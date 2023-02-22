@@ -1,6 +1,7 @@
 package com.upc.mobilitappv2.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +16,7 @@ import com.upc.mobilitappv2.navigation.AppScreens
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen() {
+fun MainScreen(context: Context) {
     val navController = rememberNavController()
 
     val navigationItems = listOf(
@@ -25,7 +26,7 @@ fun MainScreen() {
     )
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) {
-        AppNavigation(navController)
+        AppNavigation(navController, context)
     }
 }
 
@@ -61,5 +62,5 @@ private fun currentRoute(navController: NavController): String? {
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
-    MainScreen()
+    //MainScreen()
 }
