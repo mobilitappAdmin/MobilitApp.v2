@@ -75,7 +75,7 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        val simpleDateFormat= SimpleDateFormat("yyyy-MM-dd HH:MM:SS")
+        val simpleDateFormat= SimpleDateFormat("yyyy-LL-dd HH:mm:ss")
         val currentDT: String = simpleDateFormat.format(Date())
 
         var accData: FloatArray? =null
@@ -90,8 +90,8 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
 
             accArray.add(accData)
 
-            //val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
-            //Log.d("SENSOR", output)
+            val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
+            Log.d("SENSOR", output)
         }
         if (event != null && event.sensor.type == Sensor.TYPE_GYROSCOPE) {
             val gyr_x = event.values[0]
@@ -101,8 +101,8 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
 
             gyrArray.add(gyrData)
 
-            //val output = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
-            //Log.d("SENSOR", output)
+            val output = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
+            Log.d("SENSOR", output)
         }
         if (event != null && event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
             val mag_x = event.values[0]
@@ -112,16 +112,18 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
 
             magArray.add(magData)
 
-            //val output = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
-            //Log.d("SENSOR", output)
+            val output = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
+            Log.d("SENSOR", output)
         }
     }
 
-    fun stopCapture() {
+    fun stopCapture(): Array<MutableList<FloatArray>> {
         sensorManager.unregisterListener(this, sensorAcc)
         sensorManager.unregisterListener(this, sensorGyr)
         sensorManager.unregisterListener(this, sensorMag)
         Log.d("SENSOR", "Capture finished")
+
+        return arrayOf(accArray, gyrArray, magArray)
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
