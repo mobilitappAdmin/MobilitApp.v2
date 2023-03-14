@@ -161,7 +161,7 @@ private fun ActivityDialog(
         var activity: String? = null
         AlertDialog(
             onDismissRequest = {},
-            title = {Text("Select an activity", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))},
+            title = {Text("Select an activity:", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))},
             confirmButton = {
                             Button(onClick = {
                                 sensorLoader.initialize(activity!!)
@@ -204,9 +204,11 @@ private fun ActivityDialog(
                                     activity = text
                                 })
                             Text(
+                                fontSize = 18.sp,
                                 text = text,
-                                modifier = Modifier.padding(start = 16.dp)
+                                modifier = Modifier.padding(start = 2.dp, top=22.dp)
                             )
+
                         }
                     }
                 }
