@@ -13,12 +13,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.upc.mobilitappv2.navigation.AppNavigation
 import com.upc.mobilitappv2.navigation.AppScreens
+import com.upc.mobilitappv2.sensors.SensorLoader
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(context: Context) {
+fun MainScreen(context: Context, sensorLoader: SensorLoader) {
     val navController = rememberNavController()
-
     val navigationItems = listOf(
         AppScreens.TrainScreen,
         AppScreens.PredictScreen,
@@ -26,7 +26,7 @@ fun MainScreen(context: Context) {
     )
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) {
-        AppNavigation(navController, context)
+        AppNavigation(navController, context, sensorLoader)
     }
 }
 

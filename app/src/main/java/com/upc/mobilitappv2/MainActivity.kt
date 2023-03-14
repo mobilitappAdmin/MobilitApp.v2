@@ -14,14 +14,15 @@ import com.upc.mobilitappv2.sensors.SensorLoader
 import com.upc.mobilitappv2.ui.theme.MobilitAppv2Theme
 
 class MainActivity : ComponentActivity() {
-
+    private var sensorLoader = SensorLoader(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MobilitAppv2Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {
-                    MainScreen(this)
+                    MainScreen(this, sensorLoader)
                 }
             }
         }

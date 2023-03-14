@@ -8,13 +8,14 @@ import androidx.navigation.compose.composable
 import com.upc.mobilitappv2.screens.PredictScreen
 import com.upc.mobilitappv2.screens.PreferencesScreen
 import com.upc.mobilitappv2.screens.TrainScreen
+import com.upc.mobilitappv2.sensors.SensorLoader
 
 
 @Composable
-fun AppNavigation(navController: NavHostController, context: Context) {
+fun AppNavigation(navController: NavHostController, context: Context, sensorLoader: SensorLoader) {
     NavHost(navController = navController, startDestination = AppScreens.TrainScreen.route) {
         composable(route = AppScreens.TrainScreen.route) {
-            TrainScreen(context)
+            TrainScreen(context, sensorLoader)
         }
         composable(route = AppScreens.PredictScreen.route) {
             PredictScreen()
