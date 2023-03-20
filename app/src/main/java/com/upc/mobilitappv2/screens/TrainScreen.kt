@@ -123,7 +123,6 @@ private fun BodyContent(sensorLoader: SensorLoader){
                 var uploading: Boolean by remember { mutableStateOf(false) }
                 Button(
                     onClick = {
-                        Log.d("CAPTURE", "uploading data")
                         uploading = true
                         var upload = sensorLoader.saveCapture()
                         if (upload) {

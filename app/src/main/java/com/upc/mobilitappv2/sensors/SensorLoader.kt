@@ -7,16 +7,18 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Environment
 import android.os.IBinder
 import android.provider.Settings.Secure.ANDROID_ID
 import android.util.Log
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class SensorLoader(private val context: Context): Service(), SensorEventListener {
+
+    private val FILE_STORE_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/MobilitAppV2/sensors"
 
     private lateinit var sensorManager: SensorManager
 
@@ -191,9 +193,68 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
     }
 
     fun saveCapture(): Boolean {
-        Thread.sleep(5_000)
-        uploaded=true
-        Toast.makeText(context, "Capture was uploaded succesfully", Toast.LENGTH_LONG).show()
+
+        thread {
+            Log.d("SENSOR", "Saving sensor data to files")
+
+            val tm = context.getSystemService(TELEPHONY_SERVICE)
+
+            // 3 SENSORS: ACC, MAG, GYR
+            var filePart = 0
+            var FILENAME_FORMAT =
+                (ANDROID_ID
+                        + "_" + String.format("%04d", 999) + "_" + activity
+                        + "_%s" // sensor type
+                        //+ "_" + new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss").format(Calendar.getInstance().getTime())
+                        + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time)
+                        + "_" + String.format("%06d", filePart) + ".csv")
+
+            var filename = String.format(FILENAME_FORMAT, "ACC-MAG-GYR")
+            var csv = SaveCapture(FILE_STORE_DIR, filename)
+            try {
+                csv.open()
+                //writeLine("sensor,timestamp,x,y,z");
+                //for (SensorSample p : magneticFieldData) {
+                val magSize: Int = magArray.size
+
+                for (i in 0 until magSize) {
+                    if (csv.getSize() > 300 * 1024) {
+                        csv.close()
+                        filePart++
+                        FILENAME_FORMAT =  //tm.getDeviceId()
+                            (ANDROID_ID
+                                    + "_" + String.format(
+                                "%04d",
+                                999
+                            ) + "_" + activity
+                                    + "_%s" // sensor type
+                                    //+ "_" + new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss").format(Calendar.getInstance().getTime())
+                                    + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time)
+                                    + "_" + String.format("%06d", filePart) + ".csv")
+                        filename = String.format(FILENAME_FORMAT, "ACC-MAG-GYR")
+                        csv = SaveCapture(
+                            FILE_STORE_DIR,
+                            filename
+                        )
+                        csv.open()
+                    } else {
+                        csv.writeLine(
+                            java.lang.Long.valueOf("99999999999") //timestamp
+                                .toString() +
+                                    "," + accArray[i][0].toString() + "," + accArray[i][1].toString() + "," + accArray[i][2].toString() +
+                                    "," + magArray[i][0].toString() + "," + magArray[i][1].toString() + "," + magArray[i][2].toString() +
+                                    "," + gyrArray[i][0].toString() + "," + gyrArray[i][1].toString() + "," + gyrArray[i][2].toString())
+                    }
+                }
+                csv.close()
+                uploaded=true
+                //Toast.makeText(context, "Capture was saved succesfully", Toast.LENGTH_LONG).show()
+                Log.d("SENSOR", "Capture was saved succesfully")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("BAYO CSV", e.toString())
+            }
+        }
         return true
     }
 

@@ -1,22 +1,31 @@
 package com.upc.mobilitappv2
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.sensors.SensorLoader
 import com.upc.mobilitappv2.ui.theme.MobilitAppv2Theme
+
 
 class MainActivity : ComponentActivity() {
     private var sensorLoader = SensorLoader(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestPermissions()
 
         setContent {
             MobilitAppv2Theme {
@@ -27,6 +36,39 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    }
+
+    private fun requestPermissions() {
+        if (SDK_INT >= Build.VERSION_CODES.R) {
+            Log.d("myz", "" + SDK_INT)
+            if (!Environment.isExternalStorageManager()) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), 1
+                ) //permission request code is just an int
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ),
+                    1
+                )
+            }
+        }
     }
 }
 
