@@ -1,6 +1,7 @@
 package com.upc.mobilitappv2
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -17,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.sensors.SensorLoader
+import com.upc.mobilitappv2.server.UploadService
 import com.upc.mobilitappv2.ui.theme.MobilitAppv2Theme
 
 

@@ -12,6 +12,7 @@ import android.os.IBinder
 import android.provider.Settings.Secure.ANDROID_ID
 import android.util.Log
 import android.widget.Toast
+import com.upc.mobilitappv2.server.UploadService
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
@@ -255,6 +256,11 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
                 Log.d("BAYO CSV", e.toString())
             }
         }
+
+        val intent = Intent(context, UploadService::class.java)
+        intent.putExtra("UP", "Uploading...")
+        context.startService(intent)
+
         return true
     }
 
