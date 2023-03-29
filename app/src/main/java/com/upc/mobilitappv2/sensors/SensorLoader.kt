@@ -1,6 +1,5 @@
 package com.upc.mobilitappv2.sensors
 
-import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -10,7 +9,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Environment
 import android.os.IBinder
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import com.upc.mobilitappv2.server.UploadService

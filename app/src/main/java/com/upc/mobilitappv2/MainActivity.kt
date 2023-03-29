@@ -18,6 +18,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
+import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.sensors.SensorLoader
 import com.upc.mobilitappv2.server.UploadService
@@ -28,6 +29,7 @@ import java.security.AccessController.getContext
 class MainActivity : ComponentActivity() {
     private lateinit var android_id: String
     private lateinit var sensorLoader: SensorLoader
+    private lateinit var multiModal: Multimodal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,12 +37,13 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
         android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         sensorLoader = SensorLoader(this, android_id)
+        multiModal = Multimodal(this)
         Log.d("ID", android_id)
         setContent {
             MobilitAppv2Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {
-                    MainScreen(this, sensorLoader)
+                    MainScreen(this, sensorLoader, multiModal)
                 }
             }
         }
