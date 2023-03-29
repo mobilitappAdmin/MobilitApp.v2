@@ -1,6 +1,7 @@
 package com.upc.mobilitappv2
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -8,6 +9,7 @@ import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,15 +22,20 @@ import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.sensors.SensorLoader
 import com.upc.mobilitappv2.server.UploadService
 import com.upc.mobilitappv2.ui.theme.MobilitAppv2Theme
+import java.security.AccessController.getContext
 
 
 class MainActivity : ComponentActivity() {
-    private var sensorLoader = SensorLoader(this)
+    private lateinit var android_id: String
+    private lateinit var sensorLoader: SensorLoader
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
-
+        android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        sensorLoader = SensorLoader(this, android_id)
+        Log.d("ID", android_id)
         setContent {
             MobilitAppv2Theme {
                 // A surface container using the 'background' color from the theme

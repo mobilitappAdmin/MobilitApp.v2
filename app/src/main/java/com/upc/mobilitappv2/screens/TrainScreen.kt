@@ -175,7 +175,7 @@ private fun ActivityDialog(
                 }
             },
             text = {
-                val radioOptions = listOf("Bus", "Metro", "Train", "Car")
+                val radioOptions = listOf("Bus", "Metro", "Train", "Car", "Bici", "e-Bicing", "Moto", "Tram", "Run", "Walk", "e-Scooter")
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[2]) }
                 activity=selectedOption
                 Column(
@@ -197,7 +197,7 @@ private fun ActivityDialog(
                         ){
                             RadioButton(
                                 selected = (text == selectedOption),
-                                modifier = Modifier.padding(all = Dp(value = 8F)),
+                                modifier = Modifier.padding(all = Dp(value = 2F)),
                                 onClick = {
                                     onOptionSelected(text)
                                     activity = text
@@ -205,7 +205,7 @@ private fun ActivityDialog(
                             Text(
                                 fontSize = 18.sp,
                                 text = text,
-                                modifier = Modifier.padding(start = 2.dp, top=22.dp)
+                                modifier = Modifier.padding(start = 2.dp, top=16.dp)
                             )
 
                         }

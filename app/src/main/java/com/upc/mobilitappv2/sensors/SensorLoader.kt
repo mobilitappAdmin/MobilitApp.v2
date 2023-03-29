@@ -1,5 +1,6 @@
 package com.upc.mobilitappv2.sensors
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -9,7 +10,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Environment
 import android.os.IBinder
-import android.provider.Settings.Secure.ANDROID_ID
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import com.upc.mobilitappv2.server.UploadService
@@ -17,9 +18,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
 
-class SensorLoader(private val context: Context): Service(), SensorEventListener {
+class SensorLoader(private val context: Context, android_id: String): Service(), SensorEventListener {
 
     private val FILE_STORE_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/MobilitAppV2/sensors"
+
+    private val ANDROID_ID = android_id
 
     private lateinit var sensorManager: SensorManager
 
@@ -204,7 +207,7 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
             var filePart = 0
             var FILENAME_FORMAT =
                 (ANDROID_ID
-                        + "_" + String.format("%04d", 999) + "_" + activity
+                        + "_" + activity
                         + "_%s" // sensor type
                         //+ "_" + new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss").format(Calendar.getInstance().getTime())
                         + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time)
@@ -224,10 +227,7 @@ class SensorLoader(private val context: Context): Service(), SensorEventListener
                         filePart++
                         FILENAME_FORMAT =  //tm.getDeviceId()
                             (ANDROID_ID
-                                    + "_" + String.format(
-                                "%04d",
-                                999
-                            ) + "_" + activity
+                                    + "_" + activity
                                     + "_%s" // sensor type
                                     //+ "_" + new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss").format(Calendar.getInstance().getTime())
                                     + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time)
