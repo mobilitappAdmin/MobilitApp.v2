@@ -16,6 +16,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import com.upc.mobilitappv2.multimodal.Multimodal
@@ -29,6 +30,7 @@ import java.security.AccessController.getContext
 class MainActivity : ComponentActivity() {
     private lateinit var android_id: String
     private lateinit var sensorLoader: SensorLoader
+    private lateinit var sensorLoaderMulti: SensorLoader
     private lateinit var multiModal: Multimodal
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +39,8 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
         android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         sensorLoader = SensorLoader(this, android_id)
-        multiModal = Multimodal(this)
+        sensorLoaderMulti = SensorLoader(this, android_id)
+        multiModal = Multimodal(this, sensorLoaderMulti)
         Log.d("ID", android_id)
         setContent {
             MobilitAppv2Theme {

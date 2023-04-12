@@ -1,74 +1,127 @@
 package com.upc.mobilitappv2.screens
 
 import android.annotation.SuppressLint
-import android.location.Location
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
 import java.util.*
 
-private val lastLoc: MutableState<Location?> = mutableStateOf(Location("0,0"))
-
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PredictScreen(multimodal: Multimodal) {
-    Scaffold(    topBar = { TopBar("Multimodal prediction") }) {
-        BodyContent(multimodal)
+fun PredictScreen(context: Context, multimodal: Multimodal) {
+
+    Scaffold(  topBar = { TopBar("Multimodal prediction") }) {
+        //Text("In development...")
+        BodyContent(context, multimodal)
     }
 }
 
 @Composable
-private fun BodyContent(multimodal: Multimodal) {
-    Button(onClick = {
-        multimodal.initialize()
-        multimodal.startCapture()
-        lastLoc.value!!.latitude = multimodal.getLastLocation().latitude
-        lastLoc.value!!.longitude = multimodal.getLastLocation().longitude
-    },
-        modifier= Modifier
-            .height(40.dp)
-            .width(150.dp)
-    ) {
-        Icon(
-            Icons.Filled.Star,
-            contentDescription = "Start",
-            modifier = Modifier.size(ButtonDefaults.IconSize)
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = "Start")
-    }
-    if (lastLoc.value != null) {
-        Text(text = "Last location: lat: " + lastLoc.value!!.latitude +  ", lon: " + lastLoc.value!!.longitude)
-    }
-    else {
-        Text(text = "-")
+private fun BodyContent(context: Context, multimodal: Multimodal) {
+
+    val lastLoc = remember {
+        mutableStateListOf<String>("-", "-")
     }
 
-    /*
-    Button(onClick = {
-        multimodal.stopCapture()
-    },
-        modifier= Modifier
-            .height(40.dp)
-            .width(150.dp)
-    ) {
-        Icon(
-            Icons.Filled.Done,
-            contentDescription = "Stop",
-            modifier = Modifier.size(ButtonDefaults.IconSize)
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = "Stop")
+    var lastWindow: String? by remember { mutableStateOf("-") }
+
+    val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+
+        // we will receive data updates in onReceive method.
+        override fun onReceive(context: Context?, intent: Intent) {
+            // Get extra data included in the Intent
+            val loc: String? = intent.getStringExtra("location")
+            val act: String? = intent.getStringExtra("activity")
+            // on below line we are updating the data in our text view.
+            if (loc != null) {
+                lastLoc[0] = loc.split(",").toTypedArray()[0]
+                lastLoc[1] = loc.split(",").toTypedArray()[1]
+            }
+
+            if (act != null) {
+                lastWindow = act
+            }
+        }
     }
 
-     */
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(height = 10.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = {
+                    // on below line we are registering our local broadcast manager.
+                    LocalBroadcastManager.getInstance(context).registerReceiver(
+                        windowReceiver, IntentFilter("multimodal")
+                    )
+                    multimodal.initialize()
+                    multimodal.startCapture()
+                    //lastLoc.value!!.latitude = multimodal.getLastLocation().latitude
+                    //lastLoc.value!!.longitude = multimodal.getLastLocation().longitude
+                },
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(150.dp),
+                enabled = !multimodal.getState()
+            ) {
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = "Start",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "Start")
+            }
+            Spacer(modifier = Modifier.width(width = 40.dp))
+
+            Button(
+                onClick = {
+                    multimodal.stopCapture()
+                    lastLoc[0] = "-"
+                    lastLoc[1] = "-"
+                },
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(150.dp),
+                enabled = multimodal.getState()
+            ) {
+                Icon(
+                    Icons.Filled.Done,
+                    contentDescription = "Stop",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "Stop")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(height = 40.dp))
+
+        Text(text = "location: "+lastLoc[0]+", "+lastLoc[1])
+
+        Spacer(modifier = Modifier.height(height = 40.dp))
+
+        Text(text = "activity: $lastWindow")
+
+    }
+
 }

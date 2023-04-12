@@ -12,13 +12,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -121,28 +119,57 @@ private fun BodyContent(sensorLoader: SensorLoader){
                 Text(text = "End: $currentTime")
                 Spacer(modifier = Modifier.height(height = 40.dp))
                 var uploading: Boolean by remember { mutableStateOf(false) }
-                Button(
-                    onClick = {
-                        uploading = true
-                        var upload = sensorLoader.saveCapture()
-                        if (upload) {
-                            capture = null
-                            uploading=false
-                        }
-                    },
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(200.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.ThumbUp,
-                        contentDescription = "Upload",
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(text = "Upload capture")
+                var deleting: Boolean by remember { mutableStateOf(false) }
+
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End) {
+                    Button(
+                        onClick = {
+                            uploading = true
+                            var upload = sensorLoader.saveCapture()
+                            if (upload) {
+                                capture = null
+                                uploading = false
+                            }
+                        },
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(150.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.ThumbUp,
+                            contentDescription = "Upload",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(text = "Upload")
+                    }
+                    Spacer(modifier = Modifier.width(width = 40.dp))
+                    Button(
+                        onClick = {
+                            deleting = true
+                            var delete = true
+                            if (delete) {
+                                capture = null
+                                deleting = false
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE74C3C))
+                        ,
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(150.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(text = "Delete")
+                    }
                 }
-            }
+                }
         } else if (sensorLoader.getState()){
             Text("Capturing...")
         }

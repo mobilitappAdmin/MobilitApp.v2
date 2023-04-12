@@ -16,5 +16,5 @@ fun PreferencesScreen() {
 
 @Composable
 private fun BodyContent() {
-    Text("Preferences Screen")
+    Text("In development...")
 }

@@ -11,10 +11,15 @@ import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import com.upc.mobilitappv2.multimodal.FFT.Complex
+import com.upc.mobilitappv2.multimodal.FFT.FFT
 import com.upc.mobilitappv2.server.UploadService
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
+import kotlin.math.*
 
 class SensorLoader(private val context: Context, android_id: String): Service(), SensorEventListener {
 
@@ -28,9 +33,21 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     private var sensorMag: Sensor? = null
     private var sensorGyr: Sensor? = null
 
+    lateinit var accData: FloatArray
+    lateinit var gyrData: FloatArray
+    lateinit var magData: FloatArray
+
     private var accArray: MutableList<FloatArray> = ArrayList()
     private var gyrArray: MutableList<FloatArray> = ArrayList()
     private var magArray: MutableList<FloatArray> = ArrayList()
+
+    private val fifoAcc: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private val fifoMag: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private val fifoGyr: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private var currentAccWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
+    private var currentMagWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
+    private var currentGyrWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
+    private val currentDateWindow: MutableList<Date> = ArrayList()
 
     private var activity: String? = null
     var capturing = false
@@ -126,10 +143,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         val simpleDateFormat= SimpleDateFormat("yyyy-LL-dd HH:mm:ss")
         val currentDT: String = simpleDateFormat.format(Date())
 
-        var accData: FloatArray? =null
-        var gyrData: FloatArray? =null
-        var magData: FloatArray? =null
-
         var acc_x : kotlin.Float = 0.0F
         var acc_y : kotlin.Float = 0.0F
         var acc_z : kotlin.Float = 0.0F
@@ -145,9 +158,9 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             acc_x = event.values[0]
             acc_y = event.values[1]
             acc_z = event.values[2]
-            accData= floatArrayOf(acc_x, acc_y, acc_z)
+            accData = floatArrayOf(acc_x, acc_y, acc_z)
 
-            accArray.add(accData)
+            //accArray.add(accData)
         }
         if (event != null && event.sensor.type == Sensor.TYPE_GYROSCOPE) {
             gyr_x = event.values[0]
@@ -155,7 +168,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             gyr_z = event.values[2]
             gyrData= floatArrayOf(gyr_x, gyr_y, gyr_z)
 
-            gyrArray.add(gyrData)
+            //gyrArray.add(gyrData)
         }
         if (event != null && event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
             mag_x = event.values[0]
@@ -163,23 +176,160 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             mag_z = event.values[2]
             magData= floatArrayOf(mag_x, mag_y, mag_z)
 
-            //sync sensors to magnetic freq
             magArray.add(magData)
-            if (gyrData != null) {
-                gyrArray.add(gyrData)
+            accArray.add(accData)
+            gyrArray.add(gyrData)
+
+            if (activity == "Multimodal") {
+                currentAccWindow.add(accData)
+                currentMagWindow.add(magData)
+                currentGyrWindow.add(gyrData)
+                currentDateWindow.add(Calendar.getInstance().time)
             }
-            if (accData != null) {
-                accArray.add(accData)
-            }
+
             val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
             val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
             val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
-
+            /*
             Log.d("SENSOR", output)
             Log.d("SENSOR", output2)
             Log.d("SENSOR", output3)
+            */
         }
     }
+
+    fun analyseLastWindow(): String? {
+        if ( currentAccWindow.size > 256) {
+            var winSamples = currentAccWindow.size.toDouble()
+            val winT =
+                (currentDateWindow[currentDateWindow.size - 1].time - currentDateWindow[0].time) / 1000.0
+            val samplingFrequency = floor(winSamples / winT)
+            println(samplingFrequency)
+            /* FFT */
+            // Make the window size a power of two for the FFT algorithm
+            val powerOfTwo = floor(ln(winSamples) / ln(2.0)).toInt()
+            winSamples = 2.0.pow(powerOfTwo.toDouble())
+
+            var accX: Array<Complex?> = arrayOfNulls<Complex>(winSamples.toInt())
+            var accY: Array<Complex?> = arrayOfNulls<Complex>(winSamples.toInt())
+            var accZ: Array<Complex?> = arrayOfNulls<Complex>(winSamples.toInt())
+
+            val cplxFFTX: Array<Complex?>
+            val cplxFFTY: Array<Complex?>
+            val cplxFFTZ: Array<Complex?>
+
+            val fftX = DoubleArray(winSamples.toInt())
+            val fftY = DoubleArray(winSamples.toInt())
+            val fftZ = DoubleArray(winSamples.toInt())
+
+            // Separate the acc. components in three lists
+            run {
+                var i = 0
+                while (i < winSamples) {
+                    accX[i] = Complex(currentAccWindow[i][0].toDouble(), 0.0)
+                    accY[i] = Complex(currentAccWindow[i][1].toDouble(), 0.0)
+                    accZ[i] = Complex(currentAccWindow[i][2].toDouble(), 0.0)
+                    i++
+                }
+            }
+
+            // Perform the FFT and compute the magnitude of each component
+            cplxFFTX = FFT.fft(accX)
+            cplxFFTY = FFT.fft(accY)
+            cplxFFTZ = FFT.fft(accZ)
+            run {
+                var i = 0
+                while (i < winSamples) {
+                    fftX[i] = cplxFFTX[i]!!.abs()
+                    fftY[i] = cplxFFTY[i]!!.abs()
+                    fftZ[i] = cplxFFTZ[i]!!.abs()
+                    i++
+                }
+            }
+
+            // Compute the PSD (Power Spectral Density) of each component
+            val psdX = DoubleArray(winSamples.toInt() / 2)
+            val psdY = DoubleArray(winSamples.toInt() / 2)
+            val psdZ = DoubleArray(winSamples.toInt() / 2)
+            val fAxis = DoubleArray(winSamples.toInt() / 2)
+            var i = 0
+            while (i < winSamples / 2) {
+                psdX[i] = 10 * log10(
+                    1 / (winSamples * samplingFrequency) * Math.pow(
+                        fftX[i], 2.0
+                    )
+                )
+                psdY[i] = 10 * log10(
+                    1 / (winSamples * samplingFrequency) * Math.pow(
+                        fftY[i], 2.0
+                    )
+                )
+                psdZ[i] = 10 * log10(
+                    1 / (winSamples * samplingFrequency) * Math.pow(
+                        fftZ[i], 2.0
+                    )
+                )
+
+                // We use this same loop to scale the frequency axis.
+                fAxis[i] = i * (samplingFrequency / winSamples)
+                i++
+            }
+
+            // Narrow the search in the range of 1.4 to 2.3 Hz
+            val lowerIndex = abs(Arrays.binarySearch(fAxis, 1.4) + 1)
+            val upperIndex = abs(Arrays.binarySearch(fAxis, 2.3) + 1)
+            val psdXsubArray = psdX.copyOfRange(lowerIndex, upperIndex)
+            val psdYsubArray = psdY.copyOfRange(lowerIndex, upperIndex)
+            val psdZsubArray = psdZ.copyOfRange(lowerIndex, upperIndex)
+
+            // If the maximum value of the PSD is greater than a given threshold (2dB)
+            // the current window will be labeled as "Walk".
+            Log.d("FFT", psdXsubArray.max().toString())
+            val maxX: Int = psdX.indexOfFirst { it == psdXsubArray.max() }
+            val maxY: Int = psdY.indexOfFirst { it == psdYsubArray.max() }
+            val maxZ: Int = psdZ.indexOfFirst { it == psdZsubArray.max() }
+
+            val auxAcc = currentAccWindow
+            val auxMag = currentMagWindow
+            val auxGyr = currentGyrWindow
+
+            fifoAcc.add(auxAcc)
+            fifoMag.add(auxMag)
+            fifoGyr.add(auxGyr)
+
+            if (fifoAcc.size > 3) {
+                fifoAcc.removeFirst()
+                fifoMag.removeFirst()
+                fifoGyr.removeFirst()
+            }
+            currentAccWindow = ArrayList()
+            currentMagWindow = ArrayList()
+            currentGyrWindow = ArrayList()
+            currentDateWindow.clear()
+            if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
+                return ("""WALK
+freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
+freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
+freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")
+            } else {
+                return ("""OTHERS
+freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
+freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
+freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")
+            }
+
+
+            /* return String.valueOf(
+                             fAxis[maxX]+" "+psdX[maxX]
+                             +" "+fAxis[maxY]+" "+psdY[maxY]
+                             +" "+fAxis[maxZ]+" "+psdZ[maxZ]
+                     );
+                     */
+        } else {
+            return "-"
+        }
+    }
+
 
     fun stopCapture(): Int {
         sensorManager.unregisterListener(this, sensorAcc)
@@ -258,6 +408,45 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         val intent = Intent(context, UploadService::class.java)
         intent.putExtra("UP", "Uploading...")
         context.startService(intent)
+
+        return true
+    }
+
+    fun deleteCapture(): Boolean {
+
+        thread {
+            Log.d("SENSOR", "Saving sensor data to files")
+
+            val tm = context.getSystemService(TELEPHONY_SERVICE)
+            val FILEPATH = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .absolutePath + "/MobilitAppV2/sensors"
+
+            try {
+                val dir = File(FILEPATH)
+                val files = dir.listFiles()
+                if (files != null) {
+                    Log.d("DELETE", "Number of files: " + files.size)
+                }
+                if (files != null) {
+                    for (i in files.indices) {
+                        if (files[i].isFile) {
+                            val deleteFile = File(files[i].toString())
+                            val delete = deleteFile.delete()
+                            if (delete) {
+                                Log.d(
+                                    "DELETE", """The file ${files[i]} has been deleted"""
+                                )
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("DELETE", e.toString())
+            }
+        }
 
         return true
     }

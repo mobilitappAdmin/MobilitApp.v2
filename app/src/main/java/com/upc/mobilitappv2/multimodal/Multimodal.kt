@@ -3,18 +3,18 @@ package com.upc.mobilitappv2.multimodal
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
-import android.provider.CallLog
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.upc.mobilitappv2.sensors.SensorLoader
-import java.io.IOException
 
 
-class Multimodal(private val context: Context) {
+class Multimodal(private val context: Context, private val sensorLoader: SensorLoader) {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -22,7 +22,12 @@ class Multimodal(private val context: Context) {
 
     private var locations = ArrayList<Location>()
 
+    private var capturing = false
+
     fun initialize() {
+
+        val intent = Intent("multimodal")
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
         locationCallback = object : LocationCallback() {
@@ -32,27 +37,11 @@ class Multimodal(private val context: Context) {
                 if (location != null) {
                     Log.d("LOCATION", location.latitude.toString())
                     locations.add(location)
-                    //wayLatitude.add(location.latitude)
-                    //wayLongitude.add(location.longitude)
-                    //locationAccuracy.add(location.accuracy)
-                    //gpsTime =
-                    //SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().time)
-                    //wayGPSTime.add(gpsTime)
-                    /*
-                    if (sensorLoader != null) {
-                        try {
-                            //updateUI(location, MainActivity.sensorLoger.analyseLastWindow())
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    } else {
-                        try {
-                            //updateUI(location, "-")
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    }
-                    */
+                    val activity = sensorLoader.analyseLastWindow().toString()
+                    intent.putExtra("activity", activity)
+                    intent.putExtra("activity", activity)
+                    intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
                 }
             }
@@ -62,9 +51,13 @@ class Multimodal(private val context: Context) {
         locationRequest.interval = (20 * 1000).toLong() // 20 seconds
         locationRequest.fastestInterval = (18 * 1000).toLong() // 18 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
     }
 
     fun startCapture() {
+
+        capturing = true
+
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -85,6 +78,8 @@ class Multimodal(private val context: Context) {
             locationCallback,
             Looper.getMainLooper()
         )
+
+        sensorLoader.initialize("Multimodal")
     }
 
     fun getLastLocation(): Location {
@@ -92,8 +87,14 @@ class Multimodal(private val context: Context) {
         return locations.last()
     }
 
+    fun getState(): Boolean {
+        return capturing
+    }
+
     fun stopCapture() {
+        capturing = false
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        sensorLoader.stopCapture()
     }
 
 
