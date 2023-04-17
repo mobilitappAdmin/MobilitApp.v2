@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 encryptedSharedPrefs(this, sharedPreferences)
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {
-                    MainScreen(this, sensorLoader, multiModal)
+                    MainScreen(this, sensorLoader, multiModal, sharedPreferences)
                 }
             }
         }
@@ -230,7 +230,10 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
-
+        if (!sharedPreferences.contains("debug")){
+            sharedPreferences.edit().putBoolean("debug", false).apply()
+            sharedPreferences.edit().commit()
+        }
     }
 }
 

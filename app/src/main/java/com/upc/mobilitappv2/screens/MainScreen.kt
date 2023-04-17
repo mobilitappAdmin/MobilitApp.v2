@@ -2,6 +2,7 @@ package com.upc.mobilitappv2.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +19,7 @@ import com.upc.mobilitappv2.sensors.SensorLoader
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimodal) {
+fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences) {
     val navController = rememberNavController()
     val navigationItems = listOf(
         AppScreens.TrainScreen,
@@ -27,7 +28,7 @@ fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimo
     )
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) {
-        AppNavigation(navController, context, sensorLoader, multiModal)
+        AppNavigation(navController, context, sensorLoader, multiModal, sharedPreferences)
     }
 }
 

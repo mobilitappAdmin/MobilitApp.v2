@@ -1,6 +1,7 @@
 package com.upc.mobilitappv2.navigation
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,7 +14,7 @@ import com.upc.mobilitappv2.sensors.SensorLoader
 
 
 @Composable
-fun AppNavigation(navController: NavHostController, context: Context, sensorLoader: SensorLoader, multiModal: Multimodal) {
+fun AppNavigation(navController: NavHostController, context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences) {
     NavHost(navController = navController, startDestination = AppScreens.TrainScreen.route) {
         composable(route = AppScreens.TrainScreen.route) {
             TrainScreen(context, sensorLoader)
@@ -22,7 +23,7 @@ fun AppNavigation(navController: NavHostController, context: Context, sensorLoad
             PredictScreen(context, multiModal)
         }
         composable(route = AppScreens.PreferencesScreen.route) {
-            PreferencesScreen()
+            PreferencesScreen(context, sharedPreferences)
         }
     }
 
