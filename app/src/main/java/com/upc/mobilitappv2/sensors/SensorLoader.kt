@@ -33,21 +33,21 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     private var sensorMag: Sensor? = null
     private var sensorGyr: Sensor? = null
 
-    lateinit var accData: FloatArray
-    lateinit var gyrData: FloatArray
-    lateinit var magData: FloatArray
+    private var accData: FloatArray = emptyArray<Float>().toFloatArray()
+    private var gyrData: FloatArray = emptyArray<Float>().toFloatArray()
+    private var magData: FloatArray = emptyArray<Float>().toFloatArray()
 
     private var accArray: MutableList<FloatArray> = ArrayList()
     private var gyrArray: MutableList<FloatArray> = ArrayList()
     private var magArray: MutableList<FloatArray> = ArrayList()
 
-    private val fifoAcc: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
-    private val fifoMag: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
-    private val fifoGyr: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private var fifoAcc: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private var fifoMag: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
+    private var fifoGyr: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
     private var currentAccWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
     private var currentMagWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
     private var currentGyrWindow: MutableList<FloatArray> = ArrayList<FloatArray>()
-    private val currentDateWindow: MutableList<Date> = ArrayList()
+    private var currentDateWindow: MutableList<Date> = ArrayList()
 
     private var activity: String? = null
     var capturing = false
@@ -78,6 +78,18 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         accArray=ArrayList()
         magArray=ArrayList()
         gyrArray=ArrayList()
+
+        accData = emptyArray<Float>().toFloatArray()
+        gyrData = emptyArray<Float>().toFloatArray()
+        magData = emptyArray<Float>().toFloatArray()
+
+        fifoAcc = LinkedList<MutableList<FloatArray>>()
+        fifoMag = LinkedList<MutableList<FloatArray>>()
+        fifoGyr = LinkedList<MutableList<FloatArray>>()
+        currentAccWindow = ArrayList<FloatArray>()
+        currentMagWindow = ArrayList<FloatArray>()
+        currentGyrWindow = ArrayList<FloatArray>()
+        currentDateWindow = ArrayList()
 
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensorAcc = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
@@ -166,7 +178,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             gyr_x = event.values[0]
             gyr_y = event.values[1]
             gyr_z = event.values[2]
-            gyrData= floatArrayOf(gyr_x, gyr_y, gyr_z)
+            gyrData = floatArrayOf(gyr_x, gyr_y, gyr_z)
 
             //gyrArray.add(gyrData)
         }
@@ -176,25 +188,27 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             mag_z = event.values[2]
             magData= floatArrayOf(mag_x, mag_y, mag_z)
 
-            magArray.add(magData)
-            accArray.add(accData)
-            gyrArray.add(gyrData)
+            if ((gyrData.isNotEmpty()) and (accData.isNotEmpty())) {
+                magArray.add(magData)
+                accArray.add(accData)
+                gyrArray.add(gyrData)
 
-            if (activity == "Multimodal") {
-                currentAccWindow.add(accData)
-                currentMagWindow.add(magData)
-                currentGyrWindow.add(gyrData)
-                currentDateWindow.add(Calendar.getInstance().time)
+                if (activity == "Multimodal") {
+                    currentAccWindow.add(accData)
+                    currentMagWindow.add(magData)
+                    currentGyrWindow.add(gyrData)
+                    currentDateWindow.add(Calendar.getInstance().time)
+                }
+
+                val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
+                val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
+                val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
+
+                Log.d("SENSOR", output)
+                Log.d("SENSOR", output2)
+                Log.d("SENSOR", output3)
             }
 
-            val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
-            val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
-            val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
-            /*
-            Log.d("SENSOR", output)
-            Log.d("SENSOR", output2)
-            Log.d("SENSOR", output3)
-            */
         }
     }
 
