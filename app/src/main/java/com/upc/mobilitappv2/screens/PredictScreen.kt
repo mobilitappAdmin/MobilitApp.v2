@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,16 +22,18 @@ import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PredictScreen(context: Context, multimodal: Multimodal) {
+fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedPreferences ) {
+
+    val debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
 
     Scaffold(  topBar = { TopBar("Multimodal prediction") }) {
         //Text("In development...")
-        BodyContent(context, multimodal)
+        BodyContent(context, multimodal, debug!!)
     }
 }
 
 @Composable
-private fun BodyContent(context: Context, multimodal: Multimodal) {
+private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean) {
 
     val lastLoc = remember {
         mutableStateListOf<String>("-", "-")
@@ -52,7 +55,11 @@ private fun BodyContent(context: Context, multimodal: Multimodal) {
             }
 
             if (act != null) {
-                lastWindow = act
+                lastWindow = if (!debug) {
+                    act.split(',')[0]
+                } else {
+                    act
+                }
             }
         }
     }

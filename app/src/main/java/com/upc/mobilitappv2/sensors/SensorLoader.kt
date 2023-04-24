@@ -321,12 +321,12 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             currentGyrWindow = ArrayList()
             currentDateWindow.clear()
             if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
-                return ("""WALK
+                return ("""WALK,
 freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
 freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
 freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")
             } else {
-                return ("""OTHERS
+                return ("""OTHERS,
 freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
 freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
 freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")

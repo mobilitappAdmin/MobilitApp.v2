@@ -20,7 +20,7 @@ fun AppNavigation(navController: NavHostController, context: Context, sensorLoad
             TrainScreen(context, sensorLoader)
         }
         composable(route = AppScreens.PredictScreen.route) {
-            PredictScreen(context, multiModal)
+            PredictScreen(context, multiModal, sharedPreferences)
         }
         composable(route = AppScreens.PreferencesScreen.route) {
             PreferencesScreen(context, sharedPreferences)
