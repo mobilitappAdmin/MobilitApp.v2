@@ -20,6 +20,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.math.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class SensorLoader(private val context: Context, android_id: String): Service(), SensorEventListener {
 
@@ -322,23 +324,17 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             currentDateWindow.clear()
             if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
                 return ("""WALK,
-freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
-freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
-freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")
+                freqX: ${BigDecimal(fAxis[maxX]).setScale(2, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(2, RoundingMode.HALF_EVEN)}
+                freqY: ${BigDecimal(fAxis[maxY]).setScale(2, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(2, RoundingMode.HALF_EVEN)}
+                freqZ: ${BigDecimal(fAxis[maxZ]).setScale(2, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(2, RoundingMode.HALF_EVEN)}
+                """)
             } else {
                 return ("""OTHERS,
-freqX: ${fAxis[maxX]} magX: ${psdX[maxX]}
-freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
-freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}""")
+                freqX: ${BigDecimal(fAxis[maxX]).setScale(3, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(3, RoundingMode.HALF_EVEN)}
+                freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
+                freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}
+                """)
             }
-
-
-            /* return String.valueOf(
-                             fAxis[maxX]+" "+psdX[maxX]
-                             +" "+fAxis[maxY]+" "+psdY[maxY]
-                             +" "+fAxis[maxZ]+" "+psdZ[maxZ]
-                     );
-                     */
         } else {
             return "-"
         }

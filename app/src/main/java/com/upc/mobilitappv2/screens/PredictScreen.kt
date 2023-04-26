@@ -41,6 +41,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
     var lastWindow: String? by remember { mutableStateOf("-") }
 
+    var fifo: String? by remember { mutableStateOf("-") }
+
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
         // we will receive data updates in onReceive method.
@@ -48,6 +50,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             // Get extra data included in the Intent
             val loc: String? = intent.getStringExtra("location")
             val act: String? = intent.getStringExtra("activity")
+            val fifo_str = intent.getStringExtra("fifo")
             // on below line we are updating the data in our text view.
             if (loc != null) {
                 lastLoc[0] = loc.split(",").toTypedArray()[0]
@@ -61,6 +64,11 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     act
                 }
             }
+
+            if (fifo_str != null) {
+                fifo = fifo_str
+            }
+
         }
     }
 
@@ -123,11 +131,15 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         Spacer(modifier = Modifier.height(height = 40.dp))
 
-        Text(text = "location: "+lastLoc[0]+", "+lastLoc[1])
+        Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
 
         Spacer(modifier = Modifier.height(height = 40.dp))
 
-        Text(text = "activity: $lastWindow")
+        Text(text = "Last activitiy: $lastWindow")
+
+        Spacer(modifier = Modifier.height(height = 40.dp))
+
+        Text(text = "Activities: $fifo")
 
     }
 
