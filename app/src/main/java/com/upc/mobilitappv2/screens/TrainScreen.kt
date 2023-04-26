@@ -132,6 +132,7 @@ private fun BodyContent(sensorLoader: SensorLoader){
                                 uploading = false
                             }
                         },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF5DFB56)),
                         modifier = Modifier
                             .height(40.dp)
                             .width(150.dp)
