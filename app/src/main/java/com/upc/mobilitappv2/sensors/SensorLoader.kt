@@ -327,12 +327,14 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(2, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(2, RoundingMode.HALF_EVEN)}
                 freqY: ${BigDecimal(fAxis[maxY]).setScale(2, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(2, RoundingMode.HALF_EVEN)}
                 freqZ: ${BigDecimal(fAxis[maxZ]).setScale(2, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(2, RoundingMode.HALF_EVEN)}
+                time (s): ${winT}
                 """)
             } else {
                 return ("""OTHERS,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(3, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(3, RoundingMode.HALF_EVEN)}
                 freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
                 freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}
+                time (s): ${winT}
                 """)
             }
         } else {
