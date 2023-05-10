@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
@@ -43,6 +44,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
     var fifo: String? by remember { mutableStateOf("-") }
 
+    var macroState: String? by remember {
+        mutableStateOf(("-"))
+    }
+
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
         // we will receive data updates in onReceive method.
@@ -51,6 +56,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             val loc: String? = intent.getStringExtra("location")
             val act: String? = intent.getStringExtra("activity")
             val fifo_str = intent.getStringExtra("fifo")
+            val macro = intent.getStringExtra("macroState")
             // on below line we are updating the data in our text view.
             if (loc != null) {
                 lastLoc[0] = loc.split(",").toTypedArray()[0]
@@ -67,6 +73,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
             if (fifo_str != null) {
                 fifo = fifo_str
+            }
+
+            if (macro != null) {
+                macroState = macro
             }
 
         }
@@ -132,6 +142,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
+
+        Spacer(modifier = Modifier.height(height = 40.dp))
+
+        Text(text = "Macro State: $macroState", fontSize = 20.sp)
 
         Spacer(modifier = Modifier.height(height = 40.dp))
 

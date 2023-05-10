@@ -140,6 +140,32 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return sensorAcc != null //return false if not available sensor
     }
 
+    fun getLastWindow(): Array<Array<FloatArray>> {
+        var window = Array(3) {
+            Array(200) {
+                FloatArray(9)
+            }
+        }
+
+        for (i in 0..2) {
+            for (j in 0..199) {
+                window[i][j][0] = fifoAcc[i][j][0]
+                window[i][j][1] = fifoAcc[i][j][1]
+                window[i][j][2] = fifoAcc[i][j][2]
+
+                window[i][j][3] = fifoAcc[i][j][0]
+                window[i][j][4] = fifoAcc[i][j][1]
+                window[i][j][5] = fifoAcc[i][j][2]
+
+                window[i][j][6] = fifoAcc[i][j][0]
+                window[i][j][7] = fifoAcc[i][j][1]
+                window[i][j][8] = fifoAcc[i][j][2]
+            }
+        }
+
+        return window
+    }
+
     fun getState(): Boolean {
         return capturing
     }
@@ -325,14 +351,14 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
                 return ("""WALK,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(2, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(2, RoundingMode.HALF_EVEN)}
-                freqY: ${BigDecimal(fAxis[maxY]).setScale(2, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(2, RoundingMode.HALF_EVEN)}
-                freqZ: ${BigDecimal(fAxis[maxZ]).setScale(2, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(2, RoundingMode.HALF_EVEN)}
+                freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
+                freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}
                 time (s): ${winT}
                 """)
             } else {
                 return ("""OTHERS,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(3, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(3, RoundingMode.HALF_EVEN)}
-                freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
+                freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
                 freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}
                 time (s): ${winT}
                 """)

@@ -23,19 +23,25 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
+    private lateinit var mlService: MLService
     private var fifoAct: LinkedList<String> = LinkedList<String>()
-
 
     private var locations = ArrayList<Location>()
     private var last_distance: Double = 0.0
 
     private var capturing = false
+    private var macroState = "STILL"
+    private var prevMacroState = "STILL"
 
     fun initialize() {
 
+        mlService =  MLService(context)
+        mlService.initialize() //load Model
         fifoAct= LinkedList<String>()
         locations = ArrayList<Location>()
         last_distance = 0.0
+        macroState = "STILL"
+        prevMacroState = "STILL"
 
         val intent = Intent("multimodal")
 
@@ -66,11 +72,35 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         if (fifoStr =="") {fifoStr = "$fifoStr$a "}
                         else {fifoStr = "$fifoStr,$a " }
                     }
+
+                    if (fifoAct.size == 3) {
+                        if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
+                            if (fifoAct[2] == "OTHERS") {
+                                //Call ML
+                                val prediction =
+                                    mlService.overallPrediction(sensorLoader.getLastWindow())
+                                macroState = prediction
+                            }
+                            else if (fifoAct[2] == "STILL") {
+                                macroState = "STILL"
+                            }
+                        }
+                        if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
+                            macroState = "WALK"
+                        }
+                    }
+                    Log.d("Multimodal", macroState)
+
+                    intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
                     intent.putExtra("activity", activity)
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
+                    if (macroState != prevMacroState) {
+                        //userinfo
+                        prevMacroState = macroState
+                    }
                 }
             }
         }
