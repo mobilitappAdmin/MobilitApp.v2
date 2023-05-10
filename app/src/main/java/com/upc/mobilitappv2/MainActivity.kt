@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
         android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         sensorLoader = SensorLoader(this, android_id)
         sensorLoaderMulti = SensorLoader(this, android_id)
-        multiModal = Multimodal(this, sensorLoaderMulti)
+        multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences)
         Log.d("ID", android_id)
         setContent {
             MobilitAppv2Theme {

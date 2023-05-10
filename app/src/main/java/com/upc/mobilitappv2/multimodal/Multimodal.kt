@@ -4,21 +4,24 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Environment
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.upc.mobilitappv2.sensors.SensorLoader
+import java.lang.Math.abs
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.sqrt
 
 
-class Multimodal(private val context: Context, private val sensorLoader: SensorLoader) {
+class Multimodal(private val context: Context, private val sensorLoader: SensorLoader, private val preferences: SharedPreferences) {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -32,9 +35,23 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var capturing = false
     private var macroState = "STILL"
     private var prevMacroState = "STILL"
+    private var captureHash: Int = 0
+
+    private lateinit var startDate: Date
+    private var startLoc: Location? = null
+    private var first: Boolean = true
+
+    private lateinit var  userInfoService: UserInfo
+
+    val FILEPATH = Environment
+        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        .absolutePath + "/MobilitAppV2/sensors"
 
     fun initialize() {
-
+        first = true
+        startDate = Date()
+        captureHash = abs(startDate.hashCode())
+        userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
         mlService =  MLService(context)
         mlService.initialize() //load Model
         fifoAct= LinkedList<String>()
@@ -53,6 +70,9 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 val location = locationResult.locations[locationResult.locations.size - 1]
                 if (location != null) {
                     Log.d("LOCATION", location.latitude.toString())
+                    if (startLoc == null) {
+                        startLoc = location
+                    }
                     locations.add(location)
                     var activity = sensorLoader.analyseLastWindow().toString()
                     if (activity!="-") {activity = activity+"last distance: "+last_distance.toString()}
@@ -98,7 +118,27 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
                     if (macroState != prevMacroState) {
-                        //userinfo
+                        if (!first) {
+                            //userinfo
+                            userInfoService.createUserInfoDataFile(
+                                captureHash,
+                                preferences.getString("gender", null)!!,
+                                preferences.getString("age", null)!!,
+                                prevMacroState,
+                                arrayOf(
+                                    startLoc!!.longitude.toString(),
+                                    startLoc!!.latitude.toString()
+                                ),
+                                arrayOf(
+                                    location.longitude.toString(), location.latitude.toString()
+                                ),
+                                startDate.toString(),
+                                Date().toString()
+                            )
+                        }
+                        first = false
+                        startDate = Date()
+                        startLoc = location
                         prevMacroState = macroState
                     }
                 }
@@ -186,6 +226,25 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         capturing = false
         fusedLocationClient.removeLocationUpdates(locationCallback)
         sensorLoader.stopCapture()
+        //push server
+        if (!first) {
+            userInfoService.createUserInfoDataFile(
+                captureHash,
+                preferences.getString("gender", null)!!,
+                preferences.getString("age", null)!!,
+                macroState,
+                arrayOf(
+                    startLoc!!.longitude.toString(),
+                    startLoc!!.latitude.toString()
+                ),
+                arrayOf(
+                    locations[locations.size - 1].longitude.toString(),
+                    locations[locations.size - 1].latitude.toString()
+                ),
+                startDate.toString(),
+                Date().toString()
+            )
+        }
     }
 
 
