@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Environment
+import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -25,7 +26,7 @@ import kotlin.math.cos
 import kotlin.math.sqrt
 
 
-class Multimodal(private val context: Context, private val sensorLoader: SensorLoader, private val preferences: SharedPreferences) {
+class Multimodal(private val context: Context, private val sensorLoader: SensorLoader, private val preferences: SharedPreferences): Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
@@ -45,11 +46,51 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var startLoc: Location? = null
     private var first: Boolean = true
 
+    private var lastwindow = "-"
+
     private lateinit var  userInfoService: UserInfo
 
     val FILEPATH = Environment
         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         .absolutePath + "/MobilitAppV2/sensors"
+
+    fun get_lastlocation(): Array<String> {
+        if (locations.size > 0){
+            return arrayOf(
+                locations[locations.size - 1].longitude.toString(),
+                locations[locations.size - 1].latitude.toString()
+            )
+        }
+        else {
+            return arrayOf("-", "-")
+        }
+
+    }
+
+    fun get_lastwindow(): String {
+        return lastwindow
+    }
+
+    fun get_fifo(): String {
+        if (fifoAct.size > 0) {
+            var fifoStr = ""
+            for (a in fifoAct) {
+                if (fifoStr == "") {
+                    fifoStr = "$fifoStr$a "
+                } else {
+                    fifoStr = "$fifoStr,$a "
+                }
+            }
+            return fifoStr
+        }
+        else {
+            return "-"
+        }
+    }
+
+    fun get_macrostate(): String {
+        return macroState
+    }
 
     fun initialize() {
         first = true
@@ -63,6 +104,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         last_distance = 0.0
         macroState = "STILL"
         prevMacroState = "STILL"
+        lastwindow = "-"
 
         val intent = Intent("multimodal")
 
@@ -86,6 +128,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             activity = "STILL,"+activity.split(',')[1]
                         }
                     }
+
+                    lastwindow = activity
 
                     fifoAct.add(activity.split(',')[0])
                     if (fifoAct.size > 3) {
@@ -293,6 +337,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             }
         }
         return true
+    }
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
     }
 
 

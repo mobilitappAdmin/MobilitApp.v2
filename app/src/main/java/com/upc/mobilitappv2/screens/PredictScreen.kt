@@ -40,15 +40,18 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
 private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean) {
 
     val lastLoc = remember {
-        mutableStateListOf<String>("-", "-")
+        mutableStateListOf(multimodal.get_lastlocation()[0], multimodal.get_lastlocation()[1])
+    }
+    var lastWindow: String? by remember { mutableStateOf(multimodal.get_lastwindow()) }
+
+    if (!debug && lastWindow != "-") {
+        lastWindow = lastWindow!!.split(',')[0]
     }
 
-    var lastWindow: String? by remember { mutableStateOf("-") }
-
-    var fifo: String? by remember { mutableStateOf("-") }
+    var fifo: String? by remember { mutableStateOf(multimodal.get_fifo()) }
 
     var macroState: String? by remember {
-        mutableStateOf(("-"))
+        mutableStateOf(multimodal.get_macrostate())
     }
 
     var stop: Boolean? by remember { mutableStateOf(null) }
