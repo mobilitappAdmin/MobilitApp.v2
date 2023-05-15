@@ -2,6 +2,7 @@ package com.upc.mobilitappv2.multimodal
 
 import android.Manifest
 import android.app.Activity
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -14,9 +15,12 @@ import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.upc.mobilitappv2.sensors.SensorLoader
+import com.upc.mobilitappv2.server.UploadService
+import java.io.File
 import java.lang.Math.abs
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 import kotlin.math.cos
 import kotlin.math.sqrt
 
@@ -245,6 +249,50 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 Date().toString()
             )
         }
+    }
+
+    fun pushUserInfo(): Boolean {
+        val intent = Intent(context, UploadService::class.java)
+        intent.putExtra("USERINFO", "Uploading...")
+        context.startService(intent)
+
+        return true
+    }
+
+    fun deleteUserInfo(): Boolean {
+        thread {
+            Log.d("USERINFO", "Deleting userinfo files")
+
+            val FILEPATH = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .absolutePath + "/MobilitAppV2/sensors"
+
+            try {
+                val dir = File(FILEPATH)
+                val files = dir.listFiles()
+                if (files != null) {
+                    Log.d("DELETE", "Number of files: " + files.size)
+                }
+                if (files != null) {
+                    for (i in files.indices) {
+                        if (files[i].isFile) {
+                            val deleteFile = File(files[i].toString())
+                            val delete = deleteFile.delete()
+                            if (delete) {
+                                Log.d(
+                                    "DELETE", """The file ${files[i]} has been deleted"""
+                                )
+                            }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("DELETE", e.toString())
+            }
+        }
+        return true
     }
 
 

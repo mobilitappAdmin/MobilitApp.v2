@@ -453,7 +453,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     fun deleteCapture(): Boolean {
 
         thread {
-            Log.d("SENSOR", "Saving sensor data to files")
+            Log.d("SENSOR", "Deleting sensor data files")
 
             val tm = context.getSystemService(TELEPHONY_SERVICE)
             val FILEPATH = Environment
