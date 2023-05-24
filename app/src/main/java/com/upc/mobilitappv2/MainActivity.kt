@@ -19,6 +19,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.screens.components.PreferencesDialog
@@ -66,6 +68,8 @@ class MainActivity : ComponentActivity() {
         multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences)
         Log.d("ID", android_id)
         setContent {
+            val systemUiController = rememberSystemUiController()
+            systemUiController.setStatusBarColor(MaterialTheme.colors.primary)
             MobilitAppv2Theme {
                 encryptedSharedPrefs(this, sharedPreferences)
                 // A surface container using the 'background' color from the theme
@@ -83,9 +87,12 @@ class MainActivity : ComponentActivity() {
             if (!Environment.isExternalStorageManager()) {
                 ActivityCompat.requestPermissions(
                     this, arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.INTERNET
                     ), 1
                 ) //permission request code is just an int
             }

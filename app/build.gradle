@@ -64,6 +64,18 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite-select-tf-ops:+")
     implementation 'com.google.android.gms:play-services-tflite-gpu:16.1.0'
     /////////////////////////////////
+    // OSMDRIOD /////////////////////
+    implementation 'org.osmdroid:osmdroid-android:6.1.13'
+    implementation 'com.github.MKergall:osmbonuspack:6.9.0'
+    implementation 'androidx.preference:preference:1.2.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.31.1-alpha'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    /////////////////////////////////
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'androidx.security:security-crypto-ktx:1.1.0-alpha03'
     annotationProcessor  'androidx.room:room-compiler:2.4.2'

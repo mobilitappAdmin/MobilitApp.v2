@@ -6,7 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -17,11 +20,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
+import com.upc.mobilitappv2.map.Mapa
+import org.osmdroid.util.GeoPoint
 import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -55,6 +62,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     }
 
     var stop: Boolean? by remember { mutableStateOf(null) }
+    var mapa by remember {mutableStateOf(Mapa(context))}
+    val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
+    val fibPosition = GeoPoint(41.38867, 2.11196)
 
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
@@ -95,7 +105,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(height = 10.dp))
+        //Spacer(modifier = Modifier.height(height = 10.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
@@ -122,10 +132,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     contentDescription = "Start",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Start")
             }
-            Spacer(modifier = Modifier.width(width = 40.dp))
+            //Spacer(modifier = Modifier.width(width = 40.dp))
 
             Button(
                 onClick = {
@@ -142,24 +152,24 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     contentDescription = "Stop",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Stop")
             }
         }
 
-        Spacer(modifier = Modifier.height(height = 40.dp))
+        //Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
 
-        Spacer(modifier = Modifier.height(height = 40.dp))
+        //Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Macro State: $macroState", fontSize = 20.sp)
 
-        Spacer(modifier = Modifier.height(height = 40.dp))
+        //Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Last activitiy: $lastWindow")
 
-        Spacer(modifier = Modifier.height(height = 40.dp))
+        //Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Activities: $fifo")
 
@@ -167,7 +177,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             var uploading: Boolean by remember { mutableStateOf(false) }
             var deleting: Boolean by remember { mutableStateOf(false) }
 
-            Spacer(modifier = Modifier.height(height = 40.dp))
+            //Spacer(modifier = Modifier.height(height = 40.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End) {
@@ -190,10 +200,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         contentDescription = "Upload",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Upload")
                 }
-                Spacer(modifier = Modifier.width(width = 40.dp))
+                //Spacer(modifier = Modifier.width(width = 40.dp))
                 Button(
                     onClick = {
                         deleting = true
@@ -213,11 +223,12 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         contentDescription = "Delete",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Delete")
                 }
             }
         }
+        mapa.fullLayout()
 
     }
 
