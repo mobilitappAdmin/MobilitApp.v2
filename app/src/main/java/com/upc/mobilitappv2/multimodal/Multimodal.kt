@@ -145,6 +145,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
                             if (fifoAct[2] == "OTHERS") {
                                 //Call ML
+                                Log.d("ML", "Call ML")
                                 val prediction =
                                     mlService.overallPrediction(sensorLoader.getLastWindow())
                                 macroState = prediction
