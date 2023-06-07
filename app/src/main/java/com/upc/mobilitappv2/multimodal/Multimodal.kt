@@ -32,6 +32,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
     private lateinit var mlService: MLService
+    private lateinit var stopService: StopService
     private var fifoAct: LinkedList<String> = LinkedList<String>()
 
     private var locations = ArrayList<Location>()
@@ -99,6 +100,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
         mlService =  MLService(context)
         mlService.initialize() //load Model
+        stopService = StopService(alpha = 0.05, max_radium = 30, num_points = 10, covering_threshold = 75.0F) // CHANGE
+        stopService.initialize()
         fifoAct= LinkedList<String>()
         locations = ArrayList<Location>()
         last_distance = 0.0
@@ -145,7 +148,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
                             if (fifoAct[2] == "OTHERS") {
                                 //Call ML
-                                Log.d("ML", "Call ML")
+                                //Log.d("ML", "Call ML")
                                 val prediction =
                                     mlService.overallPrediction(sensorLoader.getLastWindow())
                                 macroState = prediction
@@ -158,12 +161,17 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             macroState = "WALK"
                         }
                     }
-                    Log.d("Multimodal", macroState)
+
+                    // STOP algorithm
+                    val stop = stopService.addLocation(location)
+                    Log.d("STOP", "${stop.first}, ${stop.second}")
+                    //Log.d("Multimodal", macroState)
 
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
                     intent.putExtra("activity", activity)
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
+                    intent.putExtra("stop", stop.first.toString())
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
                     if (macroState != prevMacroState) {
@@ -190,13 +198,16 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         startLoc = location
                         prevMacroState = macroState
                     }
+                    if (stop.second) {
+                        stopCapture()
+                    }
                 }
             }
         }
 
         locationRequest = LocationRequest.create()
-        locationRequest.interval = (20 * 1000).toLong() // 20 seconds
-        locationRequest.fastestInterval = (18 * 1000).toLong() // 18 seconds
+        locationRequest.interval = (10 * 1000).toLong() // 20 seconds CHANGE
+        locationRequest.fastestInterval = (8 * 1000).toLong() // 18 seconds CHANGE
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     }
@@ -228,7 +239,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             val loc1 = locations[locations.size-1]
             val dist = computeDistance(loc0.latitude, loc0.longitude, loc1.latitude, loc1.longitude)
             last_distance = dist
-            Log.d("DIST", last_distance.toString())
+            //Log.d("DIST", last_distance.toString())
             return dist < 20
         }
         return false

@@ -232,9 +232,9 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
                 val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
 
-                Log.d("SENSOR", output)
-                Log.d("SENSOR", output2)
-                Log.d("SENSOR", output3)
+                //Log.d("SENSOR", output)
+                //Log.d("SENSOR", output2)
+                //Log.d("SENSOR", output3)
             }
 
         }

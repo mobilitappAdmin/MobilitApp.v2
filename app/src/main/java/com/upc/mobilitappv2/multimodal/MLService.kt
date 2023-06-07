@@ -78,7 +78,7 @@ class MLService(val ctx: Context)
 
         model.run(input, output)
         val maxIdx =  output.indices.maxBy { output[0][it] } ?: -1
-        Log.d("ML", NAMES[maxIdx].toString())
+        //Log.d("ML", NAMES[maxIdx].toString())
 
         return NAMES[maxIdx].toString()
     }
