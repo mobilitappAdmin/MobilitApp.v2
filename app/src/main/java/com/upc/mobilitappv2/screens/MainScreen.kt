@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.navigation.AppNavigation
 import com.upc.mobilitappv2.navigation.AppScreens
@@ -19,7 +20,7 @@ import com.upc.mobilitappv2.sensors.SensorLoader
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences) {
+fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences, mapa: Mapa) {
     val navController = rememberNavController()
     val navigationItems = listOf(
         AppScreens.TrainScreen,
@@ -28,7 +29,7 @@ fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimo
     )
 
     Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) {
-        AppNavigation(navController, context, sensorLoader, multiModal, sharedPreferences)
+        AppNavigation(navController, context, sensorLoader, multiModal, sharedPreferences,mapa)
     }
 }
 

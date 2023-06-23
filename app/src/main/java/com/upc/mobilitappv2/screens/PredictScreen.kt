@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.multimodal.Multimodal
@@ -33,18 +34,18 @@ import java.util.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedPreferences ) {
+fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedPreferences, mapa: Mapa ) {
 
     val debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
-
+    //mapa.resetView()
     Scaffold(  topBar = { TopBar("Multimodal prediction") }) {
         //Text("In development...")
-        BodyContent(context, multimodal, debug!!)
+        BodyContent(context, multimodal, debug!!,mapa)
     }
 }
 
 @Composable
-private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean) {
+private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean,mapa: Mapa) {
 
     val lastLoc = remember {
         mutableStateListOf(multimodal.get_lastlocation()[0], multimodal.get_lastlocation()[1])
@@ -62,7 +63,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     }
 
     var stop: Boolean? by remember { mutableStateOf(null) }
-    var mapa by remember {mutableStateOf(Mapa(context))}
+    //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
 
@@ -229,6 +230,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
         }
         mapa.fullLayout()
+
 
     }
 

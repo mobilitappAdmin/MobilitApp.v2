@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.MainScreen
 import com.upc.mobilitappv2.screens.components.PreferencesDialog
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var sensorLoaderMulti: SensorLoader
     private lateinit var multiModal: Multimodal
     private lateinit var sharedPreferences: SharedPreferences
-
+    private lateinit var mapa:Mapa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
         sensorLoader = SensorLoader(this, android_id)
         sensorLoaderMulti = SensorLoader(this, android_id)
         multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences)
+        mapa = Mapa(this)
         Log.d("ID", android_id)
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -74,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 encryptedSharedPrefs(this, sharedPreferences)
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {
-                    MainScreen(this, sensorLoader, multiModal, sharedPreferences)
+                    MainScreen(this, sensorLoader, multiModal, sharedPreferences,mapa)
                 }
             }
         }

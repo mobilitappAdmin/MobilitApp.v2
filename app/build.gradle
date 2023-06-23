@@ -19,7 +19,9 @@ android {
             useSupportLibrary true
         }
     }
-
+    viewBinding {
+        enabled = true
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -65,9 +67,21 @@ dependencies {
     implementation 'com.google.android.gms:play-services-tflite-gpu:16.1.0'
     /////////////////////////////////
     // OSMDRIOD /////////////////////
+
+    //fragments
+    // Java language implementation
+
+    // Kotlin
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
+    // Testing Fragments in Isolation
+    debugImplementation("androidx.fragment:fragment-testing:1.5.7")
+
+
     implementation 'org.osmdroid:osmdroid-android:6.1.13'
     implementation 'com.github.MKergall:osmbonuspack:6.9.0'
     implementation 'androidx.preference:preference:1.2.0'
+    implementation "androidx.compose.ui:ui-viewbinding:$compose_ui_version"
+    implementation "androidx.activity:activity-compose:$compose_ui_version"
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.google.code.gson:gson:2.8.2'
