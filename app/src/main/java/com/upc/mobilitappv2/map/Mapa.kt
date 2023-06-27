@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -77,7 +76,7 @@ class Mapa(val context:Context): AppCompatActivity() {
     private var currentIcon = R.drawable.test_yellow
     private var previousIcon = R.drawable.test_yellow
     private var emptyMarker = false
-    private var roadIndex = 1
+    private var roadIndex = 0
     private var enQueue = mutableStateOf(true)
     private val markerColors: Map<Int, Int> =
         mapOf(
@@ -131,7 +130,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         //binding = FragContainerBinding.inflate(layoutInflater)
         fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout,null,)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
-        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID;
+
         map = fullView.findViewById<MapView>(R.id.map)
         map.post(
             Runnable { map.controller.setZoom(6.0)
@@ -175,10 +174,17 @@ class Mapa(val context:Context): AppCompatActivity() {
         map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         initializeMap()
 
-        map.invalidate()
-        for(r in savedRoadsForReset) map.overlays.add(0,r)
+        // a polyline has an atribute MapView that can be null, but once added to a map the polyline 's mapview is set
+        // and cannot be added to a diferent map, so i make a clone to add to the current map
+        for(r in savedRoadsForReset){
+            val poly = Polyline()
+            for(p in r.actualPoints) poly.addPoint(p)
+            poly.outlinePaint.color = r.color
+            poly.outlinePaint.strokeWidth = 10.0f
+            map.overlays.add(0,poly)
+        }
         for(m in savedMarkersForReset) reADD(m.value)
-
+        map.invalidate()
         //val map = view.findViewById(R.id.map) as MapView
         //initializeMap()
     }
@@ -206,19 +212,10 @@ class Mapa(val context:Context): AppCompatActivity() {
         marker.position = a.position
         marker.rotation = a.rotation
         marker.setAnchor(a.anchorU,a.anchorV)
+        markersMap[a.position] = marker
         map.overlays.add(marker)
     }
-    override fun onDetachedFromWindow() {
-        map.onPause()
-        Log.d("visibility","off :(")
-        super.onDetachedFromWindow()
-    }
 
-    override fun onAttachedToWindow() {
-        map.onResume()
-        Log.d("visibility","on :))")
-        super.onAttachedToWindow()
-    }
     private fun transformDrawable(
     icon: Drawable?,
     scaleFactor: Double,
@@ -284,12 +281,12 @@ class Mapa(val context:Context): AppCompatActivity() {
         //return consum
     }
 
-    fun addMarker(position: GeoPoint, drawable: Int, enQ: Boolean) {
+    fun addMarker(position: GeoPoint, drawable: Int) {
         if (markersMap.contains(position)) removeMarker(position)
-        if (enQ) {
-            previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
-            currentIcon = drawable
-        }
+
+        previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
+        currentIcon = drawable
+        Log.d("PreviousIcon", context.resources.getResourceEntryName(previousIcon))
         val marker =
             object : Marker(map) {
                 override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
@@ -315,20 +312,25 @@ class Mapa(val context:Context): AppCompatActivity() {
 
         markersMap[position] = marker
         savedMarkersForReset[position] = shallowCopy(marker)
-        map.overlays.add(marker)
-        //mapOverlays.add(marker)
-        map.invalidate()
-        if (enQ) {
-            if (geoQ.size > 1) geoQ.remove()
-            geoQ.add(position)
+
+
+        if(map!= null){ // to not create a null exception when the map is not visible
+            map.overlays.add(marker)
+            map.invalidate()
         }
 
+        if (geoQ.size > 1) geoQ.remove()
+        geoQ.add(position)
+
+        pathing()
+        map.invalidate()
     }
 
     fun removeMarker(position: GeoPoint) {
         if (markersMap.contains(position)) {
-            markersMap[position]?.remove(map)
+            if(map!=null) markersMap[position]?.remove(map)
             markersMap.remove(position)
+            geoQ.remove(position)
             savedMarkersForReset.remove(position)
             map.invalidate()
         }
@@ -382,15 +384,29 @@ class Mapa(val context:Context): AppCompatActivity() {
         savedMarkersForReset[marker.position] = shallowCopy(marker)
         savedMarkersForReset[marker2.position] = shallowCopy(marker2)
 
-        map.overlays.add(marker2)
+        if(map!= null){
+            map.overlays.add(marker2)
+            map.invalidate()
+        }
         //mapOverlays.add(marker2)
         if (geoQ.size > 1) geoQ.remove()
         geoQ.add(marker2.position)
-        map.invalidate()
+
     }
 
-    fun makePath(startPoint: GeoPoint, endPoint: GeoPoint): Double {
+    fun pathing(){
+        if (geoQ.size > 1) {
+            val start = geoQ.remove();lifecycleScope.launch {
+                geoQ.peek()
+                    ?.let { makePath(start, it) };
+            }
+        }
+    }
+    private fun makePath(startPoint: GeoPoint, endPoint: GeoPoint): Double {
         var ret = 0.0
+        // saving this so the internet call doesnt produce race conditions
+        val prevIcon = previousIcon
+        val currIcon = currentIcon
         val thread = Thread {
             try {
                 val roadManager = OSRMRoadManager(context, "MY_USER_AGENT")
@@ -399,14 +415,14 @@ class Mapa(val context:Context): AppCompatActivity() {
                         R.drawable.marker_still,
                         R.drawable.marker_run,
                         R.drawable.marker_walk
-                    ).contains(previousIcon)
+                    ).contains(prevIcon)
                 )
                     roadManager.setMean(OSRMRoadManager.MEAN_BY_FOOT)
                 else if (listOf(
                         R.drawable.marker_bike,
                         R.drawable.marker_ebike,
                         R.drawable.marker_escooter
-                    ).contains(previousIcon)
+                    ).contains(prevIcon)
                 )
                     roadManager.setMean(OSRMRoadManager.MEAN_BY_BIKE)
                 else
@@ -419,13 +435,13 @@ class Mapa(val context:Context): AppCompatActivity() {
                 var line = RoadManager.buildRoadOverlay(road)
 
                 //quick fix to make trains go straight
-                if(listOf(R.drawable.marker_metro,R.drawable.marker_tram,R.drawable.marker_tren).contains(previousIcon))
+                if(listOf(R.drawable.marker_metro,R.drawable.marker_tram,R.drawable.marker_tren).contains(prevIcon))
                 {
                     line  = Polyline()
                     line.setPoints(waypoints)
                 }
-
-                line.outlinePaint.color = markerColors[previousIcon]!!
+                Log.d("Previous RoadIcon", context.resources.getResourceEntryName(prevIcon))
+                line.outlinePaint.color = markerColors[prevIcon]!!
                 line.outlinePaint.strokeWidth = 10.0f
 
                 //road index per a que les carreteres mes noves solapin a les velles si es creuen i no al reves
@@ -434,13 +450,13 @@ class Mapa(val context:Context): AppCompatActivity() {
                 for(p in line.actualPoints){
                     poly.addPoint(p);
                 }
-                poly.outlinePaint.color = markerColors[previousIcon]!!
+                poly.outlinePaint.color = markerColors[prevIcon]!!
                 poly.outlinePaint.strokeWidth = 10.0f
                 savedRoadsForReset.add(poly)
                 ++roadIndex
                 map.invalidate()
 
-                val vehicle = context.resources.getResourceEntryName(previousIcon)
+                val vehicle = context.resources.getResourceEntryName(prevIcon)
                     .replace("marker_", "").replace("_crooked", "")
                 val co2 = (co2Table[vehicle] ?: 0.0)
 
@@ -457,14 +473,16 @@ class Mapa(val context:Context): AppCompatActivity() {
                     markersMap[startPoint]!!.icon = transformDrawable(
                         ContextCompat.getDrawable(context, R.drawable.bolita),
                         scaleFactor = 0.6,
-                        hue = markerColors[previousIcon]!!
+                        hue = markerColors[prevIcon]!!
                     )
                     markersMap[startPoint]!!.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                    savedMarkersForReset[startPoint] = shallowCopy(markersMap[startPoint]!!)
-                    savedMarkersForReset[startPoint]?.anchorV = Marker.ANCHOR_CENTER
+                    savedMarkersForReset[startPoint]!!.icon = markersMap[startPoint]!!.icon
+                    savedMarkersForReset[startPoint]!!.anchorV = Marker.ANCHOR_CENTER
+
+
                 }
 
-                if ((previousIcon != currentIcon)) markersOnThisRoad.clear()
+                if ((prevIcon != currIcon)) markersOnThisRoad.clear()
 
                 //center the markers on the route
                 val p = line.actualPoints
@@ -478,7 +496,8 @@ class Mapa(val context:Context): AppCompatActivity() {
                 map.invalidate()
 
                 // adding a second marker on the destination, if changing to a new vehicle
-                if ((previousIcon != currentIcon)) {
+                if ((prevIcon != currIcon)) {
+                    savedMarkersForReset.remove(endPoint)
                     markersMap[endPoint]?.let {
                         addTwin(
                             it,
@@ -496,7 +515,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 if (totalDistance < 1000) uiString2.value =
                     "Total distance = ${(totalDistance).format(1)}m"
                 else uiString2.value = "Total distance = ${(totalDistance / 1000).format(2)}Km"
-                if ((previousIcon != currentIcon)) partialDistance = 0.0
+                if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =
                     if (totalCO2 * 1000 / (totalDistance) > 60) Color(0xFFFF6D60) else if (totalCO2 * 1000 / (totalDistance) > 25) Color(
@@ -527,7 +546,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
                     val proj = mapView!!.projection
                     val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    if (!emptyMarker) addMarker(loc, selectedIcon, enQueue.value)
+                    if (!emptyMarker) addMarker(loc, selectedIcon)
                     else {
                         if (geoQ.size > 1) geoQ.remove()
                         geoQ.add(loc)
@@ -636,12 +655,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 ButtonCenterMap()
                 // MAKE PATH BETWEEN THE TWO LAST ADDED POINTS
                 Button(onClick = {
-                    if (geoQ.size > 1) {
-                        val start = geoQ.remove();lifecycleScope.launch {
-                            geoQ.peek()
-                                ?.let { makePath(start, it) };
-                        }
-                    }
+                    pathing()
                 }, shape = CircleShape) { Text(text = "MakePath", Modifier.padding(start = 10.dp)) }
                 Button(onClick = { clear() }, shape = CircleShape) {
                     Text(
@@ -684,7 +698,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 val color =
                     if (!enQueue.value) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
                 Button(
-                    onClick = { enQueue.value = !enQueue.value; map.overlays.removeAt(0) },
+                    onClick = { enQueue.value = !enQueue.value;},
                     colors = ButtonDefaults.buttonColors(backgroundColor = color),
                     shape = CircleShape
                 ) {
