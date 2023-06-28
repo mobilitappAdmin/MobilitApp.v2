@@ -71,8 +71,10 @@ class MainActivity : ComponentActivity() {
         Log.d("ID", android_id)
         setContent {
             val systemUiController = rememberSystemUiController()
-            systemUiController.setStatusBarColor(MaterialTheme.colors.primary)
+
+
             MobilitAppv2Theme {
+                systemUiController.setStatusBarColor(MaterialTheme.colors.background)
                 encryptedSharedPrefs(this, sharedPreferences)
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {

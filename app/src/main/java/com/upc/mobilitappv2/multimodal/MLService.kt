@@ -20,10 +20,10 @@ class MLService(val ctx: Context)
         3 to "E-Scooter",
         4 to "Metro",
         5 to "Run",
-        6 to "Stationary",
+        6 to "STILL",
         7 to "Train",
         8 to "Tram",
-        9 to "Walk"
+        9 to "WALK"
     )
 
     private val MODEL_FILE_NAME = "model_12juny.tflite"

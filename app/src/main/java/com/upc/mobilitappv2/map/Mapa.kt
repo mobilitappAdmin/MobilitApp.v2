@@ -106,6 +106,13 @@ class Mapa(val context:Context): AppCompatActivity() {
         )
 
 
+     val nameToID: Map<String,Int> =
+        mapOf(
+            "WALK" to R.drawable.marker_walk, "Run" to R.drawable.marker_run, "STILL" to R.drawable.marker_still, "Bicycle" to R.drawable.marker_bike,
+            "Train" to R.drawable.marker_tren, "Metro" to R.drawable.marker_metro, "Tram" to R.drawable.marker_tram, "Bus" to R.drawable.marker_bus,
+            "Moto" to R.drawable.marker_moto, "E-Scooter" to R.drawable.marker_escooter, "E-Bike" to R.drawable.marker_ebike, "Car" to R.drawable.marker_car,
+        )
+
     private val markersMap: MutableMap<GeoPoint, Marker> = mutableMapOf()
 
     private var savedMarkersForReset : MutableMap<GeoPoint,AuxMarker> = mutableMapOf()
@@ -283,7 +290,7 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     fun addMarker(position: GeoPoint, drawable: Int) {
         if (markersMap.contains(position)) removeMarker(position)
-
+        if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return
         previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
         currentIcon = drawable
         Log.d("PreviousIcon", context.resources.getResourceEntryName(previousIcon))
@@ -323,6 +330,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         geoQ.add(position)
 
         pathing()
+        if(drawable == R.drawable.marker_still) geoQ.clear()
         map.invalidate()
     }
 
@@ -575,11 +583,15 @@ class Mapa(val context:Context): AppCompatActivity() {
 
             map.controller.animateTo(myLocationOverlay.myLocation)
             map.controller.setZoom(18.0)
-        }, shape = CircleShape) {
+        },modifier = Modifier
+            .height(40.dp)
+            .width(150.dp)
+            .padding(end=1.dp))
+        {
             Image(
                 painterResource(id = R.drawable.yellowguy),
                 contentDescription = "Center",
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(22.dp)
             )
 
             //Text(text = "Add to cart",Modifier.padding(start = 10.dp))
@@ -772,7 +784,73 @@ class Mapa(val context:Context): AppCompatActivity() {
 
 
         }
+    }@Composable
+    fun APPLayout() {
+        Column {
+            Modifier.fillMaxWidth()
+            Box(){
+                Modifier
+                    .fillMaxWidth()
+
+                Column() {
+                    Text(
+                        text = uiString.value,//Text(text = "Soy un mapa :)",
+                        Modifier
+                            .padding(top = 8.dp, bottom = 5.dp)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.Bold,
+                        color = mutColor.value,
+                        //backgroundColor = Color.LightGray,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = uiString2.value,
+                        Modifier
+                            .fillMaxWidth(),
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Image(
+                    painter = painterResource(R.drawable.eco),
+                    contentDescription = "Center",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(top = 8.dp, start = 3.dp),
+                    colorFilter = ColorFilter.tint(mutColor.value)
+                )
+
+
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth().padding(10.dp),
+                horizontalArrangement = Arrangement.Center,
+
+                ) {
+                ButtonCenterMap()
+                Button(onClick = { clear() },modifier = Modifier
+                    .height(40.dp)
+                    .width(150.dp)
+                    .padding(start = 1.dp))
+                {
+                    Text(
+                        text = "Clear map",
+                        Modifier.padding(start = 10.dp)
+                    )
+                }
+            }
+            DrawMap()
+
+
+        }
     }
+
+
+
 }
+
+
 
 

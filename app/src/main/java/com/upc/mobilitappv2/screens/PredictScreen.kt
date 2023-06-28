@@ -99,6 +99,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
             if (macro != null) {
                 macroState = macro
+                mapa.nameToID[macro!!]?.let {
+                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it)
+                }
             }
 
         }
@@ -109,7 +112,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //Spacer(modifier = Modifier.height(height = 10.dp))
+        Spacer(modifier = Modifier.height(height = 10.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
@@ -238,7 +241,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 }
             }
         }
-        mapa.fullLayout()
+
+        mapa.APPLayout()
+        //mapa.DrawMap()
 
 
     }
