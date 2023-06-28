@@ -206,7 +206,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(event: MotionEvent?, mapView: MapView?): Boolean {
                     val touched = hitTest(event, mapView)
                     if (touched) {
-                        removeMarker(this.position)
+                        //removeMarker(this.position)
                         //addTwin(this)
                         //updateMarker(position,"alo")
                     }
@@ -303,7 +303,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(event: MotionEvent?, mapView: MapView?): Boolean {
                     val touched = hitTest(event, mapView)
                     if (touched) {
-                        removeMarker(this.position)
+                        //removeMarker(this.position)
                         //addTwin(this)
                         //updateMarker(position,"alo")
                     }
@@ -355,7 +355,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(event: MotionEvent?, mapView: MapView?): Boolean {
                     val touched = hitTest(event, mapView)
                     if (touched) {
-                        removeMarker(this.position)
+                        //removeMarker(this.position)
                         //updateMarker(position,"alo")
                     }
                     return super.onLongPress(event, mapView)
@@ -552,13 +552,13 @@ class Mapa(val context:Context): AppCompatActivity() {
                 }
 
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
-                    val proj = mapView!!.projection
-                    val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    if (!emptyMarker) addMarker(loc, selectedIcon)
-                    else {
-                        if (geoQ.size > 1) geoQ.remove()
-                        geoQ.add(loc)
-                    }
+                    //val proj = mapView!!.projection
+                    //val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
+                    //if (!emptyMarker) addMarker(loc, selectedIcon)
+                    //else {
+                    //  if (geoQ.size > 1) geoQ.remove()
+                    //    geoQ.add(loc)
+                    //}
                     return super.onLongPress(e, mapView)
                 }
             }
