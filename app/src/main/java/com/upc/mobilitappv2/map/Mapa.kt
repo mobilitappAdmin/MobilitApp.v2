@@ -518,9 +518,9 @@ class Mapa(val context:Context): AppCompatActivity() {
                 if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =
-                    if (totalCO2 * 1000 / (totalDistance) > 60) Color(0xFFFF6D60) else if (totalCO2 * 1000 / (totalDistance) > 25) Color(
-                        0xFFF7D06E
-                    ) else Color(0xFF98D8AA)
+                    if (totalCO2 * 1000 / (totalDistance) > 60) Color(0xFFFF6D60)
+                    else if (totalCO2 * 1000 / (totalDistance) > 25) Color(0xFFF7D06E)
+                    else Color(0xFF98D8AA)
                ret = line.distance
             } catch (e: Exception) {
                 e.printStackTrace()
