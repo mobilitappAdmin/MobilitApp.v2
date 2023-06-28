@@ -14,29 +14,32 @@ class MLService(val ctx: Context)
     private lateinit var model: Interpreter
 
     private val NAMES = mapOf(
-        0 to "Bus",
-        1 to "Car",
-        2 to "E-Scooter",
-        3 to "Metro",
-        4 to "Run",
-        5 to "Stationary",
-        6 to "Train",
-        7 to "Tram",
-        8 to "Walk"
+        0 to "Bicycle",
+        1 to "Bus",
+        2 to "Car",
+        3 to "E-Scooter",
+        4 to "Metro",
+        5 to "Run",
+        6 to "Stationary",
+        7 to "Train",
+        8 to "Tram",
+        9 to "Walk"
     )
 
-    private val MODEL_FILE_NAME = "model.tflite"
+    private val MODEL_FILE_NAME = "model_12juny.tflite"
     private val NUM_STEPS = 200
     private val NUM_FEATURES = 9
 
     private val MEAN_TEST = floatArrayOf(
-        -0.0462006055f, 0.0276003838f, 0.33340199f, 0.0208084669f,
-        -10.4566228f, 1.31600973f, -0.000123946232f, 0.000212353514f, -0.000123946232f
+        -0.019633127f, 0.087701574f, 0.35467845f, -4.2605853f,
+                -7.905628f, 1.0647204f, -0.0019038585f, -5.15451100e-04f,
+                -0.0019038585f
     )
 
     private val STD_TEST = floatArrayOf(
-        1.94794261f, 1.57676541f, 2.48401428f, 9.84275273f,
-        44.9785843f, 119.149548f, 0.67448543f, 0.6229364f, 0.67448543f
+        5.7433925f, 4.68296240f, 7.472755f, 1372.8038f,
+        1915.3158f, 13894.318f, 0.20449808f, 0.20266408f,
+        0.20449808f
     )
 
     fun initialize() {
@@ -78,7 +81,7 @@ class MLService(val ctx: Context)
 
         model.run(input, output)
         val maxIdx =  output.indices.maxBy { output[0][it] } ?: -1
-        Log.d("ML", NAMES[maxIdx].toString())
+        //Log.d("ML", NAMES[maxIdx].toString())
 
         return NAMES[maxIdx].toString()
     }

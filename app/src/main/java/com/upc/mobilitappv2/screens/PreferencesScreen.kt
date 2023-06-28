@@ -183,7 +183,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                 }
             },
             text = {
-                var radioOptions = listOf("men", "women", "others", "NA")
+                var radioOptions = listOf("man", "woman", "others", "NA")
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.indexOf(gender)]) }
                 activity=selectedOption
                 Column(

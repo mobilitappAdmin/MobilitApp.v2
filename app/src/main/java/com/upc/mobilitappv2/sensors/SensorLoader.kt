@@ -232,9 +232,9 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
                 val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
 
-                Log.d("SENSOR", output)
-                Log.d("SENSOR", output2)
-                Log.d("SENSOR", output3)
+                //Log.d("SENSOR", output)
+                //Log.d("SENSOR", output2)
+                //Log.d("SENSOR", output3)
             }
 
         }
@@ -351,14 +351,14 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
                 return ("""WALK,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(2, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(2, RoundingMode.HALF_EVEN)}
-                freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
-                freqZ: ${fAxis[maxZ]} magZ: ${psdZ[maxZ]}
+                freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
+                freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}
                 time (s): ${winT}
                 """)
             } else {
                 return ("""OTHERS,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(3, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(3, RoundingMode.HALF_EVEN)}
-                freqY: ${fAxis[maxY]} magY: ${psdY[maxY]}
+                freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
                 freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}
                 time (s): ${winT}
                 """)

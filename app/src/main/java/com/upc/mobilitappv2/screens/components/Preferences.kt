@@ -59,7 +59,7 @@ fun PreferencesDialog(
                 if  (type == "age") {
                     radioOptions = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA")
                 } else {
-                    radioOptions = listOf("men", "women", "others", "NA")
+                    radioOptions = listOf("man", "woman", "others", "NA")
                 }
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
                 activity=selectedOption

@@ -200,7 +200,7 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 text = {
-                    var radioOptions = listOf("men", "women", "others", "NA")
+                    var radioOptions = listOf("man", "woman", "others", "NA")
                     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
                     activity=selectedOption
                     Column(

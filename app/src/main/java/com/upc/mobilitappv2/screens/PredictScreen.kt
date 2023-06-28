@@ -52,6 +52,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     }
     var lastWindow: String? by remember { mutableStateOf(multimodal.get_lastwindow()) }
 
+    var stop_cov: String? by remember { mutableStateOf("0.0") }
+
     if (!debug && lastWindow != "-") {
         lastWindow = lastWindow!!.split(',')[0]
     }
@@ -76,6 +78,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             val act: String? = intent.getStringExtra("activity")
             val fifo_str = intent.getStringExtra("fifo")
             val macro = intent.getStringExtra("macroState")
+            stop_cov = intent.getStringExtra("stop")
             // on below line we are updating the data in our text view.
             if (loc != null) {
                 lastLoc[0] = loc.split(",").toTypedArray()[0]
@@ -174,7 +177,13 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         Text(text = "Activities: $fifo")
 
-        if (stop != null && stop==true) {
+        if (debug){
+            Spacer(modifier = Modifier.height(height = 40.dp))
+
+            Text(text = "Stop covering: $stop_cov %")
+        }
+
+        if (stop != null && !multimodal.getState()) {
             var uploading: Boolean by remember { mutableStateOf(false) }
             var deleting: Boolean by remember { mutableStateOf(false) }
 
