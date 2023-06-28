@@ -290,46 +290,57 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     fun addMarker(position: GeoPoint, drawable: Int) {
         if (markersMap.contains(position)) removeMarker(position)
+
+        // avoid multiple still markers on the same spot
         if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return
+
         previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
         currentIcon = drawable
         Log.d("PreviousIcon", context.resources.getResourceEntryName(previousIcon))
-        val marker =
-            object : Marker(map) {
-                override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
-                    return super.onSingleTapConfirmed(event, mapView)
-                }
 
-                override fun onLongPress(event: MotionEvent?, mapView: MapView?): Boolean {
-                    val touched = hitTest(event, mapView)
-                    if (touched) {
-                        //removeMarker(this.position)
-                        //addTwin(this)
-                        //updateMarker(position,"alo")
+        try{
+            val marker =
+                object : Marker(map) {
+                    override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
+                        return super.onSingleTapConfirmed(event, mapView)
                     }
-                    return super.onLongPress(event, mapView)
+
+                    override fun onLongPress(event: MotionEvent?, mapView: MapView?): Boolean {
+                        val touched = hitTest(event, mapView)
+                        if (touched) {
+                            //removeMarker(this.position)
+                            //addTwin(this)
+                            //updateMarker(position,"alo")
+                        }
+                        return super.onLongPress(event, mapView)
+                    }
                 }
-            }
-        marker.position = position
-        //var scale = if (map.zoomLevelDouble != 0.0) (map.zoomLevelDouble * 100.0).roundToInt() / 100.0 else 200.0
-        val scale = 18.0
-        marker.title = context.resources.getResourceEntryName(drawable)
-        marker.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / scale)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            marker.position = position
+            //var scale = if (map.zoomLevelDouble != 0.0) (map.zoomLevelDouble * 100.0).roundToInt() / 100.0 else 200.0
+            val scale = 18.0
+            marker.title = context.resources.getResourceEntryName(drawable)
+            marker.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / scale)
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-        markersMap[position] = marker
-        savedMarkersForReset[position] = shallowCopy(marker)
-
-
-        if(map!= null){ // to not create a null exception when the map is not visible
+            markersMap[position] = marker
             map.overlays.add(marker)
             map.invalidate()
+        }catch (e: Exception) {
+            e.printStackTrace()
         }
+        savedMarkersForReset[position] = AuxMarker()
+        savedMarkersForReset[position]!!.position = position
+        savedMarkersForReset[position]!!.title = context.resources.getResourceEntryName(drawable)
+        savedMarkersForReset[position]!!.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / 18.0)
+
+
 
         if (geoQ.size > 1) geoQ.remove()
         geoQ.add(position)
 
         pathing()
+
+        // avoid multiple still markers on the same spot
         if(drawable == R.drawable.marker_still) geoQ.clear()
         map.invalidate()
     }

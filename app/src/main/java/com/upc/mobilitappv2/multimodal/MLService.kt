@@ -14,16 +14,16 @@ class MLService(val ctx: Context)
     private lateinit var model: Interpreter
 
     private val NAMES = mapOf(
-        0 to "Bicycle",
-        1 to "Bus",
-        2 to "Car",
-        3 to "E-Scooter",
-        4 to "Metro",
-        5 to "Run",
-        6 to "STILL",
-        7 to "Train",
-        8 to "Tram",
-        9 to "WALK"
+        //0 to "Bicycle",
+        0 to "Bus",
+        1 to "Car",
+        2 to "E-Scooter",
+        3 to "Metro",
+        4 to "Run",
+        5 to "STILL",
+        6 to "Train",
+        7 to "Tram",
+        8 to "WALK"
     )
 
     private val MODEL_FILE_NAME = "model_28juny.tflite"
