@@ -35,8 +35,10 @@ import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.MapTileIndex
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -135,7 +137,7 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     init {
         //binding = FragContainerBinding.inflate(layoutInflater)
-        fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout,null,)
+        fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
 
         map = fullView.findViewById<MapView>(R.id.map)
@@ -163,7 +165,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         return a
     }
     fun resetView(){
-        fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout,null,)
+        fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID;
         map.removeAllViews()
@@ -597,7 +599,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         },modifier = Modifier
             .height(40.dp)
             .width(150.dp)
-            .padding(end=1.dp))
+            .padding(end = 1.dp))
         {
             Image(
                 painterResource(id = R.drawable.yellowguy),
@@ -835,7 +837,8 @@ class Mapa(val context:Context): AppCompatActivity() {
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(10.dp),
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.Center,
 
                 ) {

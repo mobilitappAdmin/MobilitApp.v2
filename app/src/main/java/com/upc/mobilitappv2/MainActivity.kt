@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
@@ -71,11 +72,10 @@ class MainActivity : ComponentActivity() {
         Log.d("ID", android_id)
         setContent {
             val systemUiController = rememberSystemUiController()
-
-
             MobilitAppv2Theme {
-                systemUiController.setStatusBarColor(MaterialTheme.colors.background)
                 encryptedSharedPrefs(this, sharedPreferences)
+                if(isSystemInDarkTheme()) systemUiController.setStatusBarColor(MaterialTheme.colors.background)
+                else systemUiController.setStatusBarColor(MaterialTheme.colors.primary)
                 // A surface container using the 'background' color from the theme
                 Surface(color=MaterialTheme.colors.background) {
                     MainScreen(this, sensorLoader, multiModal, sharedPreferences,mapa)
