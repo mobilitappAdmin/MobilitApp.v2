@@ -11,10 +11,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -32,6 +33,8 @@ fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
 
 @Composable
 private fun BodyContent(preferences: SharedPreferences) {
+    val uriHandler = LocalUriHandler.current
+    val uri = "http://mobilitat.upc.edu/#"
     var age: String? by remember { mutableStateOf(preferences.getString("age", "")) }
     var gender: String? by remember { mutableStateOf(preferences.getString("gender", "")) }
     var debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
@@ -104,7 +107,69 @@ private fun BodyContent(preferences: SharedPreferences) {
             checked = debug == true,
             preferences
         )
+
+        Text(
+            text = "About",
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(16.dp)
+        )
+        Divider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+                .clickable { uriHandler.openUri(uri) }
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Mobilitat Info",
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = "Access to the project website",
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = "web",
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+        }
+        Divider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+                .clickable { uriHandler.openUri("http://147.83.252.137:8080/pollution") }
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Pollution",
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = "Download pollution documentation",
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Icon(
+                Icons.Filled.Info,
+                contentDescription = "pollution",
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+        }
+        Divider()
     }
+
 
     if (openDialog1){
         var title = "Age:"
