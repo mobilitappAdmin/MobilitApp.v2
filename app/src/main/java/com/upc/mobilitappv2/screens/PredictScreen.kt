@@ -38,7 +38,7 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
 
     val debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
     //mapa.resetView()
-    Scaffold(  topBar = { TopBar("Multimodal prediction") }) {
+    Scaffold(  topBar = { TopBar("Trip") }) {
         //Text("In development...")
         BodyContent(context, multimodal, debug!!,mapa)
     }
@@ -142,7 +142,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Start")
             }
-            //Spacer(modifier = Modifier.width(width = 40.dp))
+            Spacer(modifier = Modifier.width(width = 40.dp))
 
             Button(
                 onClick = {
@@ -164,7 +164,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
         }
 
-        //Spacer(modifier = Modifier.height(height = 40.dp))
+        Spacer(modifier = Modifier.height(height = 20.dp))
 
         Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
 
@@ -172,9 +172,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         Text(text = "Macro State: $macroState", fontSize = 20.sp)
 
-        //Spacer(modifier = Modifier.height(height = 40.dp))
-
-        Text(text = "Last activitiy: $lastWindow")
 
         //Spacer(modifier = Modifier.height(height = 40.dp))
 

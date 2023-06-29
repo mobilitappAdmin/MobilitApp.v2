@@ -35,7 +35,7 @@ import java.util.*
 @Composable
 fun TrainScreen(context: Context, sensorLoader: SensorLoader) {
 
-    Scaffold( topBar = { TopBar("Training") }) {
+    Scaffold( topBar = { TopBar("Generate data") }) {
         BodyContent(sensorLoader)
     }
 }
@@ -104,7 +104,7 @@ private fun BodyContent(sensorLoader: SensorLoader){
         }
         Spacer(modifier = Modifier.height(height = 40.dp))
         if (capture != null && !capturing && !sensorLoader.getUploadState()) {
-            val capture_size= sensorLoader.finishedCapture
+            val capture_size = sensorLoader.finishedCapture
             if(capture_size!! < 200) {
                 Text("This capture is not long enough")
                 Text("Size of capture: $capture_size")

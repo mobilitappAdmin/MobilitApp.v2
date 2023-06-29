@@ -818,7 +818,6 @@ class Mapa(val context:Context): AppCompatActivity() {
                         text = uiString2.value,
                         Modifier
                             .fillMaxWidth(),
-                        color = Color.White,
                         textAlign = TextAlign.Center
                     )
                 }
