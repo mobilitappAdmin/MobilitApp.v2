@@ -93,7 +93,15 @@ class MLService(val ctx: Context)
         }
 
         model.run(input, output)
-        val maxIdx =  output.indices.maxBy { output[0][it] } ?: -1
+        var maxval = 0.0f
+        var maxIdx = -1
+        for (i in 0 until output[0].size) {
+            Log.d("ML pred", output[0][i].toString()+" "+i.toString())
+            if (maxval < output[0][i]) {
+                maxval = output[0][i]
+                maxIdx = i
+            }
+        }
         //Log.d("ML", NAMES[maxIdx].toString())
 
         return NAMES[maxIdx].toString()
