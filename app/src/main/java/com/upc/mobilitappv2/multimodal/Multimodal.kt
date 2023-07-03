@@ -100,7 +100,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
         mlService =  MLService(context)
         mlService.initialize() //load Model
-        stopService = StopService(alpha = 0.05, max_radium = 30, num_points = 40, covering_threshold = 75.0F) // CHANGE
+        stopService = StopService(alpha = 0.05, max_radium = 30, num_points = 90, covering_threshold = 75.0F) // CHANGE
         stopService.initialize()
         fifoAct= LinkedList<String>()
         locations = ArrayList<Location>()
