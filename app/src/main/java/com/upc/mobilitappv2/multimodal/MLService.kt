@@ -102,12 +102,13 @@ class MLService(val ctx: Context)
                 maxIdx = i
             }
         }
-        //Log.d("ML", NAMES[maxIdx].toString())
+        Log.d("ML", NAMES[maxIdx].toString())
 
         return NAMES[maxIdx].toString()
     }
 
     fun overallPrediction(matrix: Array<Array<FloatArray>>): String {
+        var count = 0
         var predictions = mutableMapOf<String, Int>()
         NAMES.forEach { act ->
             predictions[act.value] = 0
@@ -115,9 +116,11 @@ class MLService(val ctx: Context)
         matrix.forEach { sample ->
             val act = singleInference(sample).toString()
             predictions[act] = predictions[act]!! + 1
+            ++count
         }
         val maxPred=predictions.maxWith(Comparator { x, y -> x.value.compareTo(y.value)})
 
+        Log.d("NUM PRED", count.toString())
         return maxPred.key
     }
 }

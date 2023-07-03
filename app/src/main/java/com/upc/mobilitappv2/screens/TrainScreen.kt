@@ -35,7 +35,7 @@ import java.util.*
 @Composable
 fun TrainScreen(context: Context, sensorLoader: SensorLoader) {
 
-    Scaffold( topBar = { TopBar("Generate data") }) {
+    Scaffold( topBar = { TopBar("Collecting") }) {
         BodyContent(sensorLoader)
     }
 }

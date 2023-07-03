@@ -141,26 +141,42 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     }
 
     fun getLastWindow(): Array<Array<FloatArray>> {
-        var window = Array(3) {
+        var sizes = intArrayOf(0,0,0)
+
+        for (i in 0 .. 2) {
+            val size = fifoAcc[i].size
+            val num_mostres = (size/200).toInt()
+            Log.d("Mostres", "$num_mostres $size")
+            sizes[i] = num_mostres
+        }
+
+        val totalSize = sizes[0]+sizes[1]+sizes[2]
+        var window = Array(totalSize){
             Array(200) {
                 FloatArray(9)
             }
         }
+        var iz = 0
+        for (i in 0 until 3) {
+            for (k in 0 until sizes[i]) {
+                for (j in 0 until 200) {
+                    val z = 200*k + j
 
-        for (i in 0..2) {
-            for (j in 0..199) {
-                window[i][j][0] = fifoAcc[i][j][0]
-                window[i][j][1] = fifoAcc[i][j][1]
-                window[i][j][2] = fifoAcc[i][j][2]
+                    window[iz][j][0] = fifoAcc[i][z][0]
+                    window[iz][j][1] = fifoAcc[i][z][1]
+                    window[iz][j][2] = fifoAcc[i][z][2]
 
-                window[i][j][3] = fifoAcc[i][j][0]
-                window[i][j][4] = fifoAcc[i][j][1]
-                window[i][j][5] = fifoAcc[i][j][2]
+                    window[iz][j][3] = fifoMag[i][z][0]
+                    window[iz][j][4] = fifoMag[i][z][1]
+                    window[iz][j][5] = fifoMag[i][z][2]
 
-                window[i][j][6] = fifoAcc[i][j][0]
-                window[i][j][7] = fifoAcc[i][j][1]
-                window[i][j][8] = fifoAcc[i][j][2]
+                    window[iz][j][6] = fifoGyr[i][z][0]
+                    window[iz][j][7] = fifoGyr[i][z][1]
+                    window[iz][j][8] = fifoGyr[i][z][2]
+                }
+                iz += 1
             }
+
         }
 
         return window

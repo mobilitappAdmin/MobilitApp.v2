@@ -170,7 +170,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         //Spacer(modifier = Modifier.height(height = 40.dp))
 
-        Text(text = "Macro State: $macroState", fontSize = 20.sp)
+        Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
         //Spacer(modifier = Modifier.height(height = 40.dp))
