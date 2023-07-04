@@ -42,6 +42,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var macroState = "STILL"
     private var prevMacroState = "STILL"
     private var captureHash: Int = 0
+    private var othersRow: Int = 0
 
     private lateinit var startDate: Date
     private var startLoc: Location? = null
@@ -105,6 +106,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         fifoAct= LinkedList<String>()
         locations = ArrayList<Location>()
         last_distance = 0.0
+        othersRow = 0
         macroState = "STILL"
         prevMacroState = "STILL"
         lastwindow = "-"
@@ -118,7 +120,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 super.onLocationResult(locationResult)
                 val location = locationResult.locations[locationResult.locations.size - 1]
                 if (location != null) {
-                    Log.d("LOCATION", location.latitude.toString())
+                    //Log.d("LOCATION", location.latitude.toString())
                     if (startLoc == null) {
                         startLoc = location
                     }
@@ -131,6 +133,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             activity = "STILL,"+activity.split(',')[1]
                         }
                     }
+
+
 
                     lastwindow = activity
 
@@ -145,27 +149,37 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     }
 
                     if (fifoAct.size == 3) {
-                        if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
+                        if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
+                            othersRow = 0
+                            macroState = "WALK"
+                        }
+                        else if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
                             if (fifoAct[2] == "OTHERS") {
-                                //Call ML
-                                //Log.d("ML", "Call ML")
-                                val prediction =
-                                    mlService.overallPrediction(sensorLoader.getLastWindow())
-                                macroState = prediction
+                                if (othersRow == 0) {
+                                    Log.d("OthersRow", "Call 3")
+                                    val prediction =
+                                        mlService.overallPrediction(sensorLoader.getLastWindow(3))
+                                    macroState = prediction
+                                }
+                                else if (othersRow%3 == 0) {
+                                    Log.d("OthersRow", "Call 6")
+                                    val prediction =
+                                        mlService.overallPrediction(sensorLoader.getLastWindow(6))
+                                    macroState = prediction
+                                }
+                                ++othersRow
                             }
                             else if (fifoAct[2] == "STILL") {
+                                othersRow = 0
                                 macroState = "STILL"
                             }
-                        }
-                        if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
-                            macroState = "WALK"
                         }
                     }
 
                     // STOP algorithm
                     val stop = stopService.addLocation(location)
                     Log.d("STOP", "${stop.first}, ${stop.second}")
-                    //Log.d("Multimodal", macroState)
+                    Log.d("OthersRow", "$othersRow")
 
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
@@ -206,8 +220,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         }
 
         locationRequest = LocationRequest.create()
-        locationRequest.interval = (20 * 1000).toLong() // 20 seconds CHANGE
-        locationRequest.fastestInterval = (18 * 1000).toLong() // 18 seconds CHANGE
+        locationRequest.interval = (10 * 1000).toLong() // 20 seconds CHANGE
+        locationRequest.fastestInterval = (8 * 1000).toLong() // 18 seconds CHANGE
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     }

@@ -140,28 +140,28 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return sensorAcc != null //return false if not available sensor
     }
 
-    fun getLastWindow(): Array<Array<FloatArray>> {
-        var sizes = intArrayOf(0,0,0)
+    fun getLastWindow(numWindows: Int): Array<Array<FloatArray>> {
+        var sizes = IntArray(numWindows) { 0 }
 
-        for (i in 0 .. 2) {
+        for (i in 0 until numWindows) {
             val size = fifoAcc[i].size
             val num_mostres = (size/200).toInt()
             Log.d("Mostres", "$num_mostres $size")
             sizes[i] = num_mostres
         }
 
-        val totalSize = sizes[0]+sizes[1]+sizes[2]
+        val totalSize = sizes.sum()
         var window = Array(totalSize){
             Array(200) {
                 FloatArray(9)
             }
         }
         var iz = 0
-        for (i in 0 until 3) {
+        for (i in 0 until numWindows) {
             for (k in 0 until sizes[i]) {
                 for (j in 0 until 200) {
                     val z = 200*k + j
-
+                    Log.d("IDS", "$iz , $j , $i , $z")
                     window[iz][j][0] = fifoAcc[i][z][0]
                     window[iz][j][1] = fifoAcc[i][z][1]
                     window[iz][j][2] = fifoAcc[i][z][2]
@@ -355,11 +355,12 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             fifoMag.add(auxMag)
             fifoGyr.add(auxGyr)
 
-            if (fifoAcc.size > 3) {
+            if (fifoAcc.size > 6) {
                 fifoAcc.removeFirst()
                 fifoMag.removeFirst()
                 fifoGyr.removeFirst()
             }
+            Log.d("FIFOSIZE", fifoAcc.size.toString())
             currentAccWindow = ArrayList()
             currentMagWindow = ArrayList()
             currentGyrWindow = ArrayList()

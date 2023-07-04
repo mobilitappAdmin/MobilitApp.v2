@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -42,7 +43,7 @@ private fun BottomNavigationBar (navController: NavController, items: List<AppSc
         items.forEach { screen ->
             BottomNavigationItem(
                 icon = { Icon(painter=painterResource(id = screen.icon), contentDescription=screen.title) },
-                label = { Text(screen.title) },
+                label = { Text(screen.title, fontSize = 10.sp) },
                 selected = currentRoute == screen.route,
                 onClick = { navController.navigate(screen.route) {
                     popUpTo(navController.graph.findStartDestination().id){
