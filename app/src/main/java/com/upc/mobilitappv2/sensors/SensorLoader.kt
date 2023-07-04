@@ -23,6 +23,13 @@ import kotlin.math.*
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+/**
+ * Class responsible for loading sensor data.
+ *
+ * @author Gerard Caravaca and Adrian Catalin
+ * @param context context of the application.
+ * @param android_id The Android ID of the device.
+ */
 class SensorLoader(private val context: Context, android_id: String): Service(), SensorEventListener {
 
     private val FILE_STORE_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/MobilitAppV2/sensors"
@@ -60,18 +67,34 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     private val simpleDateFormat=SimpleDateFormat("yyyy-LL-dd HH:mm:ss")
 
     var uploaded = false
-    fun getContext(): Context{
-        return context
-    }
 
+    /**
+     * Returns the upload state defined as the state of the server.
+     *
+     * @author Gerard Caravaca
+     * @return True if uploaded, false otherwise.
+     */
     fun getUploadState(): Boolean {
         return uploaded
     }
 
+    /**
+     * Returns the start and end times of the current capture.
+     *
+     * @author Gerard Caravaca
+     * @return An array of start and end times.
+     */
     fun getTimes(): Array<String?> {
         return arrayOf(startTime, endTime)
     }
 
+    /**
+     * Initializes the sensors with the selected activity.
+     *
+     * @author Gerard Caravaca
+     * @param selectedActivity The selected activity "multimodal" or "train".
+     * @return True if the sensor is available, false otherwise.
+     */
     fun initialize(selectedActivity: String): Boolean {
 
         activity=selectedActivity
@@ -140,13 +163,19 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return sensorAcc != null //return false if not available sensor
     }
 
+    /**
+     * Getter of lastly collected data.
+     *
+     * @author Gerard Caravaca
+     * @param numWindows number of windows required (3 or 6).
+     * @return a matrix of last numWindows.
+     */
     fun getLastWindow(numWindows: Int): Array<Array<FloatArray>> {
         var sizes = IntArray(numWindows) { 0 }
 
         for (i in 0 until numWindows) {
             val size = fifoAcc[i].size
             val num_mostres = (size/200).toInt()
-            Log.d("Mostres", "$num_mostres $size")
             sizes[i] = num_mostres
         }
 
@@ -161,7 +190,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             for (k in 0 until sizes[i]) {
                 for (j in 0 until 200) {
                     val z = 200*k + j
-                    Log.d("IDS", "$iz , $j , $i , $z")
                     window[iz][j][0] = fifoAcc[i][z][0]
                     window[iz][j][1] = fifoAcc[i][z][1]
                     window[iz][j][2] = fifoAcc[i][z][2]
@@ -182,10 +210,22 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return window
     }
 
+    /**
+     * Get state of sensors.
+     *
+     * @author Gerard Caravaca
+     * @return True if the sensors are capturing.
+     */
     fun getState(): Boolean {
         return capturing
     }
 
+    /**
+     * Get size of capture.
+     *
+     * @author Gerard Caravaca
+     * @return size of last capture.
+     */
     fun getCapture(): Int? {
         return finishedCapture
     }
@@ -244,18 +284,21 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                     currentDateWindow.add(Calendar.getInstance().time)
                 }
 
-                val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
-                val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
-                val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
+                //val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
+                //val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
+                //val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
 
-                //Log.d("SENSOR", output)
-                //Log.d("SENSOR", output2)
-                //Log.d("SENSOR", output3)
             }
 
         }
     }
 
+    /**
+     * Check FFT of last windows.
+     *
+     * @author Adrian Catalin
+     * @return WALK, STILL or OTHERS corresponding to FFT.
+     */
     fun analyseLastWindow(): String? {
         if ( currentAccWindow.size > 256) {
             var winSamples = currentAccWindow.size.toDouble()
@@ -342,7 +385,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
 
             // If the maximum value of the PSD is greater than a given threshold (2dB)
             // the current window will be labeled as "Walk".
-            Log.d("FFT", psdXsubArray.max().toString())
             val maxX: Int = psdX.indexOfFirst { it == psdXsubArray.max() }
             val maxY: Int = psdY.indexOfFirst { it == psdYsubArray.max() }
             val maxZ: Int = psdZ.indexOfFirst { it == psdZsubArray.max() }
@@ -360,7 +402,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 fifoMag.removeFirst()
                 fifoGyr.removeFirst()
             }
-            Log.d("FIFOSIZE", fifoAcc.size.toString())
             currentAccWindow = ArrayList()
             currentMagWindow = ArrayList()
             currentGyrWindow = ArrayList()
@@ -385,8 +426,14 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         }
     }
 
-
+    /**
+     * Stop sensors.
+     *
+     * @author Gerard Caravaca
+     * @return size of last capture.
+     */
     fun stopCapture(): Int {
+        // stop sensors
         sensorManager.unregisterListener(this, sensorAcc)
         sensorManager.unregisterListener(this, sensorGyr)
         sensorManager.unregisterListener(this, sensorMag)
@@ -399,10 +446,15 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return arrayOf(accArray, gyrArray, magArray)[0].size
     }
 
+    /**
+     * Write capture in a csv file.
+     *
+     * @author Adrian Catalin
+     * @return True if successful.
+     */
     fun saveCapture(): Boolean {
 
         thread {
-            Log.d("SENSOR", "Saving sensor data to files")
 
             val tm = context.getSystemService(TELEPHONY_SERVICE)
 
@@ -420,19 +472,16 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             var csv = SaveCapture(FILE_STORE_DIR, filename)
             try {
                 csv.open()
-                //writeLine("sensor,timestamp,x,y,z");
-                //for (SensorSample p : magneticFieldData) {
                 val magSize: Int = magArray.size
 
                 for (i in 0 until magSize) {
                     if (csv.getSize() > 300 * 1024) {
                         csv.close()
                         filePart++
-                        FILENAME_FORMAT =  //tm.getDeviceId()
+                        FILENAME_FORMAT =
                             (ANDROID_ID
                                     + "_" + activity
                                     + "_%s" // sensor type
-                                    //+ "_" + new SimpleDateFormat("dd.MM.yyyy_HH.mm.ss").format(Calendar.getInstance().getTime())
                                     + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time)
                                     + "_" + String.format("%06d", filePart) + ".csv")
                         filename = String.format(FILENAME_FORMAT, "ACC-MAG-GYR")
@@ -443,7 +492,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                         csv.open()
                     } else {
                         csv.writeLine(
-                            java.lang.Long.valueOf("99999999999") //timestamp
+                            java.lang.Long.valueOf("99999999999")
                                 .toString() +
                                     "," + accArray[i][0].toString() + "," + accArray[i][1].toString() + "," + accArray[i][2].toString() +
                                     "," + magArray[i][0].toString() + "," + magArray[i][1].toString() + "," + magArray[i][2].toString() +
@@ -452,7 +501,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 }
                 csv.close()
                 uploaded=true
-                //Toast.makeText(context, "Capture was saved succesfully", Toast.LENGTH_LONG).show()
                 Log.d("SENSOR", "Capture was saved succesfully")
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -467,10 +515,15 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         return true
     }
 
+    /**
+     * Delete csv files.
+     *
+     * @author Adrian Catalin
+     * @return True if successful.
+     */
     fun deleteCapture(): Boolean {
 
         thread {
-            Log.d("SENSOR", "Deleting sensor data files")
 
             val tm = context.getSystemService(TELEPHONY_SERVICE)
             val FILEPATH = Environment

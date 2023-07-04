@@ -1,15 +1,8 @@
 package com.upc.mobilitappv2.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.Center
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,29 +10,37 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.upc.mobilitappv2.screens.components.TopBar
 import com.upc.mobilitappv2.sensors.SensorLoader
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Composable function representing the TrainScreen.
+ *
+ * @author Gerard Caravaca
+ * @param sensorLoader The instance of SensorLoader.
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun TrainScreen(context: Context, sensorLoader: SensorLoader) {
+fun TrainScreen(sensorLoader: SensorLoader) {
 
     Scaffold( topBar = { TopBar("Generate data") }) {
         BodyContent(sensorLoader)
     }
 }
 
+/**
+ * Composable function representing the body content of the TrainScreen.
+ *
+ * @author Gerard Caravaca
+ * @param sensorLoader The instance of SensorLoader.
+ */
 @Composable
 private fun BodyContent(sensorLoader: SensorLoader){
     val simpleDateFormat = SimpleDateFormat("yyyy-LL-dd HH:mm:ss")
@@ -242,10 +243,4 @@ private fun ActivityDialog(
             }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DefaultPreview() {
-    //TrainScreen()
 }

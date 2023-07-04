@@ -2,6 +2,13 @@ package com.upc.mobilitappv2.multimodal.FFT
 
 import java.util.*
 
+/**
+ * Represents a complex number with real and imaginary parts.
+ *
+ * @author Adrian Catalin
+ * @property re The real part of the complex number.
+ * @property im The imaginary part of the complex number.
+*/
 class Complex(// the real part
     private val re: Double, // the imaginary part
     private var im: Double

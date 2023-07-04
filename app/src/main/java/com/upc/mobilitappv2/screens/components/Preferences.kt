@@ -1,6 +1,5 @@
 package com.upc.mobilitappv2.screens.components
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -13,17 +12,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Composable function representing the PreferencesDialog.
+ *
+ * @param showDialog Indicates whether the dialog should be shown.
+ * @param type The type of preference dialog (e.g., "age" or "gender").
+ * @param dismissDialog The callback function to dismiss the dialog.
+ * @param sharedPreferences The instance of SharedPreferences.
+ */
 @Composable
 fun PreferencesDialog(
     showDialog: Boolean,
     type: String,
-    dismissDialog: ()->Unit,
-    context: Context,
+    dismissDialog: () -> Unit,
     sharedPreferences: SharedPreferences
 ){
     var openDialog: Boolean by remember { mutableStateOf(showDialog) }
@@ -99,10 +104,4 @@ fun PreferencesDialog(
             }
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DefaultPreview() {
-    //PreferencesDialog(showDialog = true, type = "gender", {}, this)
 }

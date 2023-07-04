@@ -26,6 +26,14 @@ import kotlin.math.cos
 import kotlin.math.sqrt
 
 
+/**
+ * This class represents the Multimodal service that captures location data, sensor data, and provides activity analysis.
+ *
+ * @author Gerard Caravaca
+ * @param context The context of the application.
+ * @param sensorLoader An instance of SensorLoader used to load and analyze sensor data.
+ * @param preferences The SharedPreferences instance to access user preferences.
+ */
 class Multimodal(private val context: Context, private val sensorLoader: SensorLoader, private val preferences: SharedPreferences): Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -56,6 +64,11 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         .absolutePath + "/MobilitAppV2/sensors"
 
+    /**
+     * Returns the last captured location as an array of longitude and latitude coordinates.
+     *
+     * @return An array containing the longitude and latitude of the last captured location.
+     */
     fun get_lastlocation(): Array<String> {
         if (locations.size > 0){
             return arrayOf(
@@ -69,10 +82,20 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
 
     }
 
+    /**
+     * Returns the last captured activity analysis window.
+     *
+     * @return The last captured activity analysis window as a string.
+     */
     fun get_lastwindow(): String {
         return lastwindow
     }
 
+    /**
+     * Returns the FIFO (First In, First Out) activity analysis window.
+     *
+     * @return The FIFO activity analysis window as a string.
+     */
     fun get_fifo(): String {
         if (fifoAct.size > 0) {
             var fifoStr = ""
@@ -90,10 +113,19 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         }
     }
 
+    /**
+     * Returns the current macrostate.
+     *
+     * @return The current macrostate as a string.
+     */
     fun get_macrostate(): String {
         return macroState
     }
 
+
+    /**
+     * Initializes the Multimodal service by setting up required components and services.
+     */
     fun initialize() {
         first = true
         startDate = Date()
@@ -120,7 +152,6 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 super.onLocationResult(locationResult)
                 val location = locationResult.locations[locationResult.locations.size - 1]
                 if (location != null) {
-                    //Log.d("LOCATION", location.latitude.toString())
                     if (startLoc == null) {
                         startLoc = location
                     }
@@ -133,8 +164,6 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             activity = "STILL,"+activity.split(',')[1]
                         }
                     }
-
-
 
                     lastwindow = activity
 
@@ -156,13 +185,11 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         else if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
                             if (fifoAct[2] == "OTHERS") {
                                 if (othersRow == 0) {
-                                    Log.d("OthersRow", "Call 3")
                                     val prediction =
                                         mlService.overallPrediction(sensorLoader.getLastWindow(3))
                                     macroState = prediction
                                 }
                                 else if (othersRow%3 == 0) {
-                                    Log.d("OthersRow", "Call 6")
                                     val prediction =
                                         mlService.overallPrediction(sensorLoader.getLastWindow(6))
                                     macroState = prediction
@@ -178,8 +205,6 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
 
                     // STOP algorithm
                     val stop = stopService.addLocation(location)
-                    Log.d("STOP", "${stop.first}, ${stop.second}")
-                    Log.d("OthersRow", "$othersRow")
 
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
@@ -226,6 +251,15 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
 
     }
 
+    /**
+     * Computes the distance between two geographic coordinates using the Haversine formula.
+     *
+     * @param lat1 Latitude of the first coordinate.
+     * @param lon1 Longitude of the first coordinate.
+     * @param lat2 Latitude of the second coordinate.
+     * @param lon2 Longitude of the second coordinate.
+     * @return The distance between the two coordinates in meters.
+     */
     private fun computeDistance(
         lat1: Double,
         lon1: Double,
@@ -247,22 +281,32 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         return radius * sqrt(x * x + deltaLat * deltaLat) * 1000
     }
 
+    /**
+     * Checks if the device is still based on the recent recorded locations.
+     * The device is considered still if the distance between the last two recorded locations is less than 20 meters.
+     *
+     * @return True if the device is still, false otherwise.
+     */
     fun isStill(): Boolean {
         if (locations.size >= 2){
             val loc0 = locations[locations.size-2]
             val loc1 = locations[locations.size-1]
             val dist = computeDistance(loc0.latitude, loc0.longitude, loc1.latitude, loc1.longitude)
             last_distance = dist
-            //Log.d("DIST", last_distance.toString())
+
             return dist < 20
         }
         return false
     }
 
+    /**
+     * Starts capturing location updates and sensor data.
+     * Requires the ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION permissions.
+     */
     fun startCapture() {
 
         capturing = true
-
+        // Request location permissions if not granted
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -277,25 +321,37 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 101
             )
         }
-
+        // Start receiving location updates
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
             Looper.getMainLooper()
         )
-
+        // Initialize sensor data capture
         sensorLoader.initialize("Multimodal")
     }
 
+    /**
+     * Retrieves the last recorded location.
+     *
+     * @return The last recorded location.
+     */
     fun getLastLocation(): Location {
-        Log.d("LOCATION", locations.size.toString())
         return locations.last()
     }
 
+    /**
+     * Retrieves the current state of the capture process.
+     *
+     * @return True if the capture process is ongoing, false otherwise.
+     */
     fun getState(): Boolean {
         return capturing
     }
 
+    /**
+     * Stops capturing location updates and sensor data.
+     */
     fun stopCapture() {
         capturing = false
         fusedLocationClient.removeLocationUpdates(locationCallback)
@@ -329,6 +385,11 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         return true
     }
 
+    /**
+     * Delete userinfo files
+     *
+     * @return True if files were deleted.
+     */
     fun deleteUserInfo(): Boolean {
         thread {
             Log.d("USERINFO", "Deleting userinfo files")

@@ -19,6 +19,15 @@ import com.upc.mobilitappv2.navigation.AppNavigation
 import com.upc.mobilitappv2.navigation.AppScreens
 import com.upc.mobilitappv2.sensors.SensorLoader
 
+/**
+ * MainScreen is the entry point of the application and displays the main user interface.
+ *
+ * @param context The context of the application.
+ * @param sensorLoader The SensorLoader instance used for loading sensor data.
+ * @param multiModal The Multimodal instance used for multimodal interaction.
+ * @param sharedPreferences The SharedPreferences instance used for storing preferences.
+ * @param mapa map instance used for displaying maps.
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences, mapa: Mapa) {
@@ -34,6 +43,13 @@ fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimo
     }
 }
 
+/**
+ * Composable function for rendering the bottom navigation bar.
+ *
+ * @author Gerard Caravaca
+ * @param navController The NavController instance for navigation between screens.
+ * @param items The list of AppScreens representing the navigation items.
+ */
 @Composable
 private fun BottomNavigationBar (navController: NavController, items: List<AppScreens>){
 
@@ -57,14 +73,14 @@ private fun BottomNavigationBar (navController: NavController, items: List<AppSc
     }
 }
 
+/**
+ * Retrieves the current route from the NavController.
+ *
+ * @param navController The NavController instance.
+ * @return The current route as a String, or null if not available.
+ */
 @Composable
 private fun currentRoute(navController: NavController): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     return navBackStackEntry?.destination?.route
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DefaultPreview() {
-    //MainScreen()
 }

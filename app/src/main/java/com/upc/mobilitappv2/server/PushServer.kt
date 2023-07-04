@@ -8,12 +8,21 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Class responsible for uploading a file to the server.
+ *
+ * @property filePath The path of the file to upload.
+ */
 class PushServer(private var filePath: String) {
     private val TAG = "Upload2Server"
     private var serverCode = 0
     private var serverMsg: String? = null
 
-
+    /**
+     * Uploads the file to the server.
+     *
+     * @return The response code from the server.
+     */
     fun call(): Int {
         var con: HttpURLConnection? = null
         var dos: DataOutputStream? = null
@@ -29,7 +38,6 @@ class PushServer(private var filePath: String) {
         var isAlive: Boolean
 
         try {
-            //val home = URL("https://mobilitat.upc.edu:80")
             val home = URL("http://mobilitat.upc.edu")
             val homeConn = home.openConnection()
             homeConn.connect()
@@ -43,7 +51,6 @@ class PushServer(private var filePath: String) {
             try {
                 val fis = FileInputStream(File(filePath))
                 Log.v(TAG, "SERVER: $isAlive")
-                Log.v(TAG, "Correct FIS: $filePath")
                 val mURL = URL(URLServer)
                 con = mURL.openConnection() as HttpURLConnection
 

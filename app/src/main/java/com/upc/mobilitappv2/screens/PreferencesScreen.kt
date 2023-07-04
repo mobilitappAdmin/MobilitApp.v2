@@ -23,6 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.upc.mobilitappv2.screens.components.TopBar
 
+/**
+ * Composable function for displaying the preferences screen.
+ *
+ * @param context The context of the application.
+ * @param preferences The SharedPreferences instance used for storing preferences.
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
@@ -31,6 +37,11 @@ fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
     }
 }
 
+/**
+ * Composable function for the body content of the preferences screen.
+ *
+ * @param preferences The SharedPreferences instance used for storing preferences.
+ */
 @Composable
 private fun BodyContent(preferences: SharedPreferences) {
     val uriHandler = LocalUriHandler.current
@@ -71,7 +82,6 @@ private fun BodyContent(preferences: SharedPreferences) {
                     style = MaterialTheme.typography.body2
                 )
             }
-            //Spacer(modifier = Modifier.height(height = 30.dp))
             Text(text = age.toString())
         }
         Divider()
@@ -96,7 +106,6 @@ private fun BodyContent(preferences: SharedPreferences) {
                     style = MaterialTheme.typography.body2
                 )
             }
-            //Spacer(modifier = Modifier.height(height = 30.dp))
             Text(text = gender.toString())
         }
         Divider()
@@ -290,6 +299,16 @@ private fun BodyContent(preferences: SharedPreferences) {
 
 }
 
+
+/**
+ * A composable function that displays a switch setting.
+ *
+ * @author Gerard Caravaca
+ * @param title The title of the switch setting.
+ * @param description The description of the switch setting.
+ * @param checked The initial checked state of the switch.
+ * @param preferences The SharedPreferences instance to store the switch state.
+ */
 @Composable
 fun SwitchSetting(
     title: String,

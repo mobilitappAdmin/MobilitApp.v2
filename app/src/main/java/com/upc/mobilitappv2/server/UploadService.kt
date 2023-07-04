@@ -6,21 +6,33 @@ import android.os.Environment
 import android.util.Log
 import java.io.File
 
+/**
+ * IntentService for uploading files to the server.
+ */
 class UploadService: IntentService("UploadService") {
-
+    /**
+     * The file path where the files to be uploaded are located.
+     */
     val FILEPATH = Environment
         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         .absolutePath + "/MobilitAppV2/sensors"
+
+    /**
+     * The tag used for logging.
+     */
     val TAG = "UploadService"
+    /**
+     * The server response code.
+     */
     var serverCode = 0
 
+    /**
+     * Handles the intent for file uploading.
+     *
+     * @param intent The intent received for file uploading.
+     */
     override fun onHandleIntent(intent: Intent?) {
-        // Gets data from the incoming Intent
-        //val dataString = intent!!.getStringExtra("UP")
-
         // Do work here, based on the contents of dataString
-        //File dir = new File(FILEPATH);
-        //File[] files = dir.listFiles();
         Log.d(TAG, "UPLOADING...")
 
         Thread(
@@ -44,10 +56,6 @@ class UploadService: IntentService("UploadService") {
                             intentUpdate.addCategory("DEFAULT")
                             intentUpdate.putExtra("KEY", i)
                             sendBroadcast(intentUpdate)
-                            Log.d(
-                                "NUMERO DE ITERACIÓN",
-                                (i + 1).toString() + " of " + files.size.toString()
-                            )
                             try {
                                 val mFile = PushServer(files[i].toString())
                                 serverCode = mFile.call()

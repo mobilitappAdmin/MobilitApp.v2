@@ -50,6 +50,12 @@ import java.util.*
 import kotlin.math.roundToInt
 
 
+/**
+ * Represents a Mapa object that provides functionality related to maps.
+ *
+ * @author Miquel Gotanegra
+ * @property context The context associated with the Mapa object.
+ */
 class Mapa(val context:Context): AppCompatActivity() {
 
     private val purpl = android.graphics.Color.parseColor("#9551ea")

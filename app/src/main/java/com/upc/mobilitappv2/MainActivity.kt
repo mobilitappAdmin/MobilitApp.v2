@@ -1,10 +1,8 @@
 package com.upc.mobilitappv2
 
 import android.Manifest
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
@@ -20,10 +18,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,11 +30,12 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.MainScreen
-import com.upc.mobilitappv2.screens.components.PreferencesDialog
 import com.upc.mobilitappv2.sensors.SensorLoader
 import com.upc.mobilitappv2.ui.theme.MobilitAppv2Theme
 
-
+/**
+ * Main activity of the application.
+ */
 class MainActivity : ComponentActivity() {
     private lateinit var android_id: String
     private lateinit var sensorLoader: SensorLoader
@@ -46,6 +43,12 @@ class MainActivity : ComponentActivity() {
     private lateinit var multiModal: Multimodal
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var mapa:Mapa
+
+    /**
+     * Initializes the activity and sets up the UI.
+     *
+     * @param savedInstanceState The saved instance state.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -69,11 +72,11 @@ class MainActivity : ComponentActivity() {
         sensorLoaderMulti = SensorLoader(this, android_id)
         multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences)
         mapa = Mapa(this)
-        Log.d("ID", android_id)
+
         setContent {
             val systemUiController = rememberSystemUiController()
             MobilitAppv2Theme {
-                encryptedSharedPrefs(this, sharedPreferences)
+                encryptedSharedPrefs(sharedPreferences)
                 if(isSystemInDarkTheme()) systemUiController.setStatusBarColor(MaterialTheme.colors.background)
                 else systemUiController.setStatusBarColor(MaterialTheme.colors.primary)
                 // A surface container using the 'background' color from the theme
@@ -85,9 +88,11 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    /**
+     * Requests necessary permissions for the application.
+     */
     private fun requestPermissions() {
         if (SDK_INT >= Build.VERSION_CODES.R) {
-            Log.d("myz", "" + SDK_INT)
             if (!Environment.isExternalStorageManager()) {
                 ActivityCompat.requestPermissions(
                     this, arrayOf(
@@ -121,10 +126,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Creates a composable function for the encrypted shared preferences dialog.
+     *
+     * @param sharedPreferences The shared preferences instance.
+     */
     @Composable
-    private fun encryptedSharedPrefs(context: Context, sharedPreferences: SharedPreferences) {
-        // on below line creating a variable for message.
-
+    private fun encryptedSharedPrefs(sharedPreferences: SharedPreferences) {
         var openDialog1: Boolean by remember { mutableStateOf(!sharedPreferences.contains("age")) }
         if (openDialog1){
                 var title = "Age:"
@@ -245,15 +253,5 @@ class MainActivity : ComponentActivity() {
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()
         }
-    }
-}
-
-
-@Preview(showSystemUi = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    MobilitAppv2Theme {
-        //MainScreen()
     }
 }

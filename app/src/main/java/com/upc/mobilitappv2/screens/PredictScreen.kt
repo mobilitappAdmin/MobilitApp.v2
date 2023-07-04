@@ -32,6 +32,15 @@ import com.upc.mobilitappv2.map.Mapa
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
+/**
+ * PredictScreen is a composable function that displays the prediction screen of the application.
+ *
+ * @author Gerard Caravaca and Miquel Gotanegra
+ * @param context The context of the application.
+ * @param multimodal The Multimodal instance used for multimodal interaction.
+ * @param preferences The SharedPreferences instance used for storing preferences.
+ * @param mapa The Map instance used for displaying maps.
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedPreferences, mapa: Mapa ) {
@@ -44,8 +53,20 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
     }
 }
 
+
+/**
+ * Composable function for rendering the body content of the PredictScreen.
+ *
+ * @author Gerard Caravaca and Miquel Gotanegra
+ * @param context The context of the application.
+ * @param multimodal The Multimodal instance used for multimodal interaction.
+ * @param debug Boolean value indicating whether debug mode is enabled.
+ * @param mapa The Map instance used for displaying maps.
+ */
 @Composable
 private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean,mapa: Mapa) {
+
+    // State variables
 
     val lastLoc = remember {
         mutableStateListOf(multimodal.get_lastlocation()[0], multimodal.get_lastlocation()[1])
@@ -117,6 +138,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
+            // Start button
             Button(
                 onClick = {
                     // on below line we are registering our local broadcast manager.
@@ -126,8 +148,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     multimodal.initialize()
                     multimodal.startCapture()
                     stop = false
-                    //lastLoc.value!!.latitude = multimodal.getLastLocation().latitude
-                    //lastLoc.value!!.longitude = multimodal.getLastLocation().longitude
                 },
                 modifier = Modifier
                     .height(40.dp)
@@ -139,11 +159,11 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     contentDescription = "Start",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
-                //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Start")
             }
             Spacer(modifier = Modifier.width(width = 40.dp))
 
+            // Stop button
             Button(
                 onClick = {
                     multimodal.stopCapture()
@@ -159,7 +179,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     contentDescription = "Stop",
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
-                //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = "Stop")
             }
         }
@@ -168,29 +187,28 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
 
-        //Spacer(modifier = Modifier.height(height = 40.dp))
 
         Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
-        //Spacer(modifier = Modifier.height(height = 40.dp))
-
         Text(text = "Activities: $fifo")
 
+        // debug text
         if (debug){
             Spacer(modifier = Modifier.height(height = 40.dp))
 
             Text(text = "Stop covering: $stop_cov %")
         }
 
+        // When stopping capture
         if (stop != null && !multimodal.getState()) {
             var uploading: Boolean by remember { mutableStateOf(false) }
             var deleting: Boolean by remember { mutableStateOf(false) }
 
-            //Spacer(modifier = Modifier.height(height = 40.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End) {
+                // Upload button
                 Button(
                     onClick = {
                         uploading = true
@@ -210,10 +228,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         contentDescription = "Upload",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Upload")
                 }
-                //Spacer(modifier = Modifier.width(width = 40.dp))
+                // delete button
                 Button(
                     onClick = {
                         deleting = true
@@ -233,15 +250,12 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         contentDescription = "Delete",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    //Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(text = "Delete")
                 }
             }
         }
 
         mapa.APPLayout()
-        //mapa.DrawMap()
-
 
     }
 

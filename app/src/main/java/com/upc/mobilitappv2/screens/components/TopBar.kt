@@ -2,7 +2,6 @@ package com.upc.mobilitappv2.screens.components
 
 import android.app.Activity
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
@@ -13,6 +12,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
+
+/**
+ * Composable function representing the top app bar.
+ *
+ * @param namePage The name of the current page.
+ */
 @Composable
 fun TopBar(namePage: String) {
     TopAppBar {
