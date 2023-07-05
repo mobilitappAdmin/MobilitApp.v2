@@ -6,29 +6,54 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
 import com.upc.mobilitappv2.map.Mapa
+import com.upc.mobilitappv2.ui.theme.LightOrange
+import com.upc.mobilitappv2.ui.theme.SoftGray
+import com.upc.mobilitappv2.ui.theme.purpl
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
@@ -63,6 +88,7 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
  * @param debug Boolean value indicating whether debug mode is enabled.
  * @param mapa The Map instance used for displaying maps.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean,mapa: Mapa) {
 
@@ -84,7 +110,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var macroState: String? by remember {
         mutableStateOf(multimodal.get_macrostate())
     }
-
     var stop: Boolean? by remember { mutableStateOf(null) }
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
@@ -127,137 +152,257 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         }
     }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
+    var popUpState: Boolean by remember { mutableStateOf(false) }
+    var animationState: Boolean by remember { mutableStateOf(false) }
+    var queue: Queue<Pair<String,Double>> = LinkedList<Pair<String,Double>>()
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(height = 10.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
+    Box() {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Start button
-            Button(
-                onClick = {
-                    // on below line we are registering our local broadcast manager.
-                    LocalBroadcastManager.getInstance(context).registerReceiver(
-                        windowReceiver, IntentFilter("multimodal")
-                    )
-                    multimodal.initialize()
-                    multimodal.startCapture()
-                    mapa.startTrip()
-                    stop = false
-                },
-                modifier = Modifier
-                    .height(40.dp)
-                    .width(150.dp),
-                enabled = (!multimodal.getState())
+
+            Spacer(modifier = Modifier.height(height = 10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
             ) {
-                Icon(
-                    Icons.Filled.PlayArrow,
-                    contentDescription = "Start",
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
-                Text(text = "Start")
-            }
-            Spacer(modifier = Modifier.width(width = 40.dp))
-
-            // Stop button
-            Button(
-                onClick = {
-                    multimodal.stopCapture()
-                    stop = true
-                },
-                modifier = Modifier
-                    .height(40.dp)
-                    .width(150.dp),
-                enabled = multimodal.getState()
-            ) {
-                Icon(
-                    Icons.Filled.Done,
-                    contentDescription = "Stop",
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
-                )
-                Text(text = "Stop")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(height = 20.dp))
-
-        Text(text = "Location: "+lastLoc[0]+", "+lastLoc[1])
-
-
-        Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
-
-
-        Text(text = "Activities: $fifo")
-
-        // debug text
-        if (debug){
-            Spacer(modifier = Modifier.height(height = 40.dp))
-
-            Text(text = "Stop covering: $stop_cov %")
-        }
-
-        // When stopping capture
-        if (stop != null && !multimodal.getState()) {
-            var uploading: Boolean by remember { mutableStateOf(false) }
-            var deleting: Boolean by remember { mutableStateOf(false) }
-
-
-            Row(verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End) {
-                // Upload button
+                // Start button
                 Button(
                     onClick = {
-                        uploading = true
-                        var upload = multimodal.pushUserInfo()
-                        if (upload) {
-                            stop = null
-                            uploading = false
-                        }
+                        // on below line we are registering our local broadcast manager.
+                        LocalBroadcastManager.getInstance(context).registerReceiver(
+                            windowReceiver, IntentFilter("multimodal")
+                        )
+                        multimodal.initialize()
+                        multimodal.startCapture()
+                        mapa.startTrip()
+                        stop = false
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF5DFB56)),
                     modifier = Modifier
                         .height(40.dp)
-                        .width(150.dp)
+                        .width(150.dp),
+                    enabled = (!multimodal.getState())
                 ) {
                     Icon(
-                        Icons.Filled.ThumbUp,
-                        contentDescription = "Upload",
+                        Icons.Filled.PlayArrow,
+                        contentDescription = "Start",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    Text(text = "Upload")
+                    Text(text = "Start")
                 }
-                // delete button
+                Spacer(modifier = Modifier.width(width = 40.dp))
+
+                // Stop button
                 Button(
                     onClick = {
-                        deleting = true
-                        var delete = multimodal.deleteUserInfo()
-                        if (delete) {
-                            stop = null
-                            deleting = false
-                        }
+                        multimodal.stopCapture()
+                        stop = true
+                        popUpState = true
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE74C3C)),
                     modifier = Modifier
                         .height(40.dp)
-                        .width(150.dp)
+                        .width(150.dp),
+                    enabled = multimodal.getState()
                 ) {
                     Icon(
-                        Icons.Filled.Delete,
-                        contentDescription = "Delete",
+                        Icons.Filled.Done,
+                        contentDescription = "Stop",
                         modifier = Modifier.size(ButtonDefaults.IconSize)
                     )
-                    Text(text = "Delete")
+                    Text(text = "Stop")
                 }
+            }
+
+            Spacer(modifier = Modifier.height(height = 20.dp))
+
+            Text(text = "Location: " + lastLoc[0] + ", " + lastLoc[1])
+
+
+            Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
+
+
+            Text(text = "Activities: $fifo")
+
+            // debug text
+            if (debug) {
+                Spacer(modifier = Modifier.height(height = 40.dp))
+
+                Text(text = "Stop covering: $stop_cov %")
+            }
+
+            // When stopping capture
+            if (stop != null && !multimodal.getState()) {
+                var uploading: Boolean by remember { mutableStateOf(false) }
+                var deleting: Boolean by remember { mutableStateOf(false) }
+
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    // Upload button
+                    Button(
+                        onClick = {
+                            uploading = true
+                            var upload = multimodal.pushUserInfo()
+                            if (upload) {
+                                stop = null
+                                uploading = false
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF5DFB56)),
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(150.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.ThumbUp,
+                            contentDescription = "Upload",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Text(text = "Upload")
+                    }
+                    // delete button
+                    Button(
+                        onClick = {
+                            deleting = true
+                            var delete = multimodal.deleteUserInfo()
+                            if (delete) {
+                                stop = null
+                                deleting = false
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE74C3C)),
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(150.dp)
+                    ) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Text(text = "Delete")
+                    }
+                }
+            }
+            //mapa.debugLayuot()
+            mapa.APPLayout()
+
+
+            }
+        AnimatedVisibility(
+            modifier = Modifier.fillMaxSize(),
+            visible = popUpState,
+            enter = fadeIn(animationSpec = tween(durationMillis = 600), ),
+            exit = fadeOut(animationSpec = tween(durationMillis = 500)),
+        ){
+            var interactionSource = remember { MutableInteractionSource() }
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { popUpState = false },
+
+            ){
+
             }
         }
 
-        mapa.APPLayout()
+        //Pollution PopUp
+        val cardHeight = 500
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            visible = popUpState,
+            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1300)),
+            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1000)),
+        ){
+            animationState  = this.transition.currentState == this.transition.targetState
+            Box(
+                Modifier
+                    .width(screenWidth - 20.dp)
+                    .height(cardHeight.dp)
+                    .clip(shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp))
+                    .background(if (!isSystemInDarkTheme()) Color.White else SoftGray))
+            {
+                IconButton(onClick = { popUpState = false},
+                    Modifier
+                        .background(Color.Transparent)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(imageVector = Icons.Rounded.Close, contentDescription = "close")
+                }
+                Image(
+                    painter = painterResource(R.drawable.eco),
+                    contentDescription = "Center",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Alignment.TopCenter),
+                    colorFilter = ColorFilter.tint(mapa.mutColor.value)
 
+                )
+                Column(
+                    Modifier
+                        .padding(top = 130.dp, start = 20.dp, end = 20.dp)
+                        .fillMaxWidth()){
+                    Text(
+
+                        text="CO2 consumtion: " + formatData(mapa.totalCO2,"CO2"),
+                        Modifier.fillMaxWidth(),
+                        color=mapa.mutColor.value,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center)
+
+                    Text(
+                        text =
+                            if(mapa.mutColor.value == Color(0xFFFF6D60)){
+                                "Your trip generated ${formatData(mapa.totalCO2,"CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2-(mapa.totalDistance * mapa.co2Table["bus"]!!/1000)),"CO2")} of CO2 by using public transport."
+                            }
+                            else{
+                                "Congratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+
+                            },
+                        Modifier.padding(top = 10.dp,bottom=5.dp),
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Justify
+                    )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(bottom = 70.dp).background(LightOrange),
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        val list =  queue.toList()
+                        itemsIndexed(list) { index, item ->
+                            //Text("Item at index $index is $item")
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
     }
-
 }
+private fun formatData(data: Double, type:String = ""):String{
+    if(type=="CO2"){
+        if (data < 1000) return "${data.format(1)}g"
+        else "${(data / 1000).format(2)}Kg"
+    }
+    else if(type=="distance"){
+        if (data < 1000) return "${data.format(1)}m"
+        else "${(data / 1000).format(2)}Km"
+    }
+    return ""
+}
+private fun Double.format(digits: Int) = "%.${digits}f".format(this)

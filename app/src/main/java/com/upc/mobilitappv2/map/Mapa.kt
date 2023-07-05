@@ -22,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.upc.mobilitappv2.R
+import com.upc.mobilitappv2.ui.theme.*
 import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.RoadManager
@@ -41,6 +43,7 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.infowindow.InfoWindow
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -55,25 +58,15 @@ import kotlin.math.roundToInt
  * @property context The context associated with the Mapa object.
  */
 class Mapa(val context:Context): AppCompatActivity() {
-
-    private val purpl = android.graphics.Color.parseColor("#9551ea")
-    private val blue = android.graphics.Color.parseColor("#2468c4")
-    private val cyan = android.graphics.Color.parseColor("#3be7b9")
-    private val tram_green = android.graphics.Color.parseColor("#008479")
-    private val green = android.graphics.Color.parseColor("#99ca58")
-    private val yellow = android.graphics.Color.parseColor("#e7b63c")
-    private val rod_orange = android.graphics.Color.parseColor("#ef7d00")
-    private val red = android.graphics.Color.parseColor("#e74c3c")
-
     private lateinit var fullView:View
-    private lateinit var map:MapView
+    private lateinit var mMap:MapView
     private lateinit var myLocationOverlay: MyLocationNewOverlay
 
-    private var totalCO2 = 0.0
-    private var totalDistance = 0.0
+    var totalCO2 = 0.0
+    var totalDistance = 0.0
     private val uiString = mutableStateOf("Total CO2 consumption : ${totalCO2.format(0)}g")
     private val uiString2 = mutableStateOf("Total distance = ${totalDistance.format(0)}m")
-    private val mutColor = mutableStateOf(Color(0xFF98D8AA))
+    val mutColor = mutableStateOf(Color(0xFF98D8AA))
 
     private var partialDistance = 0.0
     private var markersOnThisRoad: Queue<GeoPoint> = LinkedList<GeoPoint>()
@@ -86,25 +79,25 @@ class Mapa(val context:Context): AppCompatActivity() {
     private var enQueue = mutableStateOf(true)
     private val markerColors: Map<Int, Int> =
         mapOf(
-            R.drawable.marker_bike to cyan,
-            R.drawable.marker_bus to blue,
-            R.drawable.marker_car to red,
-            R.drawable.marker_ebike to green,
-            R.drawable.marker_escooter to green,
-            R.drawable.marker_metro to purpl,
-            R.drawable.marker_moto to red,
-            R.drawable.marker_run to yellow,
-            R.drawable.marker_still to yellow,
-            R.drawable.marker_tram to tram_green,
-            R.drawable.marker_tren to rod_orange,
-            R.drawable.marker_walk to yellow,
-            R.drawable.test_red to red,
-            R.drawable.test_yellow to yellow,
-            R.drawable.test_purple to purpl,
-            R.drawable.test_cyan to cyan
+            R.drawable.marker_bike to cyan.toArgb(),
+            R.drawable.marker_bus to blue.toArgb(),
+            R.drawable.marker_car to red.toArgb(),
+            R.drawable.marker_ebike to green.toArgb(),
+            R.drawable.marker_escooter to green.toArgb(),
+            R.drawable.marker_metro to purpl.toArgb(),
+            R.drawable.marker_moto to red.toArgb(),
+            R.drawable.marker_run to yellowWalk.toArgb(),
+            R.drawable.marker_still to yellowWalk.toArgb(),
+            R.drawable.marker_tram to greenTram.toArgb(),
+            R.drawable.marker_tren to orangeRodalies.toArgb(),
+            R.drawable.marker_walk to yellowWalk.toArgb(),
+            R.drawable.test_red to red.toArgb(),
+            R.drawable.test_yellow to yellowWalk.toArgb(),
+            R.drawable.test_purple to purpl.toArgb(),
+            R.drawable.test_cyan to cyan.toArgb()
         )
 
-    private val co2Table: Map<String, Double> = // g/KM
+    val co2Table: Map<String, Double> = // g/KM
         mapOf(
             "walk" to 0.0, "run" to 0.0, "still" to 0.0, "bike" to 0.0,
             "tren" to 9.0, "metro" to 23.7, "tram" to 24.0, "bus" to 40.6,
@@ -123,6 +116,9 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     private var savedMarkersForReset : MutableMap<GeoPoint,AuxMarker> = mutableMapOf()
     private var savedRoadsForReset : MutableSet<Polyline> = mutableSetOf()
+    private val geoQ: Queue<GeoPoint> = LinkedList<GeoPoint>()
+    private val fibPosition = GeoPoint(41.38867, 2.11196)
+    private val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
 
     inner class AuxMarker{
         var position = GeoPoint(41.38867, 2.11196)
@@ -133,33 +129,28 @@ class Mapa(val context:Context): AppCompatActivity() {
         var anchorV = 1.0f
 
     }
-
-    private val geoQ: Queue<GeoPoint> = LinkedList<GeoPoint>()
-    private val fibPosition = GeoPoint(41.38867, 2.11196)
-    private val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
-
-
     init {
         //binding = FragContainerBinding.inflate(layoutInflater)
         fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
 
-        map = fullView.findViewById<MapView>(R.id.map)
-        map.post(
-            Runnable { map.controller.setZoom(6.0)
-                map.controller.animateTo(myLocationOverlay.myLocation)
-                map.controller.setZoom(18.0)
+        mMap = fullView.findViewById<MapView>(R.id.map)
+        mMap.post(
+            Runnable { mMap.controller.setZoom(6.0)
+                mMap.controller.animateTo(myLocationOverlay.myLocation)
+                mMap.controller.setZoom(18.0)
             })
-        map.setUseDataConnection(true)
-        map.setTileSource(TileSourceFactory.MAPNIK)
-        map.setMultiTouchControls(true)
-        map.maxZoomLevel = 20.0
-        map.minZoomLevel = 6.0
-        map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        mMap.setUseDataConnection(true)
+        mMap.setTileSource(TileSourceFactory.MAPNIK)
+        mMap.setMultiTouchControls(true)
+        mMap.maxZoomLevel = 20.0
+        mMap.minZoomLevel = 6.0
+        mMap.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         //val map = view.findViewById(R.id.map) as MapView
         initializeMap()
 
     }
+
     fun shallowCopy(m:Marker):AuxMarker{
         var a = AuxMarker()
         a.position = m.position
@@ -169,22 +160,22 @@ class Mapa(val context:Context): AppCompatActivity() {
         return a
     }
     fun resetView(){
+        //for(m in markersMap) m.value.remove(mMap)
         fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
-        map.removeAllViews()
-        map = fullView.findViewById(R.id.map) as MapView
-        map.post(
-            Runnable { map.controller.setZoom(6.0)
-                map.controller.animateTo(myLocationOverlay.myLocation)
-                map.controller.setZoom(18.0)
+        mMap.removeAllViews()
+        mMap = fullView.findViewById(R.id.map) as MapView
+        mMap.post(
+            Runnable { mMap.controller.setZoom(6.0)
+                mMap.controller.animateTo(myLocationOverlay.myLocation)
+                mMap.controller.setZoom(18.0)
             })
-        map.setUseDataConnection(true)
-        map.setTileSource(TileSourceFactory.MAPNIK)
-        map.setMultiTouchControls(true)
-        map.maxZoomLevel = 20.0
-        map.minZoomLevel = 6.0
-        map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-        initializeMap()
+        mMap.setUseDataConnection(true)
+        mMap.setTileSource(TileSourceFactory.MAPNIK)
+        mMap.setMultiTouchControls(true)
+        mMap.maxZoomLevel = 20.0
+        mMap.minZoomLevel = 6.0
+        mMap.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
 
         // a polyline has an atribute MapView that can be null, but once added to a map the polyline 's mapview is set
         // and cannot be added to a diferent map, so i make a clone to add to the current map
@@ -193,17 +184,22 @@ class Mapa(val context:Context): AppCompatActivity() {
             for(p in r.actualPoints) poly.addPoint(p)
             poly.outlinePaint.color = r.color
             poly.outlinePaint.strokeWidth = 10.0f
-            map.overlays.add(0,poly)
+            mMap.overlays.add(0,poly)
         }
+        initializeMap()
+        /*for(m in markersMap){
+            mMap.overlays.add(m.value)
+            m.value.infoWindow = CustomInfoWindow(mMap)
+        }*/
         for(m in savedMarkersForReset) reADD(m.value)
-        map.invalidate()
+        mMap.invalidate()
         //val map = view.findViewById(R.id.map) as MapView
         //initializeMap()
     }
 
     private fun reADD(a:AuxMarker){
         val marker =
-            object : Marker(map) {
+            object : Marker(mMap) {
                 override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
                     return super.onSingleTapConfirmed(event, mapView)
                 }
@@ -225,7 +221,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         marker.rotation = a.rotation
         marker.setAnchor(a.anchorU,a.anchorV)
         markersMap[a.position] = marker
-        map.overlays.add(marker)
+        mMap.overlays.add(marker)
     }
 
     private fun transformDrawable(
@@ -249,15 +245,15 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     fun Double.format(digits: Int) = "%.${digits}f".format(this)
     fun clear() {
-
-        map.overlays.clear()
+        InfoWindow.closeAllInfoWindowsOn(mMap)
+        mMap.overlays.clear()
         savedMarkersForReset.clear()
         savedRoadsForReset.clear()
         markersMap.clear()
         geoQ.clear()
         markersOnThisRoad.clear()
-        map.overlays.add(myLocationOverlay)
-        map.invalidate()
+        mMap.overlays.add(myLocationOverlay)
+        mMap.invalidate()
         roadIndex = 0
         totalCO2 = 0.0
         totalDistance = 0.0
@@ -268,8 +264,8 @@ class Mapa(val context:Context): AppCompatActivity() {
     }
     fun startTrip() {
         clear()
-        map.controller.animateTo(myLocationOverlay.myLocation)
-        map.controller.setZoom(18.0)
+        mMap.controller.animateTo(myLocationOverlay.myLocation)
+        mMap.controller.setZoom(18.0)
 
     }
     private fun updateMarker(
@@ -311,7 +307,7 @@ class Mapa(val context:Context): AppCompatActivity() {
 
         try{
             val marker =
-                object : Marker(map) {
+                object : Marker(mMap) {
                     override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
                         return super.onSingleTapConfirmed(event, mapView)
                     }
@@ -334,10 +330,10 @@ class Mapa(val context:Context): AppCompatActivity() {
             marker.title = context.resources.getResourceEntryName(drawable)
             marker.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / scale)
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-
+            //marker.infoWindow = CustomInfoWindow(mMap)
             markersMap[p] = marker
-            map.overlays.add(marker)
-            map.invalidate()
+            mMap.overlays.add(marker)
+            mMap.invalidate()
         }catch (e: Exception) {
             e.printStackTrace()
         }
@@ -355,23 +351,23 @@ class Mapa(val context:Context): AppCompatActivity() {
 
         // avoid multiple still markers on the same spot
         if(drawable == R.drawable.marker_still) geoQ.clear()
-        map.invalidate()
+        mMap.invalidate()
     }
 
     fun removeMarker(position: GeoPoint) {
         if (markersMap.contains(position)) {
-            if(map!=null) markersMap[position]?.remove(map)
+            if(mMap!=null) markersMap[position]?.remove(mMap)
             markersMap.remove(position)
             geoQ.remove(position)
             savedMarkersForReset.remove(position)
-            map.invalidate()
+            mMap.invalidate()
         }
     }
 
 
     private fun addTwin(marker: Marker, flip: Boolean = false) {
         val marker2 =
-            object : Marker(map) {
+            object : Marker(mMap) {
                 override fun onSingleTapConfirmed(event: MotionEvent?, mapView: MapView?): Boolean {
                     return super.onSingleTapConfirmed(event, mapView)
                 }
@@ -397,7 +393,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         marker2.title =
             context.resources.getResourceEntryName(currentIcon).replace("marker_", "")
         val scale =
-            if (map.zoomLevelDouble != 0.0) (map.zoomLevelDouble * 100.0).roundToInt() / 100.0 else 200.0
+            if (mMap.zoomLevelDouble != 0.0) (mMap.zoomLevelDouble * 100.0).roundToInt() / 100.0 else 200.0
         marker.icon = transformDrawable(
             ContextCompat.getDrawable(context, previousIcon),
             13.0 / scale,
@@ -412,13 +408,14 @@ class Mapa(val context:Context): AppCompatActivity() {
         )
 
         marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker2.infoWindow = CustomInfoWindow(mMap)
         markersMap[marker2.position] = marker2
         savedMarkersForReset[marker.position] = shallowCopy(marker)
         savedMarkersForReset[marker2.position] = shallowCopy(marker2)
 
-        if(map!= null){
-            map.overlays.add(marker2)
-            map.invalidate()
+        if(mMap!= null){
+            mMap.overlays.add(marker2)
+            mMap.invalidate()
         }
         //mapOverlays.add(marker2)
         if (geoQ.size > 1) geoQ.remove()
@@ -477,7 +474,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 line.outlinePaint.strokeWidth = 10.0f
 
                 //road index per a que les carreteres mes noves solapin a les velles si es creuen i no al reves
-                map.overlays.add(roadIndex, line)
+                mMap.overlays.add(roadIndex, line)
                 var poly = Polyline()
                 for(p in line.actualPoints){
                     poly.addPoint(p);
@@ -486,7 +483,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 poly.outlinePaint.strokeWidth = 10.0f
                 savedRoadsForReset.add(poly)
                 ++roadIndex
-                map.invalidate()
+                mMap.invalidate()
 
                 val vehicle = context.resources.getResourceEntryName(prevIcon)
                     .replace("marker_", "").replace("_crooked", "")
@@ -525,7 +522,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 }
                 markersMap[endPoint]!!.position = p[p.size - 1]
                 savedMarkersForReset[endPoint]!!.position = p[p.size - 1]
-                map.invalidate()
+                mMap.invalidate()
 
                 // adding a second marker on the destination, if changing to a new vehicle
                 if ((prevIcon != currIcon)) {
@@ -550,8 +547,8 @@ class Mapa(val context:Context): AppCompatActivity() {
                 if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =
-                    if (totalCO2 * 1000 / (totalDistance) > 60) Color(0xFFFF6D60)
-                    else if (totalCO2 * 1000 / (totalDistance) > 25) Color(0xFFF7D06E)
+                    if (totalCO2 * 1000 / (totalDistance) > 45) Color(0xFFFF6D60)
+                    else if (totalCO2 * 1000 / (totalDistance) > 10) Color(0xFFF7D06E)
                     else Color(0xFF98D8AA)
                ret = line.distance
             } catch (e: Exception) {
@@ -568,7 +565,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         val provider = GpsMyLocationProvider(context)
         provider.addLocationSource(LocationManager.NETWORK_PROVIDER)
         myLocationOverlay =
-            object : MyLocationNewOverlay(provider, map) {
+            object : MyLocationNewOverlay(provider, mMap) {
                 override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
                     super.onLocationChanged(location, source)
                     location?.let {
@@ -589,9 +586,9 @@ class Mapa(val context:Context): AppCompatActivity() {
                 }*/
 
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
-                    //val proj = mapView!!.projection
-                    //val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    //if (!emptyMarker) addMarker(loc, selectedIcon)
+                    val proj = mapView!!.projection
+                    val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
+                    if (!emptyMarker) addMarker(loc, selectedIcon)
                     //else {
                     //  if (geoQ.size > 1) geoQ.remove()
                     //    geoQ.add(loc)
@@ -605,12 +602,12 @@ class Mapa(val context:Context): AppCompatActivity() {
         myLocationOverlay.enableFollowLocation()
         myLocationOverlay.runOnFirstFix {
             runOnUiThread {
-                map.controller.animateTo(myLocationOverlay.myLocation)
-                map.controller.setZoom(18.0)
+                mMap.controller.animateTo(myLocationOverlay.myLocation)
+                mMap.controller.setZoom(18.0)
             }
         }
-        map.overlays.add(myLocationOverlay)
-        map.invalidate()
+        mMap.overlays.add(myLocationOverlay)
+        mMap.invalidate()
     }
 
 
@@ -618,8 +615,8 @@ class Mapa(val context:Context): AppCompatActivity() {
     fun ButtonCenterMap() {
         Button(onClick = {
 
-            map.controller.animateTo(myLocationOverlay.myLocation)
-            map.controller.setZoom(18.0)
+            mMap.controller.animateTo(myLocationOverlay.myLocation)
+            mMap.controller.setZoom(18.0)
         },modifier = Modifier
             .height(40.dp)
             .width(150.dp)
@@ -652,7 +649,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         )
     }
     @Composable
-    fun fullLayout() {
+    fun debugLayout() {
         Column {
             Modifier.fillMaxWidth()
             Box(){
