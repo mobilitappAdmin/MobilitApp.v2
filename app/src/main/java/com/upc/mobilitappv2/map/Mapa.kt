@@ -7,6 +7,7 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -29,16 +30,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.upc.mobilitappv2.BuildConfig
 import com.upc.mobilitappv2.R
 import kotlinx.coroutines.launch
 import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.util.MapTileIndex
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -173,7 +171,6 @@ class Mapa(val context:Context): AppCompatActivity() {
     fun resetView(){
         fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
-        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID;
         map.removeAllViews()
         map = fullView.findViewById(R.id.map) as MapView
         map.post(
@@ -269,7 +266,12 @@ class Mapa(val context:Context): AppCompatActivity() {
         uiString2.value = "Total distance = ${totalDistance.format(0)}m"
         mutColor.value = Color(0xFF98D8AA)
     }
+    fun startTrip() {
+        clear()
+        map.controller.animateTo(myLocationOverlay.myLocation)
+        map.controller.setZoom(18.0)
 
+    }
     private fun updateMarker(
         position: GeoPoint,
         dist: Double = 0.0,
@@ -296,8 +298,9 @@ class Mapa(val context:Context): AppCompatActivity() {
         //return consum
     }
 
-    fun addMarker(position: GeoPoint, drawable: Int) {
+    fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false) {
         if (markersMap.contains(position)) removeMarker(position)
+
 
         // avoid multiple still markers on the same spot
         if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return
@@ -323,14 +326,16 @@ class Mapa(val context:Context): AppCompatActivity() {
                         return super.onLongPress(event, mapView)
                     }
                 }
-            marker.position = position
+            var p = position
+            if(useMapPosition) p = myLocationOverlay.myLocation
+            marker.position = p
             //var scale = if (map.zoomLevelDouble != 0.0) (map.zoomLevelDouble * 100.0).roundToInt() / 100.0 else 200.0
             val scale = 18.0
             marker.title = context.resources.getResourceEntryName(drawable)
             marker.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / scale)
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-            markersMap[position] = marker
+            markersMap[p] = marker
             map.overlays.add(marker)
             map.invalidate()
         }catch (e: Exception) {
@@ -560,15 +565,28 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     fun initializeMap() {
         //val mapController = map.controller
-
+        val provider = GpsMyLocationProvider(context)
+        provider.addLocationSource(LocationManager.NETWORK_PROVIDER)
         myLocationOverlay =
-            object : MyLocationNewOverlay(GpsMyLocationProvider(context), map) {
+            object : MyLocationNewOverlay(provider, map) {
                 override fun onLocationChanged(location: Location?, source: IMyLocationProvider?) {
                     super.onLocationChanged(location, source)
                     location?.let {
                         //uiString.value = map.zoomLevelDouble.toString()//parseLocation(it)
                     }
                 }
+               /* override fun drawMyLocation(canvas: Canvas?, pj: Projection?, lastFix: Location?) {
+                    if (this.isFollowLocationEnabled) rotateMap(lastFix)
+                    super.drawMyLocation(canvas, pj, lastFix)
+                }
+
+                private fun rotateMap(lastFix: Location?) {
+                    lastFix?.let {
+                        if (it.speed > 0.2) {
+                            map.mapOrientation = -it.bearing
+                        }
+                    }
+                }*/
 
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
                     //val proj = mapView!!.projection
@@ -583,9 +601,8 @@ class Mapa(val context:Context): AppCompatActivity() {
             }
 
         myLocationOverlay.enableMyLocation()
-        myLocationOverlay.enableFollowLocation()
         myLocationOverlay.isDrawAccuracyEnabled = true
-
+        myLocationOverlay.enableFollowLocation()
         myLocationOverlay.runOnFirstFix {
             runOnUiThread {
                 map.controller.animateTo(myLocationOverlay.myLocation)
@@ -595,6 +612,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         map.overlays.add(myLocationOverlay)
         map.invalidate()
     }
+
 
     @Composable
     fun ButtonCenterMap() {

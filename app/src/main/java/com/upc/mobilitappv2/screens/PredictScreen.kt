@@ -121,7 +121,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (macro != null) {
                 macroState = macro
                 mapa.nameToID[macro!!]?.let {
-                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it)
+                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = true)
                 }
             }
 
@@ -147,6 +147,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     )
                     multimodal.initialize()
                     multimodal.startCapture()
+                    mapa.startTrip()
                     stop = false
                 },
                 modifier = Modifier
