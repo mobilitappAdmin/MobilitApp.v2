@@ -177,6 +177,17 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         else {fifoStr = "$fifoStr,$a " }
                     }
 
+                    if (othersRow != 0) {
+                        if (othersRow == 4 || othersRow == 10) {
+                            val prediction =
+                                mlService.overallPrediction(sensorLoader.getLastWindow(6))
+                            macroState = prediction
+                        }
+                        ++othersRow
+
+                    }
+
+                   // Windows logic
                     if (fifoAct.size == 3) {
                         if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
                             othersRow = 0
@@ -188,13 +199,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                                     val prediction =
                                         mlService.overallPrediction(sensorLoader.getLastWindow(3))
                                     macroState = prediction
+                                    ++othersRow
                                 }
-                                else if (othersRow%3 == 0) {
-                                    val prediction =
-                                        mlService.overallPrediction(sensorLoader.getLastWindow(6))
-                                    macroState = prediction
-                                }
-                                ++othersRow
                             }
                             else if (fifoAct[2] == "STILL") {
                                 othersRow = 0
@@ -245,8 +251,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         }
 
         locationRequest = LocationRequest.create()
-        locationRequest.interval = (10 * 1000).toLong() // 20 seconds CHANGE
-        locationRequest.fastestInterval = (8 * 1000).toLong() // 18 seconds CHANGE
+        locationRequest.interval = (20 * 1000).toLong() // 20 seconds CHANGE
+        locationRequest.fastestInterval = (18 * 1000).toLong() // 18 seconds CHANGE
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     }
