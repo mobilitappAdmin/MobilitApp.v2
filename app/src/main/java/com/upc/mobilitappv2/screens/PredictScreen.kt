@@ -147,7 +147,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (macro != null) {
                 macroState = macro
                 mapa.nameToID[macro!!]?.let {
-                    var dist = mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = true)
+                    var dist = mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
                     //kotlin has no Lazy evaluation ????
                     if(consumes.isEmpty()) consumes.add(Pair(macro,dist))
                     else if( consumes.last().first != macro) consumes.add(Pair(macro,dist))
