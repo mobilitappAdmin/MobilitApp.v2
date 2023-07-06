@@ -17,7 +17,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -48,10 +47,7 @@ import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
 import com.upc.mobilitappv2.map.Mapa
-import com.upc.mobilitappv2.ui.theme.LightOrange
 import com.upc.mobilitappv2.ui.theme.SoftGray
-import com.upc.mobilitappv2.ui.theme.SofterGray
-import com.upc.mobilitappv2.ui.theme.purpl
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
@@ -76,7 +72,7 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
     }
 }
 
-private var consumes: MutableList<Pair<String,Double>> = mutableListOf()
+private var vehiclesTrams: MutableList<String> = mutableListOf()
 
 
 
@@ -116,6 +112,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
+    var vehicleTest: String by remember { mutableStateOf("Still") }
+
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
         // we will receive data updates in onReceive method.
@@ -124,7 +122,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             val loc: String? = intent.getStringExtra("location")
             val act: String? = intent.getStringExtra("activity")
             val fifo_str = intent.getStringExtra("fifo")
-            val macro = intent.getStringExtra("macroState")
+            var macro = intent.getStringExtra("macroState")
             stop_cov = intent.getStringExtra("stop")
             // on below line we are updating the data in our text view.
             if (loc != null) {
@@ -146,16 +144,22 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
             if (macro != null) {
                 macroState = macro
+                //debugo
+                //macro = vehicleTest
                 mapa.nameToID[macro!!]?.let {
-                    var dist = mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
+                    var dist = 0.0
+                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
                     //kotlin has no Lazy evaluation ????
-                    if(consumes.isEmpty()) consumes.add(Pair(macro,dist))
-                    else if( consumes.last().first != macro) consumes.add(Pair(macro,dist))
-                    else {
-                        dist += consumes.last().second
-                        consumes.removeLast()
-                        consumes.add(Pair(macro,dist))
-                    }
+                    if(vehiclesTrams.isEmpty()) vehiclesTrams.add(macro)
+                    else if( vehiclesTrams.last() != macro) vehiclesTrams.add(macro)
+                    else{}
+                    //test
+                    /*consumes.add(Pair("Car",2000.0))
+                    consumes.add(Pair("WALK",500.0))
+                    consumes.add(Pair("Bus",3500.0))
+                    mapa.totalDistance = 6000.0
+                    mapa.totalCO2 = 437.0*/
+
 
                 }
             }
@@ -171,7 +175,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
     Box() {
-        Log.d("consums","${consumes}")
+        //Log.d("tram_consums","${vehiclesTrams}")
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -186,8 +190,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 // Start button
                 Button(
                     onClick = {
-                        consumes.clear()
-
                         // on below line we are registering our local broadcast manager.
                         LocalBroadcastManager.getInstance(context).registerReceiver(
                             windowReceiver, IntentFilter("multimodal")
@@ -195,6 +197,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.initialize()
                         multimodal.startCapture()
                         mapa.startTrip()
+                        vehiclesTrams.clear()
 
                         stop = false
                     },
@@ -242,6 +245,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
             Text(text = "Activities: $fifo")
+
+            //debugo button
+            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
+                
 
             // debug text
             if (debug) {
@@ -334,7 +341,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         //Pollution PopUp
         val cardHeight = 500
         AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomCenter).clickable(interactionSource = interactionSource, indication = null){  },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .clickable(interactionSource = interactionSource, indication = null) { },
             visible = popUpState,
             enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1300)),
             exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1000)),
@@ -393,30 +402,49 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
 
-                    if(consumes.isEmpty()) Text("No trajects detected yet :(", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize().align(
-                        Alignment.CenterHorizontally))
+                    if(vehiclesTrams.isEmpty()) Text("No trajects detected yet :(", textAlign = TextAlign.Center, modifier = Modifier
+                        .fillMaxSize()
+                        .align(
+                            Alignment.CenterHorizontally
+                        ))
                     else {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
                                 .padding(bottom = 70.dp),//.background(LightOrange),
                             contentPadding = PaddingValues(bottom = 20.dp),
                         ) {
-                            itemsIndexed(consumes) { index, item ->
+                            itemsIndexed(vehiclesTrams) { index, item ->
                                 Box(
-                                    Modifier.fillMaxWidth().height(70.dp)
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(70.dp)
                                         .padding(bottom = 10.dp)
                                         .clip(shape = RoundedCornerShape(10.dp))
-                                        .background(mapa.getColor(item.first))
+                                        .background(mapa.getColor(item))
                                     //.background(color = LightOrange)
 
                                 )
                                 {
-                                    Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier.fillMaxWidth().align(Alignment.Center)) {
-                                        Text("${item.first}", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
-                                        Text("CO2 ${formatData(mapa.getCO2(item.second,item.first), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
-                                        Text("Distance ${formatData(item.second, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
-
+                                    if(item == "STILL"){
+                                        Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.Center)) {
+                                            Text("${item}", color = Color.White,textAlign = TextAlign.Center,modifier = Modifier)
+                                        }
                                     }
+                                    else{
+                                        var dist = if(index < mapa.trams.size) mapa.trams[index] else 80085.0
+                                        Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.Center)) {
+                                            Text("${item}", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
+                                            Text("CO2 ${formatData(mapa.getCO2(dist,item), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
+                                            Text("Distance ${formatData(dist, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
+
+                                        }
+                                    }
+
 
 
                                 }
@@ -429,12 +457,13 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
                 }
-                if(!consumes.isEmpty()){
-                    Row(Modifier
-                        .fillMaxWidth()
-                        .background(if (!isSystemInDarkTheme()) Color.White else SoftGray)
-                        .padding(top=10.dp,bottom = 60.dp,start=20.dp,end = 20.dp)
-                        .align(Alignment.BottomCenter)
+                if(vehiclesTrams.isNotEmpty()){
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(if (!isSystemInDarkTheme()) Color.White else SoftGray)
+                            .padding(top = 10.dp, bottom = 60.dp, start = 20.dp, end = 20.dp)
+                            .align(Alignment.BottomCenter)
                     ){
                         Text("Total distance", fontWeight = FontWeight.Bold,)
                         Text(formatData(mapa.totalDistance,"distance"), fontWeight = FontWeight.Bold, textAlign = TextAlign.Right,modifier = Modifier.fillMaxWidth())

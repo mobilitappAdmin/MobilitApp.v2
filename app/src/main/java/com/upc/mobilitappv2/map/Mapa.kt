@@ -111,6 +111,7 @@ class Mapa(val context:Context): AppCompatActivity() {
             "Train" to R.drawable.marker_tren, "Metro" to R.drawable.marker_metro, "Tram" to R.drawable.marker_tram, "Bus" to R.drawable.marker_bus,
             "Moto" to R.drawable.marker_moto, "E-Scooter" to R.drawable.marker_escooter, "E-Bike" to R.drawable.marker_ebike, "Car" to R.drawable.marker_car,
         )
+    var trams: MutableList<Double> = mutableListOf()
 
     private val markersMap: MutableMap<GeoPoint, Marker> = mutableMapOf()
 
@@ -274,6 +275,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         mMap.overlays.add(myLocationOverlay)
         mMap.invalidate()
         roadIndex = 0
+        trams.clear()
         totalCO2 = 0.0
         totalDistance = 0.0
         partialDistance = 0.0
@@ -299,9 +301,9 @@ class Mapa(val context:Context): AppCompatActivity() {
         val consum = (co2 * dist / 1000.0)
 
         title =
-            if (dist < 1000.0) title + "%.0fm".format(dist) else title + "%.1fKm".format(dist)
+            if (dist < 1000.0) title + "%.0fm".format(dist) else title + "%.1fKm".format(dist/1000)
         title =
-            if (consum < 1000.0) "$title\n Consum de CO2: %.1fg".format(consum) else "$title\n Consum de CO2: %.2fKg".format(consum)
+            if (consum < 1000.0) "$title\n Consum de CO2: %.1fg".format(consum) else "$title\n Consum de CO2: %.2fKg".format(consum/1000)
 
         var m: AuxMarker;
 
@@ -311,16 +313,20 @@ class Mapa(val context:Context): AppCompatActivity() {
         //return consum
     }
 
-    fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false):Double {
+    fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false) {
         if (markersMap.contains(position)) removeMarker(position)
-
-
         // avoid multiple still markers on the same spot
-        if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return 0.0
+
+        if( drawable != currentIcon) trams.add(0.0)
+        //Log.d("trams","$trams")
 
         previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
         currentIcon = drawable
-        Log.d("PreviousIcon", context.resources.getResourceEntryName(previousIcon))
+
+        if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return
+
+
+
 
         try{
             val marker =
@@ -361,13 +367,15 @@ class Mapa(val context:Context): AppCompatActivity() {
 
         if (geoQ.size > 1) geoQ.remove()
         geoQ.add(position)
-        var ret = 0.0
-        ret = pathing()
 
         // avoid multiple still markers on the same spot
+
+         pathing()
         if(drawable == R.drawable.marker_still) geoQ.clear()
+
+
         mMap.invalidate()
-        return ret
+
     }
 
     fun removeMarker(position: GeoPoint) {
@@ -424,7 +432,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         )
 
         marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker2.infoWindow = CustomInfoWindow(mMap)
+        //marker2.infoWindow = CustomInfoWindow(mMap)
         markersMap[marker2.position] = marker2
         savedMarkersForReset[marker.position] = shallowCopy(marker)
         savedMarkersForReset[marker2.position] = shallowCopy(marker2)
@@ -439,18 +447,16 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     }
 
-    fun pathing():Double{
-        var ret = 0.0
+    fun pathing(){
         if (geoQ.size > 1) {
             val start = geoQ.remove();lifecycleScope.launch {
                 geoQ.peek()
-                    ?.let { ret = makePath(start, it) };
+                    ?.let {  makePath(start, it) };
             }
         }
-        return ret
     }
-    private fun makePath(startPoint: GeoPoint, endPoint: GeoPoint): Double {
-        var ret = 0.0
+    private fun makePath(startPoint: GeoPoint, endPoint: GeoPoint) {
+
         // saving this so the internet call doesnt produce race conditions
         val prevIcon = previousIcon
         val currIcon = currentIcon
@@ -509,8 +515,11 @@ class Mapa(val context:Context): AppCompatActivity() {
 
                 totalCO2 += (co2 / 1000.0) * line.distance
                 totalDistance += line.distance
-
                 partialDistance += line.distance
+
+                if(currIcon == R.drawable.marker_still)trams[trams.size-2] += line.distance
+                else trams[trams.size-1] += line.distance
+
                 for (g in markersOnThisRoad) updateMarker(g, dist = partialDistance, vehicle, co2)
                 updateMarker(startPoint, dist = partialDistance, vehicle, co2)
                 updateMarker(endPoint, dist = partialDistance, vehicle, co2)
@@ -544,13 +553,19 @@ class Mapa(val context:Context): AppCompatActivity() {
 
                 // adding a second marker on the destination, if changing to a new vehicle
                 if ((prevIcon != currIcon)) {
-                    savedMarkersForReset.remove(endPoint)
-                    markersMap[endPoint]?.let {
-                        addTwin(
-                            it,
-                            p[p.size - 2].longitude > endPoint.longitude
-                        )
+                    if(currIcon == R.drawable.marker_still){
+                        markersMap[endPoint]!!.icon  = transformDrawable(ContextCompat.getDrawable(context, prevIcon), 13.0 / 18)
                     }
+                    else{
+                        savedMarkersForReset.remove(endPoint)
+                        markersMap[endPoint]?.let {
+                            addTwin(
+                                it,
+                                p[p.size - 2].longitude > endPoint.longitude
+                            )
+                        }
+                    }
+
                 }
 
                 //trigger recomposition for  walking periods, when CO2 doesn't increase but distance does
@@ -568,14 +583,13 @@ class Mapa(val context:Context): AppCompatActivity() {
                     if (totalCO2 * 1000 / (totalDistance) > 45) Color(0xFFFF6D60)
                     else if (totalCO2 * 1000 / (totalDistance) > 10) Color(0xFFF7D06E)
                     else Color(0xFF98D8AA)
-               ret = line.distance
+
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-
         thread.start()
-        return ret
     }
 
     fun initializeMap() {
@@ -606,7 +620,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
                     val proj = mapView!!.projection
                     val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    if (!emptyMarker) addMarker(loc, selectedIcon)
+                    //if (!emptyMarker) addMarker(loc, selectedIcon)
                     //else {
                     //  if (geoQ.size > 1) geoQ.remove()
                     //    geoQ.add(loc)
