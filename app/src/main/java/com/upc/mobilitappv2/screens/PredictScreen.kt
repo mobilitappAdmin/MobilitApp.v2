@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -16,6 +17,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -31,15 +33,10 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,6 +50,7 @@ import com.upc.mobilitappv2.screens.components.TopBar
 import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.ui.theme.LightOrange
 import com.upc.mobilitappv2.ui.theme.SoftGray
+import com.upc.mobilitappv2.ui.theme.SofterGray
 import com.upc.mobilitappv2.ui.theme.purpl
 import org.osmdroid.util.GeoPoint
 import java.util.*
@@ -78,6 +76,9 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
     }
 }
 
+private var consumes: MutableList<Pair<String,Double>> = mutableListOf()
+
+
 
 /**
  * Composable function for rendering the body content of the PredictScreen.
@@ -91,6 +92,7 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean,mapa: Mapa) {
+
 
     // State variables
 
@@ -114,7 +116,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
-
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
         // we will receive data updates in onReceive method.
@@ -146,7 +147,16 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (macro != null) {
                 macroState = macro
                 mapa.nameToID[macro!!]?.let {
-                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = true)
+                    var dist = mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = true)
+                    //kotlin has no Lazy evaluation ????
+                    if(consumes.isEmpty()) consumes.add(Pair(macro,dist))
+                    else if( consumes.last().first != macro) consumes.add(Pair(macro,dist))
+                    else {
+                        dist += consumes.last().second
+                        consumes.removeLast()
+                        consumes.add(Pair(macro,dist))
+                    }
+
                 }
             }
 
@@ -157,9 +167,11 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val screenWidth = configuration.screenWidthDp.dp
     var popUpState: Boolean by remember { mutableStateOf(false) }
     var animationState: Boolean by remember { mutableStateOf(false) }
-    var queue: Queue<Pair<String,Double>> = LinkedList<Pair<String,Double>>()
+    var interactionSource = remember { MutableInteractionSource() }
+
 
     Box() {
+        Log.d("consums","${consumes}")
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -174,6 +186,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 // Start button
                 Button(
                     onClick = {
+                        consumes.clear()
+
                         // on below line we are registering our local broadcast manager.
                         LocalBroadcastManager.getInstance(context).registerReceiver(
                             windowReceiver, IntentFilter("multimodal")
@@ -181,6 +195,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.initialize()
                         multimodal.startCapture()
                         mapa.startTrip()
+
                         stop = false
                     },
                     modifier = Modifier
@@ -291,7 +306,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     }
                 }
             }
-            //mapa.debugLayuot()
+            //mapa.debugLayout()
             mapa.APPLayout()
 
 
@@ -302,7 +317,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             enter = fadeIn(animationSpec = tween(durationMillis = 600), ),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ){
-            var interactionSource = remember { MutableInteractionSource() }
             Column(
                 Modifier
                     .fillMaxSize()
@@ -320,7 +334,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         //Pollution PopUp
         val cardHeight = 500
         AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.align(Alignment.BottomCenter).clickable(interactionSource = interactionSource, indication = null){  },
             visible = popUpState,
             enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1300)),
             exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1000)),
@@ -374,20 +388,58 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         fontSize = 12.sp,
                         textAlign = TextAlign.Justify
                     )
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(bottom = 70.dp).background(LightOrange),
-                        contentPadding = PaddingValues(16.dp)
-                    ) {
-                        val list =  queue.toList()
-                        itemsIndexed(list) { index, item ->
-                            //Text("Item at index $index is $item")
-                        }
+                    Spacer(modifier = Modifier.height(height = 10.dp))
 
+
+
+
+                    if(consumes.isEmpty()) Text("No trajects detected yet :(", textAlign = TextAlign.Center, modifier = Modifier.fillMaxSize().align(
+                        Alignment.CenterHorizontally))
+                    else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                                .padding(bottom = 70.dp),//.background(LightOrange),
+                            contentPadding = PaddingValues(bottom = 20.dp),
+                        ) {
+                            itemsIndexed(consumes) { index, item ->
+                                Box(
+                                    Modifier.fillMaxWidth().height(70.dp)
+                                        .padding(bottom = 10.dp)
+                                        .clip(shape = RoundedCornerShape(10.dp))
+                                        .background(mapa.getColor(item.first))
+                                    //.background(color = LightOrange)
+
+                                )
+                                {
+                                    Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier.fillMaxWidth().align(Alignment.Center)) {
+                                        Text("${item.first}", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
+                                        Text("CO2 ${formatData(mapa.getCO2(item.second,item.first), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
+                                        Text("Distance ${formatData(item.second, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
+
+                                    }
+
+
+                                }
+                            }
+
+
+                        }
                     }
 
 
-                }
 
+                }
+                if(!consumes.isEmpty()){
+                    Row(Modifier
+                        .fillMaxWidth()
+                        .background(if (!isSystemInDarkTheme()) Color.White else SoftGray)
+                        .padding(top=10.dp,bottom = 60.dp,start=20.dp,end = 20.dp)
+                        .align(Alignment.BottomCenter)
+                    ){
+                        Text("Total distance", fontWeight = FontWeight.Bold,)
+                        Text(formatData(mapa.totalDistance,"distance"), fontWeight = FontWeight.Bold, textAlign = TextAlign.Right,modifier = Modifier.fillMaxWidth())
+                    }
+                }
 
             }
 
@@ -395,14 +447,14 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     }
 }
 private fun formatData(data: Double, type:String = ""):String{
+    var s = ""
     if(type=="CO2"){
-        if (data < 1000) return "${data.format(1)}g"
-        else "${(data / 1000).format(2)}Kg"
+        if (data < 1000) s = "%.1fg".format(data)
+        else s = "%.2fKg".format(data/1000)
     }
     else if(type=="distance"){
-        if (data < 1000) return "${data.format(1)}m"
-        else "${(data / 1000).format(2)}Km"
+        if (data < 1000) s= "%.0fm".format(data)
+        else s ="%.1fKm".format(data/1000)
     }
-    return ""
+    return s.replace(",",".")
 }
-private fun Double.format(digits: Int) = "%.${digits}f".format(this)

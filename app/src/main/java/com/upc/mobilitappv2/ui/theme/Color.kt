@@ -10,7 +10,10 @@ val Silver = Color(0xFFC0C0C0)
 val Orange = Color(0xFFD1462A)
 val Orange2 = Color(0xFFD13415)
 val Yellow = Color(0xFFD1C23F)
+
+
 val SoftGray = Color(0xFF282828)
+val SofterGray = Color(0xFF6F6F6F)
 val LightOrange = Color(0xFFDD9A88)
 // map colors
 val purpl = Color(0xff9551ea)

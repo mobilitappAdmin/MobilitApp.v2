@@ -64,8 +64,8 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     var totalCO2 = 0.0
     var totalDistance = 0.0
-    private val uiString = mutableStateOf("Total CO2 consumption : ${totalCO2.format(0)}g")
-    private val uiString2 = mutableStateOf("Total distance = ${totalDistance.format(0)}m")
+    private val uiString = mutableStateOf("Total CO2 consumption %.0fg".format(0.0))
+    private val uiString2 = mutableStateOf("Total distance %.0fm".format(0.0))
     val mutColor = mutableStateOf(Color(0xFF98D8AA))
 
     private var partialDistance = 0.0
@@ -151,6 +151,25 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     }
 
+    fun getColor(vehicle: String):Color{
+        if (!nameToID.contains(vehicle)) return Color.White
+        return Color(markerColors[nameToID[vehicle]]!!)
+    }
+
+    val transformTable: Map<String, String> = // g/KM
+        mapOf(
+            "WALK" to "walk",  "Run" to "run", "STILL" to "still","Bicycle" to  "bike",
+            "Train" to "tren", "Metro" to "metro",  "Tram" to "tram" , "Bus" to "bus",
+            "Moto" to "moto","E-Scooter" to  "escooter", "E-Bike" to "ebike",  "Car" to "car",
+        )
+    fun getCO2(dist: Double,vehicle: String):Double{
+        val ret = 0.0
+        if(!co2Table.contains(vehicle)){
+            if(!transformTable.contains(vehicle)) return ret
+            else  return co2Table[transformTable[vehicle]]!!*dist/1000
+        }
+        return co2Table[vehicle]!!*dist/1000
+    }
     fun shallowCopy(m:Marker):AuxMarker{
         var a = AuxMarker()
         a.position = m.position
@@ -258,8 +277,8 @@ class Mapa(val context:Context): AppCompatActivity() {
         totalCO2 = 0.0
         totalDistance = 0.0
         partialDistance = 0.0
-        uiString.value = "Total CO2 consumption : ${totalCO2.format(0)}g"
-        uiString2.value = "Total distance = ${totalDistance.format(0)}m"
+        uiString.value = "Total CO2 consumption %.0fg".format(0.0)
+        uiString2.value = "Total distance %.0fm".format(0.0)
         mutColor.value = Color(0xFF98D8AA)
     }
     fun startTrip() {
@@ -280,11 +299,9 @@ class Mapa(val context:Context): AppCompatActivity() {
         val consum = (co2 * dist / 1000.0)
 
         title =
-            if (dist < 1000.0) title + dist.format(0) + "m" else title + (dist / 1000).format(2) + "Km"
+            if (dist < 1000.0) title + "%.0fm".format(dist) else title + "%.1fKm".format(dist)
         title =
-            if (consum < 1000.0) "$title\n Consum de CO2: ${consum.format(2)} g" else "$title\n Consum de CO2: ${
-                (consum / 1000).format(2)
-            } g"
+            if (consum < 1000.0) "$title\n Consum de CO2: %.1fg".format(consum) else "$title\n Consum de CO2: %.2fKg".format(consum)
 
         var m: AuxMarker;
 
@@ -294,12 +311,12 @@ class Mapa(val context:Context): AppCompatActivity() {
         //return consum
     }
 
-    fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false) {
+    fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false):Double {
         if (markersMap.contains(position)) removeMarker(position)
 
 
         // avoid multiple still markers on the same spot
-        if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return
+        if(geoQ.isEmpty() and (drawable == R.drawable.marker_still)) return 0.0
 
         previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
         currentIcon = drawable
@@ -342,16 +359,15 @@ class Mapa(val context:Context): AppCompatActivity() {
         savedMarkersForReset[position]!!.title = context.resources.getResourceEntryName(drawable)
         savedMarkersForReset[position]!!.icon = transformDrawable(ContextCompat.getDrawable(context, drawable), 13.0 / 18.0)
 
-
-
         if (geoQ.size > 1) geoQ.remove()
         geoQ.add(position)
-
-        pathing()
+        var ret = 0.0
+        ret = pathing()
 
         // avoid multiple still markers on the same spot
         if(drawable == R.drawable.marker_still) geoQ.clear()
         mMap.invalidate()
+        return ret
     }
 
     fun removeMarker(position: GeoPoint) {
@@ -423,13 +439,15 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     }
 
-    fun pathing(){
+    fun pathing():Double{
+        var ret = 0.0
         if (geoQ.size > 1) {
             val start = geoQ.remove();lifecycleScope.launch {
                 geoQ.peek()
-                    ?.let { makePath(start, it) };
+                    ?.let { ret = makePath(start, it) };
             }
         }
+        return ret
     }
     private fun makePath(startPoint: GeoPoint, endPoint: GeoPoint): Double {
         var ret = 0.0
@@ -538,12 +556,12 @@ class Mapa(val context:Context): AppCompatActivity() {
                 //trigger recomposition for  walking periods, when CO2 doesn't increase but distance does
                 uiString.value = ""
                 if (totalCO2 < 1000) uiString.value =
-                    "Total CO2 consumption : ${totalCO2.format(1)}g"
-                else uiString.value = "Total CO2 consumption : ${(totalCO2 / 1000).format(2)}Kg"
+                    "Total CO2 consumption %.1fg".format(totalCO2)
+                else uiString.value = "Total CO2 consumption %.2fKg".format(totalCO2/1000)
 
                 if (totalDistance < 1000) uiString2.value =
-                    "Total distance = ${(totalDistance).format(1)}m"
-                else uiString2.value = "Total distance = ${(totalDistance / 1000).format(2)}Km"
+                    "Total distance %.0fm".format(totalDistance)
+                else uiString2.value = "Total distance %.1fKm".format(totalDistance/1000)
                 if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =
