@@ -1,12 +1,15 @@
 package com.upc.mobilitappv2.screens
 
+import android.Manifest
+import android.R.id.message
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.util.Log
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -42,14 +45,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.upc.mobilitappv2.R
+import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
-import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.ui.theme.SoftGray
 import org.osmdroid.util.GeoPoint
 import java.util.*
+
 
 /**
  * PredictScreen is a composable function that displays the prediction screen of the application.
@@ -174,6 +182,46 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var interactionSource = remember { MutableInteractionSource() }
 
 
+    fun formatData(data: Double, type:String = ""):String{
+        var s = ""
+        if(type=="CO2"){
+            if (data < 1000) s = "%.1fg".format(data)
+            else s = "%.2fKg".format(data/1000)
+        }
+        else if(type=="distance"){
+            if (data < 1000) s= "%.0fm".format(data)
+            else s ="%.1fKm".format(data/1000)
+        }
+        return s.replace(",",".")
+    }
+    fun sendCO2notification(){
+        val mBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(
+                context,
+                context.getString(R.string.channel_id)
+            )
+                .setSmallIcon(R.mipmap.ic_launcher) // notification icon
+                .setContentTitle("Recorregut finalitzat") // title for notification
+                .setContentText("Consum total: ${formatData(mapa.totalCO2,"CO2")}") // message for notification
+                .setStyle(NotificationCompat.BigTextStyle()
+                    .bigText(
+                        if(mapa.totalCO2 * 1000 / (mapa.totalDistance) > 45)
+                            "Consum total: ${formatData(mapa.totalCO2,"CO2")}\nYour trip generated ${formatData(mapa.totalCO2, "CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2 - (mapa.totalDistance * mapa.co2Table["bus"]!! / 1000)), "CO2")} of CO2 by using public transport."
+                        else
+                            "Consum total: ${formatData(mapa.totalCO2, "CO2")}\nCongratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+
+                    ))
+        with(NotificationManagerCompat.from(context)) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) { return }
+            notify(0, mBuilder.build())
+        }
+    }
+
+
     Box() {
         //Log.d("tram_consums","${vehiclesTrams}")
         Column(
@@ -221,6 +269,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.stopCapture()
                         stop = true
                         popUpState = true
+                        sendCO2notification()
                     },
                     modifier = Modifier
                         .height(40.dp)
@@ -321,7 +370,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         AnimatedVisibility(
             modifier = Modifier.fillMaxSize(),
             visible = popUpState,
-            enter = fadeIn(animationSpec = tween(durationMillis = 600), ),
+            enter = fadeIn(animationSpec = tween(durationMillis = 600)),
             exit = fadeOut(animationSpec = tween(durationMillis = 500)),
         ){
             Column(
@@ -465,7 +514,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                             .padding(top = 10.dp, bottom = 60.dp, start = 20.dp, end = 20.dp)
                             .align(Alignment.BottomCenter)
                     ){
-                        Text("Total distance", fontWeight = FontWeight.Bold,)
+                        Text("Total distance", fontWeight = FontWeight.Bold)
                         Text(formatData(mapa.totalDistance,"distance"), fontWeight = FontWeight.Bold, textAlign = TextAlign.Right,modifier = Modifier.fillMaxWidth())
                     }
                 }
@@ -475,15 +524,4 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         }
     }
 }
-private fun formatData(data: Double, type:String = ""):String{
-    var s = ""
-    if(type=="CO2"){
-        if (data < 1000) s = "%.1fg".format(data)
-        else s = "%.2fKg".format(data/1000)
-    }
-    else if(type=="distance"){
-        if (data < 1000) s= "%.0fm".format(data)
-        else s ="%.1fKm".format(data/1000)
-    }
-    return s.replace(",",".")
-}
+
