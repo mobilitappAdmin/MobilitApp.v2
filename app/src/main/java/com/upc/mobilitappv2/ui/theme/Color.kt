@@ -13,7 +13,7 @@ val Yellow = Color(0xFFD1C23F)
 
 
 val SoftGray = Color(0xFF282828)
-val SofterGray = Color(0xFF6F6F6F)
+val SofterGray = Color(0xFFADA8A8)
 val LightOrange = Color(0xFFDD9A88)
 // map colors
 val purpl = Color(0xff9551ea)

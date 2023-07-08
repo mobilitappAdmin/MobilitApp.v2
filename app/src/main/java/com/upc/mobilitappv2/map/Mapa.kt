@@ -17,15 +17,25 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -850,7 +860,8 @@ class Mapa(val context:Context): AppCompatActivity() {
 
 
         }
-    }@Composable
+    }
+    @Composable
     fun APPLayout() {
         Column {
             Modifier.fillMaxWidth()
@@ -912,10 +923,148 @@ class Mapa(val context:Context): AppCompatActivity() {
 
         }
     }
+    @Composable
+    fun newAPPLayout() {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+                .clip(shape = RoundedCornerShape(15.dp))
+
+        )// this will be the map
+        {
+            DrawMap()
+            // buttons
+            Column(
+                Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 20.dp, end = 15.dp)){
+                Button(onClick = {  clear() },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                    Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "close", modifier = Modifier.size(25.dp),tint = Orange,
+
+                        )
+                }
+                Spacer(modifier = Modifier.size(10.dp))
+                Button(onClick = { mMap.controller.animateTo(myLocationOverlay.myLocation);mMap.controller.setZoom(18.0) },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Orange)){
+                    Icon(painter = painterResource(R.drawable.baseline_explore_24) , contentDescription = "close", modifier = Modifier.size(30.dp),tint = Color.White,
+
+                        )
+                }
+            }
+
+            //DATA
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(bottom = 20.dp,start= 10.dp)){
+                var background = Color.White.copy(alpha = 0.7f)
+                var co2 = formatData(totalCO2,"CO2")
+                var  distance = formatData(totalDistance,"distance")
+                Row(Modifier.clip(shape = RoundedCornerShape(topStart = 15.dp,topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
+                    Icon( painter = painterResource(R.drawable.eco), contentDescription = "distance", modifier = Modifier
+                        .size(25.dp)
+                        .align(CenterVertically),tint = mutColor.value)
+                    Text(co2,modifier = Modifier
+                        .padding(start = 8.dp,top = 5.dp)
+                        .align(CenterVertically), fontWeight = FontWeight.Bold,color = mutColor.value)
+                }
+                Row(Modifier.padding(end = 3.dp).clip(shape = RoundedCornerShape(bottomStart = 15.dp,bottomEnd = 15.dp, topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
+                    Icon(painter = painterResource(R.drawable.icons8_ruler_24), contentDescription = "distance", modifier = Modifier
+                        .size(25.dp)
+                        .align(CenterVertically),tint = Orange)
+                    Text(distance,modifier = Modifier
+                        .padding(start = 8.dp,top = 5.dp,end = 8.dp)
+                        .align(CenterVertically), fontWeight = FontWeight.Bold, color = Orange)
+                }
 
 
+            }
+
+        }
+    }
+    fun formatData(data: Double, type:String = ""):String{
+        var s = ""
+        if(type=="CO2"){
+            if(data == 0.0) s = "%.0fg".format(data)
+            else if (data < 1000) s = "%.1fg".format(data)
+            else s = "%.2fKg".format(data/1000)
+        }
+        else if(type=="distance"){
+            if (data < 1000) s= "%.0fm".format(data)
+            else s ="%.1fKm".format(data/1000)
+        }
+        return s.replace(",",".")
+    }
 
 }
+
+
+@Preview
+@Composable
+fun appTest(){
+    Column(Modifier.fillMaxSize().background(Color.White)){
+        Box(Modifier.fillMaxSize().background(LightOrange).weight(2f))
+        Box(Modifier.fillMaxSize().weight(3f)){newAPPLayout()}
+    }
+
+}
+@Composable
+fun newAPPLayout() {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+            .clip(shape = RoundedCornerShape(15.dp))
+
+    )// this will be the map
+    {
+        Box(Modifier.fillMaxSize().background(SofterGray)){}//DrawMap()
+        //Buttons
+        Column(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 20.dp, end = 15.dp)){
+            Button(onClick = {  },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "close", modifier = Modifier.size(25.dp),tint = Orange,
+
+                    )
+            }
+            Spacer(modifier = Modifier.size(10.dp))
+            Button(onClick = {  },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Orange)){
+                Icon(painter = painterResource(R.drawable.baseline_explore_24) , contentDescription = "close", modifier = Modifier.size(30.dp),tint = Color.White,
+
+                    )
+            }
+        }
+        //CO2 and Distance
+        Column(
+            Modifier
+                .align(Alignment.BottomStart)
+                .padding(20.dp)){
+            var background = Color.White.copy(alpha = 0.8f)
+            Row(Modifier.clip(shape = RoundedCornerShape(topStart = 15.dp,topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
+                Icon( painter = painterResource(R.drawable.eco), contentDescription = "distance", modifier = Modifier
+                    .size(25.dp)
+                    .align(CenterVertically),tint = Color(0xFF98D8AA))
+                Text("327.2g",modifier = Modifier
+                    .padding(start = 8.dp,top = 1.dp)
+                    .align(CenterVertically), fontWeight = FontWeight.Bold,color = Color(0xFF98D8AA))
+            }
+            Row(Modifier.padding(end = 3.dp).clip(shape = RoundedCornerShape(bottomStart = 15.dp,bottomEnd = 15.dp, topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
+                Icon(painter = painterResource(R.drawable.icons8_ruler_24), contentDescription = "distance", modifier = Modifier
+                    .size(25.dp)
+                    .align(Bottom),tint = Orange)
+                Text("27.32Km",modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(CenterVertically), fontWeight = FontWeight.Bold)
+            }
+
+
+        }
+
+    }
+}
+
 
 
 

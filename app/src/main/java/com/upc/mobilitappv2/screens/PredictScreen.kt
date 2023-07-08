@@ -162,9 +162,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     else if( vehiclesTrams.last() != macro) vehiclesTrams.add(macro)
                     else{}
                     //test
-                    /*consumes.add(Pair("Car",2000.0))
-                    consumes.add(Pair("WALK",500.0))
-                    consumes.add(Pair("Bus",3500.0))
+                    /*vehiclesTrams.add("Car")
+                    vehiclesTrams.add("WALK")
+                    vehiclesTrams.add("Bus")
                     mapa.totalDistance = 6000.0
                     mapa.totalCO2 = 437.0*/
 
@@ -201,7 +201,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 context.getString(R.string.channel_id)
             )
                 .setSmallIcon(R.mipmap.ic_launcher) // notification icon
-                .setContentTitle("Recorregut finalitzat") // title for notification
+                .setContentTitle("Journey finished") // title for notification
                 .setContentText("Consum total: ${formatData(mapa.totalCO2,"CO2")}") // message for notification
                 .setStyle(NotificationCompat.BigTextStyle()
                     .bigText(
@@ -363,7 +363,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 }
             }
             //mapa.debugLayout()
-            mapa.APPLayout()
+            mapa.newAPPLayout()
 
 
             }
@@ -394,8 +394,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 .align(Alignment.BottomCenter)
                 .clickable(interactionSource = interactionSource, indication = null) { },
             visible = popUpState,
-            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1300)),
-            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1000)),
+            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+(cardHeight*1.5).toInt()},animationSpec = tween(durationMillis = 1300)),
+            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+(cardHeight*1.5).toInt()},animationSpec = tween(durationMillis = 1000)),
         ){
             animationState  = this.transition.currentState == this.transition.targetState
             Box(
@@ -412,15 +412,18 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 ) {
                     Icon(imageVector = Icons.Rounded.Close, contentDescription = "close")
                 }
-                Image(
-                    painter = painterResource(R.drawable.eco),
-                    contentDescription = "Center",
-                    modifier = Modifier
-                        .size(150.dp)
-                        .align(Alignment.TopCenter),
-                    colorFilter = ColorFilter.tint(mapa.mutColor.value)
+                Box(Modifier.align(Alignment.TopCenter).size(150.dp)){
+                    Image(
+                        painter = painterResource(R.drawable.eco2),
+                        contentDescription = "Center",
+                        modifier = Modifier
+                            .size(75.dp)
+                            .align(Alignment.Center),
+                        colorFilter = ColorFilter.tint(mapa.mutColor.value)
 
-                )
+                    )
+                }
+
                 Column(
                     Modifier
                         .padding(top = 130.dp, start = 20.dp, end = 20.dp)
@@ -460,8 +463,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(bottom = 70.dp),//.background(LightOrange),
-                            contentPadding = PaddingValues(bottom = 20.dp),
+                                ,//.background(LightOrange),
+                            contentPadding = PaddingValues(bottom = 40.dp),
                         ) {
                             itemsIndexed(vehiclesTrams) { index, item ->
                                 Box(
@@ -483,7 +486,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                         }
                                     }
                                     else{
-                                        var dist = if(index < mapa.trams.size) mapa.trams[index] else 80085.0
+                                        var dist = if(index < mapa.trams.size) mapa.trams[index] else 0.0
                                         Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier
                                             .fillMaxWidth()
                                             .align(Alignment.Center)) {
@@ -511,7 +514,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         Modifier
                             .fillMaxWidth()
                             .background(if (!isSystemInDarkTheme()) Color.White else SoftGray)
-                            .padding(top = 10.dp, bottom = 60.dp, start = 20.dp, end = 20.dp)
+                            .padding(top = 10.dp, bottom = 5.dp, start = 20.dp, end = 20.dp)
                             .align(Alignment.BottomCenter)
                     ){
                         Text("Total distance", fontWeight = FontWeight.Bold)
