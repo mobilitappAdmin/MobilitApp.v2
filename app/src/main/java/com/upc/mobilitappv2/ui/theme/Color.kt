@@ -12,6 +12,12 @@ val Orange2 = Color(0xFFD13415)
 val Yellow = Color(0xFFD1C23F)
 
 
+// colors
+val ecoGreen = Color(0xFF98D8AA)
+val ecoYellow = Color(0xFFF7D06E)
+val ecoRed = Color(0xFFFF6D60)
+
+
 val SoftGray = Color(0xFF282828)
 val SofterGray = Color(0xFFADA8A8)
 val LightOrange = Color(0xFFDD9A88)

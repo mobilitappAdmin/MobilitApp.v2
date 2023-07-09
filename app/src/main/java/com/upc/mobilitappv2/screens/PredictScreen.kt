@@ -117,7 +117,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
-    var vehicleTest: String by remember { mutableStateOf("Still") }
+    var vehicleTest: String by remember { mutableStateOf("Car") }
 
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
@@ -201,7 +201,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         if(mapa.totalCO2 * 1000 / (mapa.totalDistance) > 45)
                             "Consum total: ${formatData(mapa.totalCO2,"CO2")}\nYour trip generated ${formatData(mapa.totalCO2, "CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2 - (mapa.totalDistance * mapa.co2Table["bus"]!! / 1000)), "CO2")} of CO2 by using public transport."
                         else
-                            "Consum total: ${formatData(mapa.totalCO2, "CO2")}\nCongratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+                            "Consum total: ${formatData(mapa.totalCO2, "CO2")}\nCongratulations! you have potentially saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
 
                     ))
         with(NotificationManagerCompat.from(context)) {
@@ -433,7 +433,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                 "Your trip generated ${formatData(mapa.totalCO2,"CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2-(mapa.totalDistance * mapa.co2Table["bus"]!!/1000)),"CO2")} of CO2 by using public transport."
                             }
                             else{
-                                "Congratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+                                "Congratulations! you have potentially saved  ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
 
                             },
                         Modifier.padding(top = 10.dp,bottom=5.dp),

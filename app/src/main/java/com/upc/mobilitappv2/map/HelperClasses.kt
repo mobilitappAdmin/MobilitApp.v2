@@ -2,6 +2,7 @@ package com.upc.mobilitappv2.map
 
 import android.content.Context
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.infowindow.InfoWindow
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
 
@@ -23,3 +24,4 @@ class CustomInfoWindow(mapView: MapView?) :
     }
 
 }
+
