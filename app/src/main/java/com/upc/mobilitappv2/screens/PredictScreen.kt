@@ -80,9 +80,6 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
     }
 }
 
-private var vehiclesTrams: MutableList<String> = mutableListOf()
-
-
 
 /**
  * Composable function for rendering the body content of the PredictScreen.
@@ -153,14 +150,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (macro != null) {
                 macroState = macro
                 //debugo
-                //macro = vehicleTest
+                macro = vehicleTest
                 mapa.nameToID[macro!!]?.let {
-                    var dist = 0.0
                     mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
-                    //kotlin has no Lazy evaluation ????
-                    if(vehiclesTrams.isEmpty()) vehiclesTrams.add(macro)
-                    else if( vehiclesTrams.last() != macro) vehiclesTrams.add(macro)
-                    else{}
+
                     //test
                     /*vehiclesTrams.add("Car")
                     vehiclesTrams.add("WALK")
@@ -245,8 +238,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.initialize()
                         multimodal.startCapture()
                         mapa.startTrip()
-                        vehiclesTrams.clear()
-
                         stop = false
                     },
                     modifier = Modifier
@@ -296,7 +287,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Activities: $fifo")
 
             //debugo button
-            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
+            Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
                 
 
             // debug text
@@ -453,7 +444,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
 
-
+                    var vehiclesTrams = mapa.trams
                     if(vehiclesTrams.isEmpty()) Text("No trajects detected yet :(", textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxSize()
                         .align(
@@ -466,7 +457,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                 ,//.background(LightOrange),
                             contentPadding = PaddingValues(bottom = 40.dp),
                         ) {
-                            itemsIndexed(vehiclesTrams) { index, item ->
+                            itemsIndexed(vehiclesTrams) { index, objct ->
+                                var item = objct.first
+                                var dist = objct.second
                                 Box(
                                     Modifier
                                         .fillMaxWidth()
@@ -486,7 +479,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                         }
                                     }
                                     else{
-                                        var dist = if(index < mapa.trams.size) mapa.trams[index] else 0.0
+
                                         Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier
                                             .fillMaxWidth()
                                             .align(Alignment.Center)) {
@@ -509,7 +502,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
                 }
-                if(vehiclesTrams.isNotEmpty()){
+                if(mapa.trams.isNotEmpty()){
                     Row(
                         Modifier
                             .fillMaxWidth()

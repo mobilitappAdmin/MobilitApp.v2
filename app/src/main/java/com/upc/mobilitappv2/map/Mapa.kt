@@ -74,6 +74,9 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     var totalCO2 = 0.0
     var totalDistance = 0.0
+    var CO2String = mutableStateOf(formatData(totalCO2,"CO2"))
+    var DistanceString = mutableStateOf(formatData(totalDistance,"distance"))
+
     private val uiString = mutableStateOf("Total CO2 consumption %.0fg".format(0.0))
     private val uiString2 = mutableStateOf("Total distance %.0fm".format(0.0))
     val mutColor = mutableStateOf(Color(0xFF98D8AA))
@@ -121,7 +124,15 @@ class Mapa(val context:Context): AppCompatActivity() {
             "Train" to R.drawable.marker_tren, "Metro" to R.drawable.marker_metro, "Tram" to R.drawable.marker_tram, "Bus" to R.drawable.marker_bus,
             "Moto" to R.drawable.marker_moto, "E-Scooter" to R.drawable.marker_escooter, "E-Bike" to R.drawable.marker_ebike, "Car" to R.drawable.marker_car,
         )
-    var trams: MutableList<Double> = mutableListOf()
+
+    val transformTable: Map<String, String> = // g/KM
+        mapOf(
+            "WALK" to "walk",  "Run" to "run", "STILL" to "still","Bicycle" to  "bike",
+            "Train" to "tren", "Metro" to "metro",  "Tram" to "tram" , "Bus" to "bus",
+            "Moto" to "moto","E-Scooter" to  "escooter", "E-Bike" to "ebike",  "Car" to "car",
+        )
+    fun <K, V> Map<K, V>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
+    var trams: MutableList<Pair<String,Double>> = mutableListOf()
 
     private val markersMap: MutableMap<GeoPoint, Marker> = mutableMapOf()
 
@@ -166,13 +177,6 @@ class Mapa(val context:Context): AppCompatActivity() {
         if (!nameToID.contains(vehicle)) return Color.White
         return Color(markerColors[nameToID[vehicle]]!!)
     }
-
-    val transformTable: Map<String, String> = // g/KM
-        mapOf(
-            "WALK" to "walk",  "Run" to "run", "STILL" to "still","Bicycle" to  "bike",
-            "Train" to "tren", "Metro" to "metro",  "Tram" to "tram" , "Bus" to "bus",
-            "Moto" to "moto","E-Scooter" to  "escooter", "E-Bike" to "ebike",  "Car" to "car",
-        )
     fun getCO2(dist: Double,vehicle: String):Double{
         val ret = 0.0
         if(!co2Table.contains(vehicle)){
@@ -327,7 +331,7 @@ class Mapa(val context:Context): AppCompatActivity() {
         if (markersMap.contains(position)) removeMarker(position)
         // avoid multiple still markers on the same spot
 
-        if( drawable != currentIcon) trams.add(0.0)
+        if( drawable != currentIcon) trams.add(Pair(nameToID.inverseMap()[drawable]!!,0.0))
         //Log.d("trams","$trams")
 
         previousIcon = if (geoQ.isEmpty()) drawable else currentIcon
@@ -527,8 +531,11 @@ class Mapa(val context:Context): AppCompatActivity() {
                 totalDistance += line.distance
                 partialDistance += line.distance
 
-                if(currIcon == R.drawable.marker_still)trams[trams.size-2] += line.distance
-                else trams[trams.size-1] += line.distance
+                CO2String.value = formatData(totalCO2,"CO2")
+                DistanceString.value = formatData(totalDistance,"distance")
+
+                if(currIcon != prevIcon)trams[trams.size-2]  = trams[trams.size-2].copy(second = trams[trams.size-2].second + line.distance)
+                else trams[trams.size-1]  = trams[trams.size-1].copy(second = trams[trams.size-1].second + line.distance)
 
                 for (g in markersOnThisRoad) updateMarker(g, dist = partialDistance, vehicle, co2)
                 updateMarker(startPoint, dist = partialDistance, vehicle, co2)
@@ -587,6 +594,8 @@ class Mapa(val context:Context): AppCompatActivity() {
                 if (totalDistance < 1000) uiString2.value =
                     "Total distance %.0fm".format(totalDistance)
                 else uiString2.value = "Total distance %.1fKm".format(totalDistance/1000)
+
+
                 if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =
@@ -958,13 +967,12 @@ class Mapa(val context:Context): AppCompatActivity() {
                     .align(Alignment.BottomStart)
                     .padding(bottom = 20.dp,start= 10.dp)){
                 var background = Color.White.copy(alpha = 0.7f)
-                var co2 = formatData(totalCO2,"CO2")
-                var  distance = formatData(totalDistance,"distance")
+
                 Row(Modifier.clip(shape = RoundedCornerShape(topStart = 15.dp,topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
                     Icon( painter = painterResource(R.drawable.eco), contentDescription = "distance", modifier = Modifier
                         .size(25.dp)
                         .align(CenterVertically),tint = mutColor.value)
-                    Text(co2,modifier = Modifier
+                    Text(CO2String.value,modifier = Modifier
                         .padding(start = 8.dp,top = 5.dp)
                         .align(CenterVertically), fontWeight = FontWeight.Bold,color = mutColor.value)
                 }
@@ -972,7 +980,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                     Icon(painter = painterResource(R.drawable.icons8_ruler_24), contentDescription = "distance", modifier = Modifier
                         .size(25.dp)
                         .align(CenterVertically),tint = Orange)
-                    Text(distance,modifier = Modifier
+                    Text(DistanceString.value,modifier = Modifier
                         .padding(start = 8.dp,top = 5.dp,end = 8.dp)
                         .align(CenterVertically), fontWeight = FontWeight.Bold, color = Orange)
                 }
@@ -1010,59 +1018,7 @@ fun appTest(){
 }
 @Composable
 fun newAPPLayout() {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-            .clip(shape = RoundedCornerShape(15.dp))
 
-    )// this will be the map
-    {
-        Box(Modifier.fillMaxSize().background(SofterGray)){}//DrawMap()
-        //Buttons
-        Column(
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 20.dp, end = 15.dp)){
-            Button(onClick = {  },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
-                Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "close", modifier = Modifier.size(25.dp),tint = Orange,
-
-                    )
-            }
-            Spacer(modifier = Modifier.size(10.dp))
-            Button(onClick = {  },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Orange)){
-                Icon(painter = painterResource(R.drawable.baseline_explore_24) , contentDescription = "close", modifier = Modifier.size(30.dp),tint = Color.White,
-
-                    )
-            }
-        }
-        //CO2 and Distance
-        Column(
-            Modifier
-                .align(Alignment.BottomStart)
-                .padding(20.dp)){
-            var background = Color.White.copy(alpha = 0.8f)
-            Row(Modifier.clip(shape = RoundedCornerShape(topStart = 15.dp,topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
-                Icon( painter = painterResource(R.drawable.eco), contentDescription = "distance", modifier = Modifier
-                    .size(25.dp)
-                    .align(CenterVertically),tint = Color(0xFF98D8AA))
-                Text("327.2g",modifier = Modifier
-                    .padding(start = 8.dp,top = 1.dp)
-                    .align(CenterVertically), fontWeight = FontWeight.Bold,color = Color(0xFF98D8AA))
-            }
-            Row(Modifier.padding(end = 3.dp).clip(shape = RoundedCornerShape(bottomStart = 15.dp,bottomEnd = 15.dp, topEnd = 15.dp)).background(background).padding(start = 10.dp,end = 10.dp)){
-                Icon(painter = painterResource(R.drawable.icons8_ruler_24), contentDescription = "distance", modifier = Modifier
-                    .size(25.dp)
-                    .align(Bottom),tint = Orange)
-                Text("27.32Km",modifier = Modifier
-                    .padding(start = 8.dp)
-                    .align(CenterVertically), fontWeight = FontWeight.Bold)
-            }
-
-
-        }
-
-    }
 }
 
 
