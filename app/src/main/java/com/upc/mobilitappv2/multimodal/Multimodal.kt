@@ -159,7 +159,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     var activity = sensorLoader.analyseLastWindow().toString()
                     if (activity!="-") {activity = activity+"last distance: "+last_distance.toString()}
 
-                    if (activity.split(',')[0] == "OTHERS") {
+                    if (activity.split(',')[0] == "MOVING") {
                         if (isStill()) {
                             activity = "STILL,"+activity.split(',')[1]
                         }
@@ -173,6 +173,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     }
                     var fifoStr = ""
                     for (a in fifoAct){
+
                         if (fifoStr =="") {fifoStr = "$fifoStr$a "}
                         else {fifoStr = "$fifoStr,$a " }
                     }
@@ -194,7 +195,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             macroState = "WALK"
                         }
                         else if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
-                            if (fifoAct[2] == "OTHERS") {
+                            if (fifoAct[2] == "MOVING") {
                                 if (othersRow == 0) {
                                     val prediction =
                                         mlService.overallPrediction(sensorLoader.getLastWindow(3))

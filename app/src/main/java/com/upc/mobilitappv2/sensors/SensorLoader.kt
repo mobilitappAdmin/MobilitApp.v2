@@ -297,7 +297,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
      * Check FFT of last windows.
      *
      * @author Adrian Catalin
-     * @return WALK, STILL or OTHERS corresponding to FFT.
+     * @return WALK, STILL or MOVING corresponding to FFT.
      */
     fun analyseLastWindow(): String? {
         if ( currentAccWindow.size > 256) {
@@ -414,7 +414,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 time (s): ${winT}
                 """)
             } else {
-                return ("""OTHERS,
+                return ("""MOVING,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(3, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(3, RoundingMode.HALF_EVEN)}
                 freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}
                 freqZ: ${BigDecimal(fAxis[maxZ]).setScale(3, RoundingMode.HALF_EVEN)} magZ: ${BigDecimal(psdZ[maxZ]).setScale(3, RoundingMode.HALF_EVEN)}

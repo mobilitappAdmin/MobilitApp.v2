@@ -303,7 +303,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (debug) {
                 Spacer(modifier = Modifier.height(height = 40.dp))
 
-                Text(text = "Stop covering: $stop_cov %")
+                Text(text = "STOP coverage: $stop_cov %")
             }
 
             // When stopping capture
