@@ -1,22 +1,11 @@
 package com.upc.mobilitappv2.screens
 
 import android.Manifest
-import android.R.id.message
 import android.annotation.SuppressLint
-import android.app.PendingIntent
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,7 +38,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
@@ -269,7 +257,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.stopCapture()
                         stop = true
                         popUpState = true
-                        sendCO2notification()
+                        //sendCO2notification()
                     },
                     modifier = Modifier
                         .height(40.dp)
@@ -293,12 +281,14 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
-            Text(text = "Activities: $fifo")
+            Text(text = "Activities: ,$fifo")
 
             //debugo button
             //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
                 
-
+            if (stop_cov!!.toDouble() >= 75.0) {
+                sendCO2notification()
+            }
             // debug text
             if (debug) {
                 Spacer(modifier = Modifier.height(height = 40.dp))
