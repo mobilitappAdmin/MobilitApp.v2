@@ -105,6 +105,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         mutableStateOf(multimodal.get_macrostate())
     }
     var stop: Boolean? by remember { mutableStateOf(null) }
+    var location_accuracy: String? by remember { mutableStateOf("0") }
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
@@ -118,6 +119,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             val loc: String? = intent.getStringExtra("location")
             val act: String? = intent.getStringExtra("activity")
             val fifo_str = intent.getStringExtra("fifo")
+            val loc_acc = intent.getStringExtra("accuracy")
             var macro = intent.getStringExtra("macroState")
             stop_cov = intent.getStringExtra("stop")
             // on below line we are updating the data in our text view.
@@ -132,6 +134,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 } else {
                     act
                 }
+            }
+
+            if (loc_acc != null) {
+                location_accuracy = loc_acc
             }
 
             if (fifo_str != null) {
@@ -294,6 +300,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 Spacer(modifier = Modifier.height(height = 40.dp))
 
                 Text(text = "STOP coverage: $stop_cov %")
+                Text(text = "Location error: $location_accuracy")
             }
 
             // When stopping capture

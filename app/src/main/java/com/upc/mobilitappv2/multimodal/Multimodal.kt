@@ -151,6 +151,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 val location = locationResult.locations[locationResult.locations.size - 1]
+                val accuracy = location.accuracy
+
                 if (location != null) {
                     if (startLoc == null) {
                         startLoc = location
@@ -160,7 +162,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     if (activity!="-") {activity = activity+"last distance: "+last_distance.toString()}
 
                     if (activity.split(',')[0] == "MOVING") {
-                        if (isStill()) {
+                        if (isStill(accuracy)) {
                             activity = "STILL,"+activity.split(',')[1]
                         }
                     }
@@ -216,6 +218,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
                     intent.putExtra("activity", activity)
+                    intent.putExtra("accuracy", accuracy.toString())
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
                     intent.putExtra("stop", stop.first.toString())
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
@@ -294,8 +297,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
      *
      * @return True if the device is still, false otherwise.
      */
-    fun isStill(): Boolean {
-        if (locations.size >= 2){
+    fun isStill(accuracy: Float): Boolean {
+        if (locations.size >= 2 && accuracy < 100){
             val loc0 = locations[locations.size-2]
             val loc1 = locations[locations.size-1]
             val dist = computeDistance(loc0.latitude, loc0.longitude, loc1.latitude, loc1.longitude)
