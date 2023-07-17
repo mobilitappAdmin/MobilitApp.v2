@@ -42,7 +42,7 @@ import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
 import com.upc.mobilitappv2.screens.components.TopBar
-import com.upc.mobilitappv2.ui.theme.SoftGray
+import com.upc.mobilitappv2.ui.theme.*
 import org.osmdroid.util.GeoPoint
 import java.util.*
 
@@ -68,7 +68,6 @@ fun PredictScreen(context: Context, multimodal: Multimodal, preferences: SharedP
     }
 }
 
-private var vehiclesTrams: MutableList<String> = mutableListOf()
 
 
 
@@ -109,7 +108,34 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
-    var vehicleTest: String by remember { mutableStateOf("Still") }
+    var vehicleTest: String by remember { mutableStateOf("Car") }
+
+    fun sendCO2notification(){
+        val mBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(
+                context,
+                context.getString(R.string.channel_id)
+            )
+                .setSmallIcon(R.mipmap.ic_launcher) // notification icon
+                .setContentTitle("Journey finished") // title for notification
+                .setContentText("Consum total: ${mapa.formatData(mapa.totalCO2,"CO2")}") // message for notification
+                .setStyle(NotificationCompat.BigTextStyle()
+                    .bigText(
+                        if(mapa.totalCO2 * 1000 / (mapa.totalDistance) > 45)
+                            "Consum total: ${mapa.formatData(mapa.totalCO2,"CO2")}\nYour trip generated ${mapa.formatData(mapa.totalCO2, "CO2")} of CO2. You could have saved ${mapa.formatData((mapa.totalCO2 - (mapa.totalDistance * mapa.co2Table["bus"]!! / 1000)), "CO2")} of CO2 by using public transport."
+                        else
+                            "Consum total: ${mapa.formatData(mapa.totalCO2, "CO2")}\nCongratulations! you have potentially saved ${mapa.formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+
+                    ))
+        with(NotificationManagerCompat.from(context)) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) { return }
+            notify(0, mBuilder.build())
+        }
+    }
 
     val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
 
@@ -143,24 +169,25 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (fifo_str != null) {
                 fifo = fifo_str
             }
+            if(stop_cov!!.toDouble() >= 75.0){
+                sendCO2notification()
+            }
 
             if (macro != null) {
                 macroState = macro
                 //debugo
                 //macro = vehicleTest
                 mapa.nameToID[macro!!]?.let {
-                    var dist = 0.0
                     mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
-                    //kotlin has no Lazy evaluation ????
-                    if(vehiclesTrams.isEmpty()) vehiclesTrams.add(macro)
-                    else if( vehiclesTrams.last() != macro) vehiclesTrams.add(macro)
-                    else{}
+
                     //test
-                    /*consumes.add(Pair("Car",2000.0))
-                    consumes.add(Pair("WALK",500.0))
-                    consumes.add(Pair("Bus",3500.0))
-                    mapa.totalDistance = 6000.0
-                    mapa.totalCO2 = 437.0*/
+                    /*mapa.trams.add(Pair("Car",1000.0))
+                    mapa.trams.add(Pair("WALK",500.0))
+                    mapa.trams.add(Pair("Bus",3000.0))
+                    mapa.trams.add(Pair("STILL",0.0))
+                    mapa.mutColor.value = ecoRed
+                    mapa.totalDistance = 4500.0
+                    mapa.totalCO2 = 237.0*/
 
 
                 }
@@ -176,44 +203,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var interactionSource = remember { MutableInteractionSource() }
 
 
-    fun formatData(data: Double, type:String = ""):String{
-        var s = ""
-        if(type=="CO2"){
-            if (data < 1000) s = "%.1fg".format(data)
-            else s = "%.2fKg".format(data/1000)
-        }
-        else if(type=="distance"){
-            if (data < 1000) s= "%.0fm".format(data)
-            else s ="%.1fKm".format(data/1000)
-        }
-        return s.replace(",",".")
-    }
-    fun sendCO2notification(){
-        val mBuilder: NotificationCompat.Builder =
-            NotificationCompat.Builder(
-                context,
-                context.getString(R.string.channel_id)
-            )
-                .setSmallIcon(R.mipmap.ic_launcher) // notification icon
-                .setContentTitle("Recorregut finalitzat") // title for notification
-                .setContentText("Consum total: ${formatData(mapa.totalCO2,"CO2")}") // message for notification
-                .setStyle(NotificationCompat.BigTextStyle()
-                    .bigText(
-                        if(mapa.totalCO2 * 1000 / (mapa.totalDistance) > 45)
-                            "Consum total: ${formatData(mapa.totalCO2,"CO2")}\nYour trip generated ${formatData(mapa.totalCO2, "CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2 - (mapa.totalDistance * mapa.co2Table["bus"]!! / 1000)), "CO2")} of CO2 by using public transport."
-                        else
-                            "Consum total: ${formatData(mapa.totalCO2, "CO2")}\nCongratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
 
-                    ))
-        with(NotificationManagerCompat.from(context)) {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) { return }
-            notify(0, mBuilder.build())
-        }
-    }
 
 
     Box() {
@@ -239,8 +229,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.initialize()
                         multimodal.startCapture()
                         mapa.startTrip()
-                        vehiclesTrams.clear()
-
                         stop = false
                     },
                     modifier = Modifier
@@ -360,7 +348,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 }
             }
             //mapa.debugLayout()
-            mapa.APPLayout()
+            mapa.newAPPLayout()
 
 
             }
@@ -391,8 +379,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 .align(Alignment.BottomCenter)
                 .clickable(interactionSource = interactionSource, indication = null) { },
             visible = popUpState,
-            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1300)),
-            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+cardHeight+70},animationSpec = tween(durationMillis = 1000)),
+            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()+(cardHeight*1.5).toInt()},animationSpec = tween(durationMillis = 1300)),
+            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()+(cardHeight*1.5).toInt()},animationSpec = tween(durationMillis = 1000)),
         ){
             animationState  = this.transition.currentState == this.transition.targetState
             Box(
@@ -409,22 +397,25 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 ) {
                     Icon(imageVector = Icons.Rounded.Close, contentDescription = "close")
                 }
-                Image(
-                    painter = painterResource(R.drawable.eco),
-                    contentDescription = "Center",
-                    modifier = Modifier
-                        .size(150.dp)
-                        .align(Alignment.TopCenter),
-                    colorFilter = ColorFilter.tint(mapa.mutColor.value)
+                Box(Modifier.align(Alignment.TopCenter).size(150.dp)){
+                    Image(
+                        painter = painterResource(R.drawable.eco2),
+                        contentDescription = "Center",
+                        modifier = Modifier
+                            .size(75.dp)
+                            .align(Alignment.Center),
+                        colorFilter = ColorFilter.tint(mapa.mutColor.value)
 
-                )
+                    )
+                }
+
                 Column(
                     Modifier
                         .padding(top = 130.dp, start = 20.dp, end = 20.dp)
                         .fillMaxWidth()){
                     Text(
 
-                        text="CO2 consumtion: " + formatData(mapa.totalCO2,"CO2"),
+                        text="CO2 consumtion: " + mapa.formatData(mapa.totalCO2,"CO2"),
                         Modifier.fillMaxWidth(),
                         color=mapa.mutColor.value,
                         fontWeight = FontWeight.Bold,
@@ -433,10 +424,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     Text(
                         text =
                             if(mapa.mutColor.value == Color(0xFFFF6D60)){
-                                "Your trip generated ${formatData(mapa.totalCO2,"CO2")} of CO2. You could have saved ${formatData((mapa.totalCO2-(mapa.totalDistance * mapa.co2Table["bus"]!!/1000)),"CO2")} of CO2 by using public transport."
+                                "Your trip generated ${mapa.formatData(mapa.totalCO2,"CO2")} of CO2. You could have saved ${mapa.formatData((mapa.totalCO2-(mapa.totalDistance * mapa.co2Table["bus"]!!/1000)),"CO2")} of CO2 by using public transport."
                             }
                             else{
-                                "Congratulations! you have saved ${formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
+                                "Congratulations! you have potentially saved  ${mapa.formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")} of CO2 by avoiding the use of polluting transport."
 
                             },
                         Modifier.padding(top = 10.dp,bottom=5.dp),
@@ -447,7 +438,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
 
-
+                    var vehiclesTrams = mapa.trams
                     if(vehiclesTrams.isEmpty()) Text("No trajects detected yet :(", textAlign = TextAlign.Center, modifier = Modifier
                         .fillMaxSize()
                         .align(
@@ -457,10 +448,12 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(bottom = 70.dp),//.background(LightOrange),
-                            contentPadding = PaddingValues(bottom = 20.dp),
+                                ,//.background(LightOrange),
+                            contentPadding = PaddingValues(bottom = 40.dp),
                         ) {
-                            itemsIndexed(vehiclesTrams) { index, item ->
+                            itemsIndexed(vehiclesTrams) { index, objct ->
+                                var item = objct.first
+                                var dist = objct.second
                                 Box(
                                     Modifier
                                         .fillMaxWidth()
@@ -480,13 +473,13 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                         }
                                     }
                                     else{
-                                        var dist = if(index < mapa.trams.size) mapa.trams[index] else 80085.0
+
                                         Row(horizontalArrangement = Arrangement.SpaceEvenly,modifier = Modifier
                                             .fillMaxWidth()
                                             .align(Alignment.Center)) {
                                             Text("${item}", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
-                                            Text("CO2 ${formatData(mapa.getCO2(dist,item), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
-                                            Text("Distance ${formatData(dist, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
+                                            Text("CO2 ${mapa.formatData(mapa.getCO2(dist,item), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
+                                            Text("Distance ${mapa.formatData(dist, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
 
                                         }
                                     }
@@ -503,16 +496,16 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
                 }
-                if(vehiclesTrams.isNotEmpty()){
+                if(mapa.trams.isNotEmpty()){
                     Row(
                         Modifier
                             .fillMaxWidth()
                             .background(if (!isSystemInDarkTheme()) Color.White else SoftGray)
-                            .padding(top = 10.dp, bottom = 60.dp, start = 20.dp, end = 20.dp)
+                            .padding(top = 10.dp, bottom = 5.dp, start = 20.dp, end = 20.dp)
                             .align(Alignment.BottomCenter)
                     ){
                         Text("Total distance", fontWeight = FontWeight.Bold)
-                        Text(formatData(mapa.totalDistance,"distance"), fontWeight = FontWeight.Bold, textAlign = TextAlign.Right,modifier = Modifier.fillMaxWidth())
+                        Text(mapa.formatData(mapa.totalDistance,"distance"), fontWeight = FontWeight.Bold, textAlign = TextAlign.Right,modifier = Modifier.fillMaxWidth())
                     }
                 }
 
