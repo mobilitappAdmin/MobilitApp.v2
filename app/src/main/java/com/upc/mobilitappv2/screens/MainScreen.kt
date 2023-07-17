@@ -3,9 +3,12 @@ package com.upc.mobilitappv2.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -38,8 +41,11 @@ fun MainScreen(context: Context, sensorLoader: SensorLoader, multiModal: Multimo
         AppScreens.PreferencesScreen
     )
 
-    Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) {
-        AppNavigation(navController, context, sensorLoader, multiModal, sharedPreferences,mapa)
+    Scaffold(bottomBar = { BottomNavigationBar(navController = navController, items = navigationItems) }) { innerPadding ->
+        // Apply the padding globally to the whole BottomNavScreensController
+        Box(modifier = Modifier.padding(innerPadding)) {
+            AppNavigation(navController, context, sensorLoader, multiModal, sharedPreferences, mapa)
+        }
     }
 }
 
