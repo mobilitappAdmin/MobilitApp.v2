@@ -182,7 +182,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             if (macro != null) {
                 macroState = macro
                 //debugo
-                macro = vehicleTest
+                //macro = vehicleTest
                 mapa.nameToID[macro!!]?.let {
                     mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
 
@@ -284,7 +284,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Activities: $fifo")
 
             //debugo button
-            Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
+            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
                 
 
             // debug text

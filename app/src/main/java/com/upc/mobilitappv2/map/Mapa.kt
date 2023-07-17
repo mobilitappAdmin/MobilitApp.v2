@@ -872,11 +872,11 @@ class Mapa(val context:Context): AppCompatActivity() {
                 Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 20.dp, end = 15.dp)){
-                Button(onClick = {  clear() },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                /*Button(onClick = {  clear() },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
                     Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "Clean map", modifier = Modifier.size(25.dp),tint = Orange,
 
                         )
-                }
+                }*/
                 Spacer(modifier = Modifier.size(10.dp))
                 Button(onClick = { mMap.controller.animateTo(myLocationOverlay.myLocation,18.0,500.toLong());myLocationOverlay.enableFollowLocation() },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Orange)){
                     Icon(painter = painterResource(R.drawable.baseline_explore_24) , contentDescription = "Center map", modifier = Modifier.size(30.dp),tint = Color.White,
