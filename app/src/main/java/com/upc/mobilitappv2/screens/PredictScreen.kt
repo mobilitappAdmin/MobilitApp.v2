@@ -171,6 +171,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
             if(stop_cov!!.toDouble() >= 75.0){
                 sendCO2notification()
+                mapa.endTrip()
             }
 
             if (macro != null) {
@@ -251,6 +252,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.stopCapture()
                         stop = true
                         popUpState = true
+                        mapa.endTrip()
                         //sendCO2notification()
                     },
                     modifier = Modifier
@@ -348,7 +350,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 }
             }
             //mapa.debugLayout()
-            mapa.newAPPLayout()
+            mapa.appLayout()
 
 
             }
