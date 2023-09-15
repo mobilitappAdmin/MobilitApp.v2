@@ -41,6 +41,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.upc.mobilitappv2.R
 import com.upc.mobilitappv2.map.Mapa
 import com.upc.mobilitappv2.multimodal.Multimodal
+import com.upc.mobilitappv2.screens.components.MapDialog
 import com.upc.mobilitappv2.screens.components.TopBar
 import com.upc.mobilitappv2.ui.theme.*
 import org.osmdroid.util.GeoPoint
@@ -93,6 +94,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var lastWindow: String? by remember { mutableStateOf(multimodal.get_lastwindow()) }
 
     var stop_cov: String? by remember { mutableStateOf("0.0") }
+    var ml_calls: String? by remember { mutableStateOf("0") }
 
     if (!debug && lastWindow != "-") {
         lastWindow = lastWindow!!.split(',')[0]
@@ -148,6 +150,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             val loc_acc = intent.getStringExtra("accuracy")
             var macro = intent.getStringExtra("macroState")
             stop_cov = intent.getStringExtra("stop")
+            ml_calls = intent.getStringExtra("ml")
             // on below line we are updating the data in our text view.
             if (loc != null) {
                 lastLoc[0] = loc.split(",").toTypedArray()[0]
@@ -275,7 +278,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
-            Text(text = "Activities: ,$fifo")
+            Text(text = "Activities: ,$fifo", fontSize = 12.sp)
 
             //debugo button
             //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
@@ -285,17 +288,31 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
             // debug text
             if (debug) {
-                Spacer(modifier = Modifier.height(height = 40.dp))
-
+                Spacer(modifier = Modifier.height(height = 10.dp))
+                val showDialog = remember { mutableStateOf(false) }
+                Text(text = "ML calls: $ml_calls")
                 Text(text = "STOP coverage: $stop_cov %")
-                Text(text = "Location error: $location_accuracy")
+                Text(text = "GPS location error: $location_accuracy")
+                Button(
+                    onClick = { showDialog.value = true },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(text = "Show last predition", fontSize = 11.sp)
+                }
+
+                if (showDialog.value) {
+                    MapDialog(
+                        map = multimodal.getPredictionSummary(),
+                        onDismiss = { showDialog.value = false }
+                    )
+                }
+
             }
 
             // When stopping capture
             if (stop != null && !multimodal.getState()) {
                 var uploading: Boolean by remember { mutableStateOf(false) }
                 var deleting: Boolean by remember { mutableStateOf(false) }
-
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -435,7 +452,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         textAlign = TextAlign.Justify
                     )
                     Spacer(modifier = Modifier.height(height = 10.dp))
-
 
 
                     var vehiclesTrams = mapa.trams

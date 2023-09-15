@@ -42,6 +42,18 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private lateinit var mlService: MLService
     private lateinit var stopService: StopService
     private var fifoAct: LinkedList<String> = LinkedList<String>()
+    private var last_accuracies: LinkedList<Int> = LinkedList<Int>()
+    private var predictionSummary: MutableMap<String, Int> = mapOf(
+        "Bus" to 0,
+        "Car" to 0,
+        "E-Scooter" to 0,
+        "Metro" to 0,
+        "Run" to 0,
+        "STILL" to 0,
+        "Train" to 0,
+        "Tram" to 0,
+        "WALK" to 0
+    ) as MutableMap<String, Int>
 
     private var locations = ArrayList<Location>()
     private var last_distance: Double = 0.0
@@ -51,6 +63,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var prevMacroState = "STILL"
     private var captureHash: Int = 0
     private var othersRow: Int = 0
+    private var ml_calls: Int = 0
 
     private lateinit var startDate: Date
     private var startLoc: Location? = null
@@ -133,15 +146,28 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
         mlService =  MLService(context)
         mlService.initialize() //load Model
-        stopService = StopService(alpha = 0.05, max_radium = 30, num_points = 90, covering_threshold = 75.0F) // CHANGE
+        stopService = StopService(alpha = 0.05, max_radium = 30, num_points = 90, covering_threshold = 75.0F)
         stopService.initialize()
-        fifoAct= LinkedList<String>()
+        fifoAct = LinkedList<String>()
+        last_accuracies = LinkedList<Int>()
         locations = ArrayList<Location>()
         last_distance = 0.0
         othersRow = 0
+        ml_calls = 0
         macroState = "STILL"
         prevMacroState = "STILL"
         lastwindow = "-"
+        predictionSummary = mapOf(
+            "Bus" to 0,
+            "Car" to 0,
+            "E-Scooter" to 0,
+            "Metro" to 0,
+            "Run" to 0,
+            "STILL" to 0,
+            "Train" to 0,
+            "Tram" to 0,
+            "WALK" to 0
+        ) as MutableMap<String, Int>
 
         val intent = Intent("multimodal")
 
@@ -152,6 +178,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 super.onLocationResult(locationResult)
                 val location = locationResult.locations[locationResult.locations.size - 1]
                 val accuracy = location.accuracy
+
 
                 if (location != null) {
                     if (startLoc == null) {
@@ -170,28 +197,29 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     lastwindow = activity
 
                     fifoAct.add(activity.split(',')[0])
-                    if (fifoAct.size > 3) {
+                    if (fifoAct.size > 5) {
                         fifoAct.removeFirst()
                     }
                     var fifoStr = ""
                     for (a in fifoAct){
-
                         if (fifoStr =="") {fifoStr = "$fifoStr$a"}
                         else {fifoStr = "$fifoStr, $a" }
                     }
 
                     if (othersRow != 0) {
-                        if (othersRow == 4 || othersRow == 10) {
-                            val prediction =
-                                mlService.overallPrediction(sensorLoader.getLastWindow(6))
+                        if ((othersRow-1)%3 == 0 && (othersRow-1) != 0)  { // Call ML periodically
+                            val (prediction, summary) =
+                                mlService.overallPrediction(sensorLoader.getLastWindow(3))
                             macroState = prediction
+                            predictionSummary = summary
+                            ++ml_calls
                         }
                         ++othersRow
-
                     }
 
                    // Windows logic
-                    if (fifoAct.size == 3) {
+                    /*
+                    if (fifoAct.size >= 3) {
                         if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
                             othersRow = 0
                             macroState = "WALK"
@@ -203,6 +231,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                                         mlService.overallPrediction(sensorLoader.getLastWindow(3))
                                     macroState = prediction
                                     ++othersRow
+                                    ++ml_calls
                                 }
                             }
                             else if (fifoAct[2] == "STILL") {
@@ -210,6 +239,25 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                                 macroState = "STILL"
                             }
                         }
+                    }
+                     */
+
+                    val majority = majorityState()
+                    if (majority == "MOVING") {
+                        if (othersRow == 0) {
+                            val (prediction, summary) =
+                                mlService.overallPrediction(sensorLoader.getLastWindow(3))
+                            macroState = prediction
+                            predictionSummary = summary
+
+                            ++othersRow
+                            ++ml_calls
+                        }
+                    }
+                    else {
+                        macroState = majority
+                        othersRow = 0
+                        ml_calls = 0
                     }
 
                     // STOP algorithm
@@ -221,6 +269,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     intent.putExtra("accuracy", accuracy.toString())
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
                     intent.putExtra("stop", stop.first.toString())
+                    intent.putExtra("ml", ml_calls.toString())
+
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
                     if (macroState != prevMacroState) {
@@ -255,10 +305,33 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         }
 
         locationRequest = LocationRequest.create()
-        locationRequest.interval = (30 * 1000).toLong() // 18 seconds
-        locationRequest.fastestInterval = (25 * 1000).toLong() // 16 seconds
+        locationRequest.interval = (10 * 1000).toLong() // 18 seconds
+        locationRequest.fastestInterval = (8 * 1000).toLong() // 16 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
+    }
+
+    fun getPredictionSummary(): MutableMap<String, Int> {
+        return predictionSummary
+    }
+
+    private fun majorityState(): String {
+        if (fifoAct.size >= 3) {
+            val activities = mutableMapOf(
+                "STILL" to 0,
+                "WALK" to 0,
+                "MOVING" to 0
+            )
+            var counts = 0
+            for (state in fifoAct) {
+                if (state in activities.keys) {
+                    counts++
+                    activities[state] = activities[state]!! + 1
+                }
+            }
+            if (counts >= 3) return activities.maxBy { it.value }.key
+        }
+        return "STILL"
     }
 
     /**

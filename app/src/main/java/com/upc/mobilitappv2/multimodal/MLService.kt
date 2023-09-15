@@ -8,6 +8,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
+import kotlin.collections.MutableMap as MutableMap
 
 /**
     * MLService is a class that provides machine learning functionality for multimodal transportation analysis.
@@ -128,7 +129,7 @@ class MLService(val ctx: Context)
      * @param matrix of a number of samples.
      * @return overall prediction.
      */
-    fun overallPrediction(matrix: Array<Array<FloatArray>>): String {
+    fun overallPrediction(matrix: Array<Array<FloatArray>>): Pair<String, MutableMap<String, Int>> {
         var count = 0
         var predictions = mutableMapOf<String, Int>()
         NAMES.forEach { act ->
@@ -140,7 +141,6 @@ class MLService(val ctx: Context)
             ++count
         }
         val maxPred=predictions.maxWith(Comparator { x, y -> x.value.compareTo(y.value)})
-
-        return maxPred.key
+        return maxPred.key to  predictions
     }
 }
