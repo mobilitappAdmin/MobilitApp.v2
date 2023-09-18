@@ -305,8 +305,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         }
 
         locationRequest = LocationRequest.create()
-        locationRequest.interval = (10 * 1000).toLong() // 18 seconds
-        locationRequest.fastestInterval = (8 * 1000).toLong() // 16 seconds
+        locationRequest.interval = (30 * 1000).toLong() // 18 seconds
+        locationRequest.fastestInterval = (25 * 1000).toLong() // 16 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     }
