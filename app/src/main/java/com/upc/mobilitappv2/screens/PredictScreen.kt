@@ -278,7 +278,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
-            Text(text = "Activities: ,$fifo", fontSize = 12.sp)
+            Text(text = "Activities: $fifo", fontSize = 12.sp)
 
             //debugo button
             //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}

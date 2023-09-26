@@ -113,10 +113,12 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         if (fifoAct.size > 0) {
             var fifoStr = ""
             for (a in fifoAct) {
-                if (fifoStr == "") {
-                    fifoStr = "$fifoStr$a"
-                } else {
-                    fifoStr = "$fifoStr, $a"
+                if (a != "-") {
+                    if (fifoStr == "") {
+                        fifoStr = "$fifoStr$a"
+                    } else {
+                        fifoStr = "$fifoStr, $a"
+                    }
                 }
             }
             return fifoStr
@@ -202,14 +204,19 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     }
                     var fifoStr = ""
                     for (a in fifoAct){
-                        if (fifoStr =="") {fifoStr = "$fifoStr$a"}
-                        else {fifoStr = "$fifoStr, $a" }
+                        if (a != "-") {
+                            if (fifoStr == "") {
+                                fifoStr = "$fifoStr$a"
+                            } else {
+                                fifoStr = "$fifoStr, $a"
+                            }
+                        }
                     }
 
                     if (othersRow != 0) {
                         if ((othersRow-1)%3 == 0 && (othersRow-1) != 0)  { // Call ML periodically
                             val (prediction, summary) =
-                                mlService.overallPrediction(sensorLoader.getLastWindow(3))
+                                mlService.overallPrediction(sensorLoader.getLastWindow(fifoAct.size, fifoAct))
                             macroState = prediction
                             predictionSummary = summary
                             ++ml_calls
@@ -246,7 +253,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     if (majority == "MOVING") {
                         if (othersRow == 0) {
                             val (prediction, summary) =
-                                mlService.overallPrediction(sensorLoader.getLastWindow(3))
+                                mlService.overallPrediction(sensorLoader.getLastWindow(3, fifoAct))
                             macroState = prediction
                             predictionSummary = summary
 
@@ -306,7 +313,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
 
         locationRequest = LocationRequest.create()
         locationRequest.interval = (30 * 1000).toLong() // 18 seconds
-        locationRequest.fastestInterval = (25 * 1000).toLong() // 16 seconds
+        locationRequest.fastestInterval = (20 * 1000).toLong() // 16 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
     }

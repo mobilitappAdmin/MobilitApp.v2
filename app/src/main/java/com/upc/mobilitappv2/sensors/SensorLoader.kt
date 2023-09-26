@@ -170,13 +170,25 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
      * @param numWindows number of windows required (3 or 6).
      * @return a matrix of last numWindows.
      */
-    fun getLastWindow(numWindows: Int): Array<Array<FloatArray>> {
-        var sizes = IntArray(numWindows) { 0 }
+    fun getLastWindow(numWindows: Int, fifoAct: LinkedList<String>): Array<Array<FloatArray>> {
+        var finalWindows = 0
+        for (i in (numWindows-1) downTo 0) {
+            if (fifoAct[i] == "MOVING") {
+                finalWindows++
+            }
+        }
+        var sizes = IntArray(finalWindows) { 0 }
+        var ids = IntArray(finalWindows) { 0 }
+        var jx = 0
+        for (i in (numWindows-1) downTo 0) {
 
-        for (i in 0 until numWindows) {
-            val size = fifoAcc[i].size
-            val num_mostres = (size/200).toInt()
-            sizes[i] = num_mostres
+            if (fifoAct[i] == "MOVING") {
+                val size = fifoAcc[i].size
+                val num_mostres = (size/200).toInt()
+                sizes[jx] = num_mostres
+                ids[jx] = i
+                jx++
+            }
         }
 
         val totalSize = sizes.sum()
@@ -186,8 +198,9 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             }
         }
         var iz = 0
-        for (i in 0 until numWindows) {
-            for (k in 0 until sizes[i]) {
+        jx = 0
+        for (i in ids) {
+            for (k in 0 until sizes[jx]) {
                 for (j in 0 until 200) {
                     val z = 200*k + j
                     window[iz][j][0] = fifoAcc[i][z][0]
@@ -204,6 +217,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 }
                 iz += 1
             }
+            jx++
 
         }
 
