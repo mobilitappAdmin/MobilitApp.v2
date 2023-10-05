@@ -249,7 +249,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     }
                      */
 
-                    val majority = majorityState()
+                    var majority = majorityState()
+                    if (majority == null) {
+                        majority = macroState
+                    }
                     if (majority == "MOVING") {
                         if (othersRow == 0) {
                             val (prediction, summary) =
@@ -322,8 +325,9 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         return predictionSummary
     }
 
-    private fun majorityState(): String {
+    private fun majorityState(): String? {
         if (fifoAct.size >= 3) {
+            var majority: String? = null
             val activities = mutableMapOf(
                 "STILL" to 0,
                 "WALK" to 0,
@@ -336,9 +340,23 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     activities[state] = activities[state]!! + 1
                 }
             }
-            if (counts >= 3) return activities.maxBy { it.value }.key
+            if (counts >= 3) {
+                majority = activities.maxBy { it.value }.key
+            }
+            if (majority != null){
+                if ((majority == "MOVING" && activities["MOVING"]!! >= 3) || majority != "MOVING") {
+                    if (majority == "STILL") {
+                        return if (fifoAct[fifoAct.size - 1] == fifoAct[fifoAct.size - 2] && fifoAct[fifoAct.size - 2] == fifoAct[fifoAct.size - 3] && fifoAct[fifoAct.size - 1] == "STILL") {
+                            majority
+                        } else {
+                            null
+                        }
+                    }
+                    return majority
+                }
+            }
         }
-        return "STILL"
+        return null
     }
 
     /**
