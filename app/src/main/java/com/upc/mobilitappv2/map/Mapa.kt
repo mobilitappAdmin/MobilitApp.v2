@@ -314,6 +314,7 @@ class Mapa(val context:Context): AppCompatActivity() {
     }
 
     fun zoomToBB(){
+        if(savedRoadsForReset.isEmpty()) return
         var l = mutableListOf<GeoPoint>()
         savedRoadsForReset.map{l.addAll(it.actualPoints)}
         var b = BoundingBox.fromGeoPoints(l)
