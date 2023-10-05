@@ -651,7 +651,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
                     val proj = mapView!!.projection
                     val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    addMarker(loc, selectedIcon)
+                    //addMarker(loc, selectedIcon)
                     return super.onLongPress(e, mapView)
                 }
 

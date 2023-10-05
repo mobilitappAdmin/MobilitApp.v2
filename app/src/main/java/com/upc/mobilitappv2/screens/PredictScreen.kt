@@ -284,7 +284,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Activities: ,$fifo")
 
             //debugo button
-            Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
+            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
                 
             if (stop_cov!!.toDouble() >= 75.0) {
                 sendCO2notification()
