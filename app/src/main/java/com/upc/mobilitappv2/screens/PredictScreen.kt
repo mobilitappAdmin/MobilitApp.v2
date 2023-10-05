@@ -110,6 +110,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val fibPosition = GeoPoint(41.38867, 2.11196)
     var vehicleTest: String by remember { mutableStateOf("Car") }
 
+    // chose if the popup should put all the subt-ravels with the same vehicle into one card or show them separately
+    var condensedPopUp = true
+
+
     fun sendCO2notification(){
         val mBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(
@@ -280,7 +284,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = "Activities: ,$fifo")
 
             //debugo button
-            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" }){Text(vehicleTest)}
+            Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
                 
             if (stop_cov!!.toDouble() >= 75.0) {
                 sendCO2notification()
@@ -354,6 +358,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
             }
+
+        //darken the background behind the popup and close the it if clicked outside
         AnimatedVisibility(
             modifier = Modifier.fillMaxSize(),
             visible = popUpState,
@@ -453,6 +459,17 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                 ,//.background(LightOrange),
                             contentPadding = PaddingValues(bottom = 40.dp),
                         ) {
+                            if(condensedPopUp){
+                                var l = mutableMapOf<String,Double>()
+                                vehiclesTrams.map{
+                                    if(it.first != "STILL") {
+                                        if(l.contains(it.first)) l[it.first] = l[it.first]!! + it.second
+                                        else l[it.first] = it.second
+                                    }
+                                }
+                                vehiclesTrams.clear()
+                                l.map{vehiclesTrams.add(Pair(it.key,it.value))}
+                            }
                             itemsIndexed(vehiclesTrams) { index, objct ->
                                 var item = objct.first
                                 var dist = objct.second

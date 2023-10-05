@@ -51,6 +51,7 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager
 import org.osmdroid.bonuspack.routing.RoadManager
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
@@ -91,7 +92,7 @@ class Mapa(val context:Context): AppCompatActivity() {
     private var partialDistance = 0.0
     private var markersOnThisRoad: Queue<GeoPoint> = LinkedList<GeoPoint>()
 
-    private var selectedIcon = R.drawable.test_yellow
+    var selectedIcon = R.drawable.marker_car
     private var currentIcon = R.drawable.test_yellow
     private var previousIcon = R.drawable.test_yellow
     private var emptyMarker = false
@@ -99,6 +100,8 @@ class Mapa(val context:Context): AppCompatActivity() {
     private var onTrip = mutableStateOf(false)
     private var onCruise = mutableStateOf(false)
 
+    //instead of blindly believing the route generated, draw a straight line if the path seems unlikely
+    private var useHeuristic = true
     fun <K, V> Map<K, V>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
     var trams: MutableList<Pair<String,Double>> = mutableListOf()
 
@@ -307,7 +310,17 @@ class Mapa(val context:Context): AppCompatActivity() {
     fun endTrip() {
         onTrip.value = false
         onCruise.value = false
+        zoomToBB()
+    }
 
+    fun zoomToBB(){
+        var l = mutableListOf<GeoPoint>()
+        savedRoadsForReset.map{l.addAll(it.actualPoints)}
+        var b = BoundingBox.fromGeoPoints(l)
+        var latPad = b.latitudeSpan/10
+        var lonPad = b.longitudeSpan/20
+        var bb = BoundingBox.fromGeoPoints(listOf(GeoPoint(b.latNorth+latPad,b.lonEast+lonPad),GeoPoint(b.latSouth-latPad,b.lonWest-lonPad)))
+        mMap.zoomToBoundingBox(bb,true)
     }
 
     fun center(){
@@ -498,13 +511,14 @@ class Mapa(val context:Context): AppCompatActivity() {
                 waypoints.add(endPoint)
                 val road = roadManager.getRoad(waypoints)
                 var line = RoadManager.buildRoadOverlay(road)
+                var straightLine = Polyline()
+                straightLine.setPoints(waypoints)
+
+                if(useHeuristic and (straightLine.distance * 2.2 < line.distance)) line = straightLine
 
                 //quick fix to make trains go straight
-                if(listOf(R.drawable.marker_metro,R.drawable.marker_tram,R.drawable.marker_tren).contains(prevIcon))
-                {
-                    line  = Polyline()
-                    line.setPoints(waypoints)
-                }
+                if(listOf(R.drawable.marker_metro,R.drawable.marker_tram,R.drawable.marker_tren).contains(prevIcon)) line  = straightLine
+
                 Log.d("Previous RoadIcon", context.resources.getResourceEntryName(prevIcon))
                 line.outlinePaint.color = markerColors[prevIcon]!!
                 line.outlinePaint.strokeWidth = 10.0f
@@ -624,7 +638,8 @@ class Mapa(val context:Context): AppCompatActivity() {
                     }
                 }
                 override fun drawMyLocation(canvas: Canvas?, pj: Projection?, lastFix: Location?) {
-                    if (onTrip.value and this.isFollowLocationEnabled) rotateMap(lastFix)
+                    // TODO Trip mode WIP
+                    //if (onTrip.value and this.isFollowLocationEnabled) rotateMap(lastFix)
                     super.drawMyLocation(canvas, pj, lastFix)
                 }
 
@@ -636,7 +651,7 @@ class Mapa(val context:Context): AppCompatActivity() {
                 override fun onLongPress(e: MotionEvent?, mapView: MapView?): Boolean {
                     val proj = mapView!!.projection
                     val loc = proj.fromPixels(e!!.x.toInt(), e.y.toInt()) as GeoPoint
-                    //addMarker(loc, R.drawable.marker_car)
+                    addMarker(loc, selectedIcon)
                     return super.onLongPress(e, mapView)
                 }
 
