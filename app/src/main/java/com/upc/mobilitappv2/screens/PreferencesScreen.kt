@@ -9,19 +9,27 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.upc.mobilitappv2.screens.components.TopBar
+import com.upc.mobilitappv2.ui.theme.Orange
 
 /**
  * Composable function for displaying the preferences screen.
@@ -36,6 +44,8 @@ fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
         BodyContent(preferences)
     }
 }
+
+
 
 /**
  * Composable function for the body content of the preferences screen.
@@ -324,6 +334,7 @@ fun SwitchSetting(
             .height(72.dp)
             .padding(horizontal = 16.dp)
     ) {
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -342,10 +353,66 @@ fun SwitchSetting(
                 checkedState.value = it
                 preferences.edit().putBoolean("debug", checkedState.value).apply()
                 preferences.edit().commit()
+
             }
         )
+
+    }
+    if(checkedState.value){
+        Divider(Modifier.padding(bottom= 10.dp))
+        TextBox(preferences)
     }
     Divider()
+}
+
+@Composable
+fun TextBox(preferences: SharedPreferences) {
+    Row(modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 16.dp)){
+        Column(
+            modifier = Modifier.weight(4f)
+        ) {
+            Text(
+                text = "Heuristic factor",
+                style = MaterialTheme.typography.subtitle1
+            )
+            Text(
+                text = "Strength of route following (Default 2.2)",
+                style = MaterialTheme.typography.body2
+            )
+        }
+        var num by remember { mutableStateOf(preferences.getFloat("heuristic_fact",0f).toString()) }
+        val focusManager = LocalFocusManager.current
+        TextField(
+            value = num,
+            modifier = Modifier.weight(1f),
+            colors = TextFieldDefaults.textFieldColors(
+                disabledTextColor = Color.Transparent,
+                backgroundColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            onValueChange = {
+                if (it.isEmpty() || (it.toDoubleOrNull() != null && (it.length < 4) && it.toDouble() < 10)) {
+                    num = it
+                    }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number,imeAction = ImeAction.Done),
+            keyboardActions= KeyboardActions(
+                onDone = {
+                    if(num.toDoubleOrNull() != null){
+                        preferences.edit().putFloat("heuristic_fact",num.toFloat()).apply()
+                        focusManager.clearFocus();
+                    }
+
+                },
+            ),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
+
+        )
+    }
+
+
 }
 
 

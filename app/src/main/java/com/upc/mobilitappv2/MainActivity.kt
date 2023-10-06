@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
         sensorLoader = SensorLoader(this, android_id)
         sensorLoaderMulti = SensorLoader(this, android_id)
         multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences)
-        mapa = Mapa(this)
+        mapa = Mapa(this,sharedPreferences)
 
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -274,6 +274,10 @@ class MainActivity : ComponentActivity() {
         }
         if (!sharedPreferences.contains("debug")){
             sharedPreferences.edit().putBoolean("debug", false).apply()
+            sharedPreferences.edit().commit()
+        }
+        if (!sharedPreferences.contains("heuristic_fact")){
+            sharedPreferences.edit().putFloat("heuristic_fact", 2.2f).apply()
             sharedPreferences.edit().commit()
         }
     }
