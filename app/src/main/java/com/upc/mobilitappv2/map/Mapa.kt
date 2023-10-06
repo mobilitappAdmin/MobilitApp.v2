@@ -2,6 +2,7 @@ package com.upc.mobilitappv2.map
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -73,11 +74,12 @@ import kotlin.math.roundToInt
  * @author Miquel Gotanegra
  * @property context The application context.
  */
-class Mapa(val context:Context): AppCompatActivity() {
+class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): AppCompatActivity() {
     private lateinit var fullView:View
     private lateinit var mMap:MapView
     private lateinit var myLocationOverlay: MyLocationNewOverlay
     private lateinit var myRotationOverlay : RotationGestureOverlay
+    private var preferences = sharedPreferences
 
     val markerScale = 18.0
     var totalCO2 = 0.0
@@ -315,6 +317,7 @@ class Mapa(val context:Context): AppCompatActivity() {
 
     fun zoomToBB(){
         var l = mutableListOf<GeoPoint>()
+        if (l.isEmpty()) return
         savedRoadsForReset.map{l.addAll(it.actualPoints)}
         var b = BoundingBox.fromGeoPoints(l)
         var latPad = b.latitudeSpan/10
@@ -514,7 +517,10 @@ class Mapa(val context:Context): AppCompatActivity() {
                 var straightLine = Polyline()
                 straightLine.setPoints(waypoints)
 
-                if(useHeuristic and (straightLine.distance * 2.2 < line.distance)) line = straightLine
+                val fact = preferences?.getFloat("heuristic_fact",0f)?.toDouble() ?: 2.2
+                if(useHeuristic and (straightLine.distance * fact < line.distance)) line = straightLine
+
+                Log.d("heuristic fact", fact.toString())
 
                 //quick fix to make trains go straight
                 if(listOf(R.drawable.marker_metro,R.drawable.marker_tram,R.drawable.marker_tren).contains(prevIcon)) line  = straightLine
