@@ -307,7 +307,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         onTrip.value = true
         onCruise.value = true
 
-
+ 
     }
     fun endTrip() {
         onTrip.value = false
