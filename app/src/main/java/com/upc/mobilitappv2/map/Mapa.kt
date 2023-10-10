@@ -328,7 +328,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
 
     fun center(){
-        mMap.controller.animateTo(myLocationOverlay.myLocation,18.7,500.toLong(),if(onTrip.value)myLocationOverlay.lastFix.bearing else 0.0f)
+        mMap.controller.animateTo(myLocationOverlay.myLocation,18.7,500.toLong(),if(onTrip.value and (myLocationOverlay.lastFix != null))myLocationOverlay.lastFix!!.bearing  else 0.0f)
         myLocationOverlay.enableFollowLocation()
     }
 
@@ -646,7 +646,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                 }
                 override fun drawMyLocation(canvas: Canvas?, pj: Projection?, lastFix: Location?) {
                     // TODO Trip mode WIP
-                    //if (onTrip.value and this.isFollowLocationEnabled) rotateMap(lastFix)
+                    if (onTrip.value and this.isFollowLocationEnabled) rotateMap(lastFix)
                     super.drawMyLocation(canvas, pj, lastFix)
                 }
 

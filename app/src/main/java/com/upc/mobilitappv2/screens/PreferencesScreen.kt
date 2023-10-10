@@ -367,7 +367,7 @@ fun SwitchSetting(
 
 @Composable
 fun TextBox(preferences: SharedPreferences) {
-    Row(modifier = Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 16.dp)){
+    Row(modifier = Modifier.fillMaxWidth().height(82.dp).padding(horizontal = 16.dp)){
         Column(
             modifier = Modifier.weight(4f)
         ) {
@@ -376,7 +376,7 @@ fun TextBox(preferences: SharedPreferences) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = "Strength of route following (Default 2.2)",
+                text = "Strength of route following\nDefault: 2.2",
                 style = MaterialTheme.typography.body2
             )
         }
