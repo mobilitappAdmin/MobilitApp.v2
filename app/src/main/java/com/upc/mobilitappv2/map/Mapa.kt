@@ -316,9 +316,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
 
     fun zoomToBB(){
+        //myLocationOverlay.disableFollowLocation()
         if(savedRoadsForReset.isEmpty()) return
         var l = mutableListOf<GeoPoint>()
-        if (l.isEmpty()) return
         savedRoadsForReset.map{l.addAll(it.actualPoints)}
         var b = BoundingBox.fromGeoPoints(l)
         var latPad = b.latitudeSpan/10
@@ -362,6 +362,8 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     fun addMarker(position: GeoPoint, drawable: Int, useMapPosition: Boolean = false) {
         //if (markersMap.contains(position)) removeMarker(position)
         // avoid multiple still markers on the same spot
+
+        if(!onTrip.value) return
 
         //if screen is out of focus addMarker gets called 3 times ????
         if(position == lastPos) return
@@ -519,7 +521,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                 straightLine.setPoints(waypoints)
 
                 val fact = preferences?.getFloat("heuristic_fact",0f)?.toDouble() ?: 2.2
-                if(useHeuristic and (straightLine.distance * fact < line.distance)) line = straightLine
+                if((prevIcon == R.drawable.marker_walk) or (useHeuristic and (straightLine.distance * fact < line.distance))) line = straightLine
 
                 Log.d("heuristic fact", fact.toString())
 
