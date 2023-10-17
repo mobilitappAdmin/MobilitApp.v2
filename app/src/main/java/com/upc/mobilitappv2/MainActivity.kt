@@ -276,9 +276,9 @@ class MainActivity : ComponentActivity() {
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()
         }
-        if (!sharedPreferences.contains("heuristic_fact")){
-            sharedPreferences.edit().putFloat("heuristic_fact", 2.2f).apply()
+        //if (!sharedPreferences.contains("heuristic_fact")){
+            sharedPreferences.edit().putFloat("heuristic_fact", 3.0f).apply()
             sharedPreferences.edit().commit()
-        }
+        //}
     }
 }
