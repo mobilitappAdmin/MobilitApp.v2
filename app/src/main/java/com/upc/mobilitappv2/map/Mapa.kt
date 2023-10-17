@@ -4,7 +4,6 @@ package com.upc.mobilitappv2.map
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.drawable.BitmapDrawable
@@ -16,33 +15,25 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.upc.mobilitappv2.R
@@ -87,9 +78,15 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     var CO2String = mutableStateOf(formatData(totalCO2,"CO2"))
     var DistanceString = mutableStateOf(formatData(totalDistance,"distance"))
 
+    // dimensions of the drawn map, used in zoomToBB
+    var mapHeight = 0.dp
+    var mapWidth = 0.dp
+
+
     private val uiString = mutableStateOf("Total CO2 consumption %.0fg".format(0.0))
     private val uiString2 = mutableStateOf("Total distance %.0fm".format(0.0))
     val mutColor = mutableStateOf(ecoGreen)
+
 
     private var partialDistance = 0.0
     private var markersOnThisRoad: Queue<GeoPoint> = LinkedList<GeoPoint>()
@@ -316,13 +313,16 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
 
     fun zoomToBB(){
-        //myLocationOverlay.disableFollowLocation()
+        myLocationOverlay.disableFollowLocation()
         if(savedRoadsForReset.isEmpty()) return
         var l = mutableListOf<GeoPoint>()
         savedRoadsForReset.map{l.addAll(it.actualPoints)}
         var b = BoundingBox.fromGeoPoints(l)
-        var latPad = b.latitudeSpan/10
-        var lonPad = b.longitudeSpan/20
+
+        var ratio = (mapHeight/mapWidth).toDouble()
+
+        var latPad = (b.latitudeSpan/10) * (1/ratio)
+        var lonPad = (b.longitudeSpan/20) * ratio
         var bb = BoundingBox.fromGeoPoints(listOf(GeoPoint(b.latNorth+latPad,b.lonEast+lonPad),GeoPoint(b.latSouth-latPad,b.lonWest-lonPad)))
         mMap.zoomToBoundingBox(bb,true)
     }
@@ -698,7 +698,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
     @Composable
     fun ButtonClearMap(){
-        Button(onClick = {  clear() },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+        Button(onClick = {  clear()
+            //zoomToBB()
+                         },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
             Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "Clean map", modifier = Modifier.size(25.dp),tint = Orange,
 
                 )
@@ -734,16 +736,23 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
     @Composable
     fun appLayout() {
+        val localDensity = LocalDensity.current
         Box(
             Modifier
                 .fillMaxSize()
                 .padding(10.dp)
                 .clip(shape = RoundedCornerShape(15.dp))
+                .onGloballyPositioned { coordinates ->
+                    mapHeight = with(localDensity) { coordinates.size.height.toDp() }
+                    mapWidth = with(localDensity) { coordinates.size.width.toDp() }
+                }
 
         )// this will be the map
         {
+
             DrawMap()
-            // buttons
+            //Text("H $mapHeight W $mapWidth",modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp), fontWeight = FontWeight.Bold,color = Color.Black)
+
             Column(
                 Modifier
                     .align(Alignment.BottomEnd)
@@ -756,6 +765,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                     ButtonCenterMap()
                 }
                 else{
+                    //ButtonClearMap()
                     ButtonCruise()
                 }
             }
