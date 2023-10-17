@@ -376,7 +376,7 @@ fun TextBox(preferences: SharedPreferences) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = "Strength of route following\nDefault: 2.2",
+                text = "Strength of route following\nDefault: 3.0",
                 style = MaterialTheme.typography.body2
             )
         }
