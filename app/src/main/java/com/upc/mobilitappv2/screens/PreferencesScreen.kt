@@ -119,13 +119,14 @@ private fun BodyContent(preferences: SharedPreferences) {
             Text(text = gender.toString())
         }
         Divider()
-
+        /*
         SwitchSetting(
             title = "Debug Mode",
             description = "Enable debug mode",
             checked = debug == true,
             preferences
         )
+        */
 
         Text(
             text = "About",
