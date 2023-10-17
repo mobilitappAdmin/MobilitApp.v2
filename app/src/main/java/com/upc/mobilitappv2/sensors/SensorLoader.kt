@@ -319,7 +319,6 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             val winT =
                 (currentDateWindow[currentDateWindow.size - 1].time - currentDateWindow[0].time) / 1000.0
             val samplingFrequency = floor(winSamples / winT)
-            println(samplingFrequency)
             /* FFT */
             // Make the window size a power of two for the FFT algorithm
             val powerOfTwo = floor(ln(winSamples) / ln(2.0)).toInt()

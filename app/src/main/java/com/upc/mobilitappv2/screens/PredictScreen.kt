@@ -277,14 +277,15 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
 
             Spacer(modifier = Modifier.height(height = 20.dp))
-
-            Text(text = "Location: " + lastLoc[0] + ", " + lastLoc[1])
+            if (lastLoc[0] != "-") {
+                Text(text = lastLoc[0] + ", " + lastLoc[1], fontSize = 15.sp)
+            }
 
 
             Text(text = "Predicted Activity: $macroState", fontSize = 20.sp)
 
 
-            Text(text = "Activities: $fifo", fontSize = 12.sp)
+            Text(text = "Activities: $fifo", fontSize = 10.sp)
 
             //debugo button
             //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
@@ -294,11 +295,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
             // debug text
             if (debug) {
-                Spacer(modifier = Modifier.height(height = 10.dp))
                 val showDialog = remember { mutableStateOf(false) }
-                Text(text = "ML calls: $ml_calls")
-                Text(text = "STOP coverage: $stop_cov %")
-                Text(text = "GPS location error: $location_accuracy")
+                Text(text = "ML calls: $ml_calls.  GPS error: $location_accuracy", fontSize = 15.sp)
+                Text(text = "STOP coverage: $stop_cov %", fontSize = 15.sp)
                 Button(
                     onClick = { showDialog.value = true },
                     modifier = Modifier.padding(8.dp)
