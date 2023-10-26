@@ -321,8 +321,8 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
 
         var ratio = (mapHeight/mapWidth).toDouble()
 
-        var latPad = (b.latitudeSpan/10) * (1/ratio)
-        var lonPad = (b.longitudeSpan/20) * ratio
+        var latPad = (b.latitudeSpan/5) * (1/ratio)
+        var lonPad = (b.longitudeSpan/10) * ratio
         var bb = BoundingBox.fromGeoPoints(listOf(GeoPoint(b.latNorth+latPad,b.lonEast+lonPad),GeoPoint(b.latSouth-latPad,b.lonWest-lonPad)))
         mMap.zoomToBoundingBox(bb,true)
     }
