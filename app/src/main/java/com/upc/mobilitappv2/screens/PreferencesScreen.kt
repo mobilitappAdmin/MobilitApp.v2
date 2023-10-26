@@ -2,9 +2,7 @@ package com.upc.mobilitappv2.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,7 +27,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.upc.mobilitappv2.screens.components.TopBar
-import com.upc.mobilitappv2.ui.theme.Orange
 
 /**
  * Composable function for displaying the preferences screen.
@@ -126,6 +123,7 @@ private fun BodyContent(preferences: SharedPreferences) {
             checked = debug == true,
             preferences
         )
+
 
 
         Text(
@@ -348,6 +346,7 @@ fun SwitchSetting(
                 style = MaterialTheme.typography.body2
             )
         }
+
         Switch(
             checked = checkedState.value,
             onCheckedChange = {
@@ -357,6 +356,7 @@ fun SwitchSetting(
 
             }
         )
+
 
     }
     if(checkedState.value){

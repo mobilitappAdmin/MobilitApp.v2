@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -91,22 +92,22 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val lastLoc = remember {
         mutableStateListOf(multimodal.get_lastlocation()[0], multimodal.get_lastlocation()[1])
     }
-    var lastWindow: String? by remember { mutableStateOf(multimodal.get_lastwindow()) }
+    var lastWindow: String? by rememberSaveable  { mutableStateOf(multimodal.get_lastwindow()) }
 
-    var stop_cov: String? by remember { mutableStateOf("0.0") }
-    var ml_calls: String? by remember { mutableStateOf("0") }
+    var stop_cov: String? by rememberSaveable  { mutableStateOf("0.0") }
+    var ml_calls: String? by rememberSaveable  { mutableStateOf("0") }
 
     if (!debug && lastWindow != "-") {
         lastWindow = lastWindow!!.split(',')[0]
     }
 
-    var fifo: String? by remember { mutableStateOf(multimodal.get_fifo()) }
+    var fifo: String? by rememberSaveable  { mutableStateOf(multimodal.get_fifo()) }
 
-    var macroState: String? by remember {
+    var macroState: String? by rememberSaveable  {
         mutableStateOf(multimodal.get_macrostate())
     }
-    var stop: Boolean? by remember { mutableStateOf(null) }
-    var location_accuracy: String? by remember { mutableStateOf("0") }
+    var stop: Boolean? by rememberSaveable  { mutableStateOf(null) }
+    var location_accuracy: String? by rememberSaveable  { mutableStateOf("0") }
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
     val fibPosition = GeoPoint(41.38867, 2.11196)
@@ -186,7 +187,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 //debugo
                 //macro = vehicleTest
                 mapa.nameToID[macro!!]?.let {
-                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(),lastLoc[1].toDouble()), it,useMapPosition = false)
+                    mapa.addMarker(GeoPoint(lastLoc[0].toDouble(), lastLoc[1].toDouble()), it,useMapPosition = false)
 
                     //test
                     /*mapa.trams.add(Pair("Car",1000.0))
@@ -209,9 +210,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var popUpState: Boolean by remember { mutableStateOf(false) }
     var animationState: Boolean by remember { mutableStateOf(false) }
     var interactionSource = remember { MutableInteractionSource() }
-
-
-
 
 
     Box() {
@@ -278,7 +276,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
             Spacer(modifier = Modifier.height(height = 20.dp))
             if (lastLoc[0] != "-") {
-                Text(text = lastLoc[0] + ", " + lastLoc[1], fontSize = 15.sp)
+                Text(text = lastLoc[0]+ ", " + lastLoc[1], fontSize = 15.sp)
             }
 
 

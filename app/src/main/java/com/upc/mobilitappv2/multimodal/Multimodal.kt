@@ -282,6 +282,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
                     intent.putExtra("stop", stop.first.toString())
                     intent.putExtra("ml", ml_calls.toString())
+                    Log.d("MULTIMODAL", "send fifo $fifoStr")
 
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 

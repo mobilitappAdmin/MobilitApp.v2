@@ -301,7 +301,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 //val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
                 //val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
                 //val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
-
+                //Log.d("SENSORS", "New analyzed window $output")
             }
 
         }
@@ -315,6 +315,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
      */
     fun analyseLastWindow(): String? {
         if ( currentAccWindow.size > 256) {
+
             var winSamples = currentAccWindow.size.toDouble()
             val winT =
                 (currentDateWindow[currentDateWindow.size - 1].time - currentDateWindow[0].time) / 1000.0
