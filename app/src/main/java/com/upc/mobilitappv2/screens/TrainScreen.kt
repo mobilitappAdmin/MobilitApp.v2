@@ -204,7 +204,7 @@ private fun ActivityDialog(
                 }
             },
             text = {
-                val radioOptions = listOf("Bus", "Metro", "Train", "Car", "Bike", "e-Bike", "Moto", "Tram", "Run", "Walk", "Stationary", "e-Scooter")
+                val radioOptions = listOf("Bike", "Bus", "Car", "e-Bike", "e-Scooter", "Metro", "Moto", "Run", "Stationary", "Train", "Tram", "Walk")
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[2]) }
                 activity=selectedOption
                 Column(
