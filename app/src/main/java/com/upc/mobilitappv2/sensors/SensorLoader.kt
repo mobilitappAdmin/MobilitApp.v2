@@ -180,11 +180,13 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         var sizes = IntArray(finalWindows) { 0 }
         var ids = IntArray(finalWindows) { 0 }
         var jx = 0
+        var s = fifoAcc.size
+
         for (i in (numWindows-1) downTo 0) {
 
             if (fifoAct[i] == "MOVING") {
                 val size = fifoAcc[i].size
-                val num_mostres = (size/200).toInt()
+                val num_mostres = (size/512).toInt()
                 sizes[jx] = num_mostres
                 ids[jx] = i
                 jx++
@@ -193,7 +195,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
 
         val totalSize = sizes.sum()
         var window = Array(totalSize){
-            Array(200) {
+            Array(512) {
                 FloatArray(9)
             }
         }
@@ -201,8 +203,8 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         jx = 0
         for (i in ids) {
             for (k in 0 until sizes[jx]) {
-                for (j in 0 until 200) {
-                    val z = 200*k + j
+                for (j in 0 until 512) {
+                    val z = 512*k + j
                     window[iz][j][0] = fifoAcc[i][z][0]
                     window[iz][j][1] = fifoAcc[i][z][1]
                     window[iz][j][2] = fifoAcc[i][z][2]
@@ -506,8 +508,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                         csv.open()
                     } else {
                         csv.writeLine(
-                            java.lang.Long.valueOf("99999999999")
-                                .toString() +
+                            SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time) +
                                     "," + accArray[i][0].toString() + "," + accArray[i][1].toString() + "," + accArray[i][2].toString() +
                                     "," + magArray[i][0].toString() + "," + magArray[i][1].toString() + "," + magArray[i][2].toString() +
                                     "," + gyrArray[i][0].toString() + "," + gyrArray[i][1].toString() + "," + gyrArray[i][2].toString())

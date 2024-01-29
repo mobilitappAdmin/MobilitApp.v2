@@ -106,7 +106,7 @@ private fun BodyContent(sensorLoader: SensorLoader){
         Spacer(modifier = Modifier.height(height = 40.dp))
         if (capture != null && !capturing && !sensorLoader.getUploadState()) {
             val capture_size = sensorLoader.finishedCapture
-            if(capture_size!! < 200) {
+            if(capture_size!! < 512) {
                 Text("This capture is not long enough")
                 Text("Size of capture: $capture_size")
                 val currentTime=endTime

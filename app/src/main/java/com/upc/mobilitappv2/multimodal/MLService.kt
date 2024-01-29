@@ -27,19 +27,21 @@ class MLService(val ctx: Context)
     private lateinit var model: Interpreter
 
     private val NAMES = mapOf(
-        0 to "Bus",
-        1 to "Car",
-        2 to "E-Scooter",
-        3 to "Metro",
+        0 to "Bicycle",
+        1 to "Bus",
+        2 to "Car",
+        3 to "Moto",
         4 to "Run",
         5 to "STILL",
-        6 to "Train",
-        7 to "Tram",
-        8 to "WALK"
+        6 to "Metro",
+        7 to "Train",
+        8 to "Tram",
+        9 to "WALK",
+        10 to "E-Scooter"
     )
 
-    private val MODEL_FILE_NAME = "model_28juny.tflite"
-    private val NUM_STEPS = 200
+    private val MODEL_FILE_NAME = "model_25jan.tflite"
+    private val NUM_STEPS = 512
     private val NUM_FEATURES = 9
 
     /**
@@ -104,7 +106,7 @@ class MLService(val ctx: Context)
             }
         }
         for (i in 0 until NUM_STEPS){
-            input[0][i] = standardizeData(sample[i])
+            input[0][i] = sample[i] //standardizeData(sample[i])
         }
         val output =  Array(1) {
             FloatArray(NAMES.size)
