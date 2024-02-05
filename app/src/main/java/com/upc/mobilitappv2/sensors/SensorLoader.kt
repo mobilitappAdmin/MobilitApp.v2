@@ -422,7 +422,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
             currentMagWindow = ArrayList()
             currentGyrWindow = ArrayList()
             currentDateWindow.clear()
-            if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) {
+            if (psdX[maxX] > 2 || psdY[maxY] > 2 || psdZ[maxZ] > 2) { //HERE
                 return ("""WALK,
                 freqX: ${BigDecimal(fAxis[maxX]).setScale(2, RoundingMode.HALF_EVEN)} magX: ${BigDecimal(psdX[maxX]).setScale(2, RoundingMode.HALF_EVEN)}
                 freqY: ${BigDecimal(fAxis[maxY]).setScale(3, RoundingMode.HALF_EVEN)} magY: ${BigDecimal(psdY[maxY]).setScale(3, RoundingMode.HALF_EVEN)}

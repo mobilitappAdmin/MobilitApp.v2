@@ -50,6 +50,8 @@ class StopService(alpha: Double, max_radium: Int, num_points: Int, covering_thre
         }
         center = calculateCenter(loc)
 
+        Log.d("STOP", checkStop().toString())
+
         return checkStop() to (checkStop() >= threshold)
     }
 

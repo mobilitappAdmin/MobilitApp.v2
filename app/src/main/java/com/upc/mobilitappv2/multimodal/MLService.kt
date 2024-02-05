@@ -40,7 +40,7 @@ class MLService(val ctx: Context)
         10 to "E-Scooter"
     )
 
-    private val MODEL_FILE_NAME = "model_25jan.tflite"
+    private val MODEL_FILE_NAME = "2feb-notf.tflite"
     private val NUM_STEPS = 512
     private val NUM_FEATURES = 9
 

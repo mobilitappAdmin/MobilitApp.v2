@@ -192,7 +192,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
 
                     if (activity.split(',')[0] == "MOVING") {
                         if (isStill(accuracy)) {
-                            activity = "STILL,"+activity.split(',')[1]
+                            activity = "STILL,"+activity.split(',')[1] //HERE
                         }
                     }
 
