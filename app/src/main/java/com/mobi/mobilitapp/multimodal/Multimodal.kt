@@ -68,6 +68,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var captureHash: Int = 0
     private var othersRow: Int = 0
     private var ml_calls: Int = 0
+    private var stop: Pair<Float, Boolean> = Pair(0.0f, false)
 
     private lateinit var startDate: Date
     private var startLoc: Location? = null
@@ -149,7 +150,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         first = true
         startDate = Date()
         captureHash = abs((startDate.toString()+ANDROID_ID).hashCode())
-        Log.d("Upload", captureHash.toString())
+        stop = Pair(0.0f, false)
         userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
         mlService =  MLService(context)
         mlService.initialize() //load Model
@@ -229,30 +230,6 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         ++othersRow
                     }
 
-                   // Windows logic
-                    /*
-                    if (fifoAct.size >= 3) {
-                        if (fifoAct[1] == fifoAct[2] && fifoAct[2] == "WALK"){
-                            othersRow = 0
-                            macroState = "WALK"
-                        }
-                        else if (fifoAct[0] == fifoAct[1] && fifoAct[1] == fifoAct[2]){
-                            if (fifoAct[2] == "MOVING") {
-                                if (othersRow == 0) {
-                                    val prediction =
-                                        mlService.overallPrediction(sensorLoader.getLastWindow(3))
-                                    macroState = prediction
-                                    ++othersRow
-                                    ++ml_calls
-                                }
-                            }
-                            else if (fifoAct[2] == "STILL") {
-                                othersRow = 0
-                                macroState = "STILL"
-                            }
-                        }
-                    }
-                     */
 
                     var majority = majorityState()
                     if (majority == null) {
@@ -276,9 +253,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         othersRow = 0
                         ml_calls = 0
                     }
-
                     // STOP algorithm
-                    val stop = stopService.addLocation(location)
+                    if (accuracy < 100) {
+                        stop = stopService.addLocation(location)
+                    }
 
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
