@@ -1,0 +1,88 @@
+<resources>
+    <!--General reusable words (Buttons/PopUps)-->
+    <string name="Start">Empezar</string>
+    <string name="Stop">Detener</string>
+    <string name="Started">Empezado</string>
+    <string name="Finished">Acabado</string>
+    <string name="Upload">Subir</string>
+    <string name="Delete">Eliminar</string>
+    <string name="Accept">Aceptar</string>
+    <string name="Cancel">Cancelar</string>
+    <string name="Close">Cerrar</string>
+    <string name="Distance">Distancia</string>
+    <string name="Next">Siguiente</string>
+    <string name="Settings">Configuración</string>
+    <string name="DebugMode">Modo de depuración</string>
+    <string name="About">Proyecto</string>
+    <string name="Gender">Género</string>
+    <string name="Age">Edad</string>
+    <string name="man">hombre</string>
+    <string name="woman">mujer</string>
+    <string name="others">otros</string>
+    <string name="Pollution">Contaminación</string>
+
+    <string name="Bicycle">Bicicleta</string>
+    <string name="Bus">Autobús</string>
+    <string name="Car">Coche</string>
+    <string name="e_Bicycle">e-Bicicleta</string>
+    <string name="e_Scooter">e-Scooters</string>
+    <string name="Metro">Metro</string>
+    <string name="Moto">Moto</string>
+    <string name="Run">Correr</string>
+    <string name="Stationary">Estacionario</string>
+    <string name="Train">Tren</string>
+    <string name="Tram">Tranvía</string>
+    <string name="Walk">Caminar</string>
+
+    <!--Main-->
+    <string name="Age2">Edad (años):</string>
+
+    <!--Train Screen-->
+    <string name="GenerateData">Generar Datos</string>
+
+    <string name="train1">Esta captura no es lo suficientemente larga</string>
+    <string name="train2">Tamaño de captura</string>
+    <string name="train3">Capturado correctamente</string>
+    <string name="train4">Capturando</string>
+    <string name="train5">Seleccione una actividad</string>
+
+    <!--Predict Screen-->
+    <string name="Trip">Viaje</string>
+    <string name="pred1">Predicción de actividad</string>
+    <string name="pred2">Actividades</string>
+    <string name="pred3">Muestra la última predicción</string>
+    <string name="pred4">Consumo de CO2:</string>
+    <string name="pred5">Aún no se ha detectado ningún viaje :(</string>
+    <string name="pred6">Distancia total</string>
+
+    <!--Preferences Screen-->
+    <string name="Preferences">Preferencias</string>
+
+    <string name="pref1">Seleccione su intervalo de edad</string>
+    <string name="pref2">Seleccione su género</string>
+    <string name="pref3">Activa el modo de depuración</string>
+    <string name="pref4">Acceso a la página web del proyecto</string>
+    <string name="pref5">Descarga la documentación de contaminación</string>
+    <string name="pref6">Factor heurístico</string>
+    <string name="pref7">Nivel de adherencia a la carretera \nPor defecto: 3.0</string>
+    <string name="pref8">Factor alfa</string>
+    <string name="pref9">Detén el algoritmo en \nPor defecto: 0.2</string>
+    <!--Map-->
+    <string name="co2cons">Consumo total de CO2</string>
+    <string name="distcons">Distancia total</string>
+    <string name="m1">Distancia total recorrida</string>
+    <string name="m2">Consumo de CO2</string>
+
+    <!--SensorLoader-->
+    <string name="SensorLoader">Actividad seleccionada</string>
+
+    <!--PredictionMap-->
+    <string name="predMap1">Predicción de la actividad con ML</string>
+
+    <!--Co2 Notification-->
+    <string name="JourneyFinished">Viaje finalizado</string>
+    <string name="n1">Consumo total: %s</string>
+    <string name="n2">Consumo total: %s\nSu viaje ha generado %s de CO2. Podría haber ahorrado %s de CO2 utilizando el transporte público.</string>
+    <string name="n3">Consumo total: %s\n¡Enhorabuena! Ha ahorrado potencialmente %s de CO2 evitando el uso de transportes contaminantes.</string>
+
+</resources>

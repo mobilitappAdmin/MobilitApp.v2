@@ -1,0 +1,88 @@
+<resources>
+    <!--General reusable words (Buttons/PopUps)-->
+    <string name="Start">Començar</string>
+    <string name="Stop">Aturar</string>
+    <string name="Started">Començat</string>
+    <string name="Finished">Acabat</string>
+    <string name="Upload">Envia</string>
+    <string name="Delete">Suprimeix</string>
+    <string name="Accept">Acceptar</string>
+    <string name="Cancel">Cancel·lar</string>
+    <string name="Close">Tanca</string>
+    <string name="Distance">Distància</string>
+    <string name="Next">Següent</string>
+    <string name="Settings">Configuració</string>
+    <string name="DebugMode">Mode de depuració</string>
+    <string name="About">Projecte</string>
+    <string name="Gender">Gènere</string>
+    <string name="Age">Edat</string>
+    <string name="man">home</string>
+    <string name="woman">dona</string>
+    <string name="others">altres</string>
+    <string name="Pollution">Contaminació</string>
+
+    <string name="Bicycle">Bicicleta</string>
+    <string name="Bus">Autobús</string>
+    <string name="Car">Cotxe</string>
+    <string name="e_Bicycle">e-Bicicleta</string>
+    <string name="e_Scooter">e-Scooters</string>
+    <string name="Metro">Metro</string>
+    <string name="Moto">Moto</string>
+    <string name="Run">Còrrer</string>
+    <string name="Stationary">Estacionari</string>
+    <string name="Train">Tren</string>
+    <string name="Tram">Tramvia</string>
+    <string name="Walk">Caminar</string>
+
+    <!--Main-->
+    <string name="Age2">Edat (anys):</string>
+
+    <!--Train Screen-->
+    <string name="GenerateData">Generar Dades</string>
+
+    <string name="train1">Aquesta captura no és prou llarga</string>
+    <string name="train2">Mida de la captura</string>
+    <string name="train3">Capturat correctament</string>
+    <string name="train4">Capturant</string>
+    <string name="train5">Seleccioneu una activitat</string>
+
+    <!--Predict Screen-->
+    <string name="Trip">Viatge</string>
+    <string name="pred1">Predicció d\'activitat</string>
+    <string name="pred2">Activitats</string>
+    <string name="pred3">Mostra l\'última predicció</string>
+    <string name="pred4">Consum de CO2:</string>
+    <string name="pred5">Encara no s\'ha detectat cap viatge :(</string>
+    <string name="pred6">Distància total</string>
+
+    <!--Preferences Screen-->
+    <string name="Preferences">Preferències</string>
+
+    <string name="pref1">Seleccioneu el vostre interval d\'edat</string>
+    <string name="pref2">Seleccioneu el vostre gènere</string>
+    <string name="pref3">Activa el mode de depuració</string>
+    <string name="pref4">Accés a la pàgina web del projecte</string>
+    <string name="pref5">Descarrega la documentació de contaminació</string>
+    <string name="pref6">Factor heurístic</string>
+    <string name="pref7">Nivell d\'adherència a la carretera \nPer defecte: 3.0</string>
+    <string name="pref8">Factor alfa</string>
+    <string name="pref9">Atura l\'algorisme a \nPer defecte: 0.2</string>
+    <!--Map-->
+    <string name="co2cons">Consum total de CO2</string>
+    <string name="distcons">Distància total</string>
+    <string name="m1">Distància total recorreguda</string>
+    <string name="m2">Consum de CO2</string>
+
+    <!--SensorLoader-->
+    <string name="SensorLoader">Activitat seleccionada</string>
+
+    <!--PredictionMap-->
+    <string name="predMap1">Predicció de l\'activitat amb ML</string>
+
+    <!--Co2 Notification-->
+    <string name="JourneyFinished">Viatge finalitzat</string>
+    <string name="n1">Consum total: %s</string>
+    <string name="n2">Consum total: %s\nEl vostre viatge ha generat %s de CO2. Podríeu haver estalviat %s de CO2 utilitzant el transport públic.</string>
+    <string name="n3">Consum total: %s\nEnhorabona! Heu estalviat potencialment %s de CO2 evitant l\'ús de transports contaminants.</string>
+
+</resources>

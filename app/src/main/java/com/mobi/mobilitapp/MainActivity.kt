@@ -20,6 +20,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -156,8 +157,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun encryptedSharedPrefs(sharedPreferences: SharedPreferences) {
         var openDialog1: Boolean by remember { mutableStateOf(!sharedPreferences.contains("age")) }
+        val res = LocalContext.current
         if (openDialog1){
-                var title = "Age (years old):"
+                var title = res.getString(R.string.Age2)
                 var activity: String? = null
                 AlertDialog(
                     onDismissRequest = {openDialog1 = false},
@@ -170,7 +172,7 @@ class MainActivity : ComponentActivity() {
                             sharedPreferences.edit().commit()
                             openDialog1 = false
                         }) {
-                            Text("Next")
+                            Text(res.getString(R.string.Next))
                         }
                     },
                     text = {
@@ -215,7 +217,7 @@ class MainActivity : ComponentActivity() {
             }
         var openDialog2: Boolean by remember { mutableStateOf(!sharedPreferences.contains("gender")) }
         if (!openDialog1 and openDialog2){
-            var title: String = "Gender:"
+            var title: String = res.getString(R.string.Gender) +":"
             var activity: String? = null
             AlertDialog(
                 onDismissRequest = {openDialog2 = false},
@@ -228,11 +230,11 @@ class MainActivity : ComponentActivity() {
                         sharedPreferences.edit().commit()
                         openDialog2 = false
                     }) {
-                        Text("Next")
+                        Text(res.getString(R.string.Next))
                     }
                 },
                 text = {
-                    var radioOptions = listOf("man", "woman", "others", "NA")
+                    var radioOptions = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.others), "NA")
                     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
                     activity=selectedOption
                     Column(

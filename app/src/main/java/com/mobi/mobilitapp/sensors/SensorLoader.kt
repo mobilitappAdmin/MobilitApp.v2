@@ -11,6 +11,8 @@ import android.os.Environment
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.multimodal.FFT.Complex
 import com.mobi.mobilitapp.multimodal.FFT.FFT
 import com.mobi.mobilitapp.server.UploadService
@@ -98,7 +100,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     fun initialize(selectedActivity: String): Boolean {
 
         activity=selectedActivity
-        Toast.makeText(context,"selected activity: $activity", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, this.context.getString(R.string.SensorLoader)+": $activity", Toast.LENGTH_LONG).show()
 
         accArray=ArrayList()
         magArray=ArrayList()

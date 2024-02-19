@@ -71,7 +71,6 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     private lateinit var myLocationOverlay: MyLocationNewOverlay
     private lateinit var myRotationOverlay : RotationGestureOverlay
     private var preferences = sharedPreferences
-
     val markerScale = 18.0
     var totalCO2 = 0.0
     var totalDistance = 0.0
@@ -83,8 +82,8 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     var mapWidth = 0.dp
 
 
-    private val uiString = mutableStateOf("Total CO2 consumption %.0fg".format(0.0))
-    private val uiString2 = mutableStateOf("Total distance %.0fm".format(0.0))
+    private val uiString = mutableStateOf(context.getString(R.string.co2cons) + " %.0fg".format(0.0))
+    private val uiString2 = mutableStateOf(context.getString(R.string.distcons)+" %.0fm".format(0.0))
     val mutColor = mutableStateOf(ecoGreen)
 
 
@@ -294,8 +293,8 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         partialDistance = 0.0
         CO2String = mutableStateOf(formatData(totalCO2,"CO2"))
         DistanceString = mutableStateOf(formatData(totalDistance,"distance"))
-        uiString.value = "Total CO2 consumption %.0fg".format(0.0)
-        uiString2.value = "Total distance %.0fm".format(0.0)
+        uiString.value = context.getString(R.string.co2cons) + " %.0fg".format(0.0)
+        uiString2.value = context.getString(R.string.co2cons) + " %.0fg".format(0.0)
         mutColor.value = ecoGreen
     }
     fun startTrip() {
@@ -343,14 +342,14 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         vehicle: String = "car",
         co2: Double
     ) {
-        var title = "Distancia total recorreguda en $vehicle: "
+        var title = context.getString(R.string.m1)+" $vehicle: "
 
         val consum = (co2 * dist / 1000.0)
 
         title =
             if (dist < 1000.0) title + "%.0fm".format(dist) else title + "%.1fKm".format(dist/1000)
         title =
-            if (consum < 1000.0) "$title\n Consum de CO2: %.1fg".format(consum) else "$title\n Consum de CO2: %.2fKg".format(consum/1000)
+            if (consum < 1000.0) "$title\n " +context.getString(R.string.m2) + " %.1fg".format(consum) else "$title\n "+context.getString(R.string.m2)+": %.2fKg".format(consum/1000)
 
 
         if (markersMap.contains(position))markersMap[position]?.title = title
@@ -613,12 +612,12 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                 //trigger recomposition for  walking periods, when CO2 doesn't increase but distance does
                 uiString.value = ""
                 if (totalCO2 < 1000) uiString.value =
-                    "Total CO2 consumption %.1fg".format(totalCO2)
-                else uiString.value = "Total CO2 consumption %.2fKg".format(totalCO2/1000)
+                    context.getString(R.string.co2cons) + " %.1fg".format(totalCO2)
+                else uiString.value = context.getString(R.string.co2cons) + " %.2fKg".format(totalCO2/1000)
 
                 if (totalDistance < 1000) uiString2.value =
-                    "Total distance %.0fm".format(totalDistance)
-                else uiString2.value = "Total distance %.1fKm".format(totalDistance/1000)
+                    context.getString(R.string.distcons) + " %.0fm".format(totalDistance)
+                else uiString2.value = context.getString(R.string.distcons) + " %.1fKm".format(totalDistance/1000)
                 if ((prevIcon != currIcon)) partialDistance = 0.0
                 else markersOnThisRoad.add(startPoint)
                 mutColor.value =

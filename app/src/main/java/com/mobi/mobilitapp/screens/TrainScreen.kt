@@ -10,15 +10,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.screens.components.TopBar
 import com.mobi.mobilitapp.sensors.SensorLoader
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * Composable function representing the TrainScreen.
@@ -30,7 +33,7 @@ import java.util.*
 @Composable
 fun TrainScreen(sensorLoader: SensorLoader) {
 
-    Scaffold( topBar = { TopBar("Generate data") }) {
+    Scaffold( topBar = { TopBar(LocalContext.current.getString(R.string.GenerateData)) }) {
         BodyContent(sensorLoader)
     }
 }
@@ -49,7 +52,7 @@ private fun BodyContent(sensorLoader: SensorLoader){
     var capturing by remember { mutableStateOf(sensorLoader.getState()) }
     var capture: Int? by remember{ mutableStateOf(sensorLoader.getCapture()) }
     var openDialog: Boolean by remember { mutableStateOf(false) }
-    
+    val res = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -77,11 +80,11 @@ private fun BodyContent(sensorLoader: SensorLoader){
             ) {
                 Icon(
                     Icons.Filled.PlayArrow,
-                    contentDescription = "Start",
+                    contentDescription = res.getString(R.string.Start),
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "Start")
+                Text(text = res.getString(R.string.Start))
             }
             Spacer(modifier = Modifier.width(width = 40.dp))
             Button(onClick = {
@@ -96,28 +99,28 @@ private fun BodyContent(sensorLoader: SensorLoader){
             ) {
                 Icon(
                     Icons.Filled.Done,
-                    contentDescription = "Stop",
+                    contentDescription = res.getString(R.string.Stop),
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "Stop")
+                Text(text = res.getString(R.string.Stop))
             }
         }
         Spacer(modifier = Modifier.height(height = 40.dp))
         if (capture != null && !capturing && !sensorLoader.getUploadState()) {
             val capture_size = sensorLoader.finishedCapture
             if(capture_size!! < 512) {
-                Text("This capture is not long enough")
-                Text("Size of capture: $capture_size")
+                Text(res.getString(R.string.train1))
+                Text(res.getString(R.string.train2)+": $capture_size")
                 val currentTime=endTime
-                Text(text = "Start: $startTime")
-                Text(text="End: $currentTime")
+                Text(text = res.getString(R.string.Started)+": $startTime")
+                Text(text=res.getString(R.string.Finished)+": $currentTime")
             } else {
-                Text("Captured succesfully")
-                Text("Size of capture: $capture_size")
+                Text(res.getString(R.string.train3))
+                Text(res.getString(R.string.train2)+": $capture_size")
                 val currentTime=endTime
-                Text(text = "Start: $startTime")
-                Text(text = "End: $currentTime")
+                Text(text = res.getString(R.string.Started)+": $startTime")
+                Text(text=res.getString(R.string.Finished)+": $currentTime")
                 Spacer(modifier = Modifier.height(height = 40.dp))
                 var uploading: Boolean by remember { mutableStateOf(false) }
                 var deleting: Boolean by remember { mutableStateOf(false) }
@@ -140,11 +143,11 @@ private fun BodyContent(sensorLoader: SensorLoader){
                     ) {
                         Icon(
                             Icons.Filled.ThumbUp,
-                            contentDescription = "Upload",
+                            contentDescription = res.getString(R.string.Upload),
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(text = "Upload")
+                        Text(text = res.getString(R.string.Upload))
                     }
                     Spacer(modifier = Modifier.width(width = 40.dp))
                     Button(
@@ -164,16 +167,16 @@ private fun BodyContent(sensorLoader: SensorLoader){
                     ) {
                         Icon(
                             Icons.Filled.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = res.getString(R.string.Delete),
                             modifier = Modifier.size(ButtonDefaults.IconSize)
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(text = "Delete")
+                        Text(text = res.getString(R.string.Delete))
                     }
                 }
                 }
         } else if (sensorLoader.getState()){
-            Text("Capturing...")
+            Text(res.getString(R.string.train4)+"...")
         }
     }
 
@@ -185,26 +188,39 @@ private fun ActivityDialog(
     dismissDialog: ()->Unit,
     sensorLoader: SensorLoader
 ){
+    val res = LocalContext.current
     if (showDialog){
         var activity: String? = null
         AlertDialog(
             onDismissRequest = {},
-            title = {Text("Select an activity:", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))},
+            title = {Text(res.getString(R.string.train5)+":", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))},
             confirmButton = {
                             Button(onClick = {
                                 sensorLoader.initialize(activity!!)
                                 dismissDialog()
                             }) {
-                                Text("Accept")
+                                Text(res.getString(R.string.Accept))
                             }
             },
             dismissButton = {
                 Button(onClick = { dismissDialog() }) {
-                    Text("Cancel")
+                    Text(res.getString(R.string.Cancel))
                 }
             },
             text = {
-                val radioOptions = listOf("Bicycle", "Bus", "Car", "e-Bicycle", "e-Scooter", "Metro", "Moto", "Run", "Stationary", "Train", "Tram", "Walk")
+                val radioOptions = listOf( res.getString(R.string.Bicycle),
+                                            res.getString(R.string.Bus),
+                                            res.getString(R.string.Car),
+                                            res.getString(R.string.e_Bicycle),
+                                            res.getString(R.string.e_Scooter),
+                                            res.getString(R.string.Metro),
+                                            res.getString(R.string.Moto),
+                                            res.getString(R.string.Run),
+                                            res.getString(R.string.Stationary),
+                                            res.getString(R.string.Train),
+                                            res.getString(R.string.Tram),
+                                            res.getString(R.string.Walk))
+
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[2]) }
                 activity=selectedOption
                 Column(

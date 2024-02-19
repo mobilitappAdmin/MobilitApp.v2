@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.screens.components.TopBar
 
 /**
@@ -37,7 +39,7 @@ import com.mobi.mobilitapp.screens.components.TopBar
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
-    Scaffold( topBar = { TopBar("Preferences") }) {
+    Scaffold( topBar = { TopBar(LocalContext.current.getString(R.string.Preferences)) }) {
         BodyContent(preferences)
     }
 }
@@ -61,9 +63,11 @@ private fun BodyContent(preferences: SharedPreferences) {
     var openDialog2: Boolean by remember { mutableStateOf(false) }
     var openDialog1: Boolean by remember { mutableStateOf(false) }
 
+    val res = LocalContext.current
+
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Settings",
+            text = res.getString(R.string.Settings),
             style = MaterialTheme.typography.h5,
             modifier = Modifier.padding(16.dp)
         )
@@ -81,11 +85,11 @@ private fun BodyContent(preferences: SharedPreferences) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Age",
+                    text = res.getString(R.string.Age),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Text(
-                    text = "Select your age range",
+                    text = res.getString(R.string.pref1),
                     style = MaterialTheme.typography.body2
                 )
             }
@@ -105,11 +109,11 @@ private fun BodyContent(preferences: SharedPreferences) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Gender",
+                    text = res.getString(R.string.Gender),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Text(
-                    text = "Select your gender",
+                    text = res.getString(R.string.pref2),
                     style = MaterialTheme.typography.body2
                 )
             }
@@ -118,8 +122,8 @@ private fun BodyContent(preferences: SharedPreferences) {
         Divider()
 
         SwitchSetting(
-            title = "Debug Mode",
-            description = "Enable debug mode",
+            title = res.getString(R.string.DebugMode),
+            description = res.getString(R.string.pref3),
             checked = debug == true,
             preferences
         )
@@ -127,7 +131,7 @@ private fun BodyContent(preferences: SharedPreferences) {
 
 
         Text(
-            text = "About",
+            text = res.getString(R.string.About),
             style = MaterialTheme.typography.h5,
             modifier = Modifier.padding(16.dp)
         )
@@ -148,7 +152,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                     style = MaterialTheme.typography.subtitle1
                 )
                 Text(
-                    text = "Access to the project website",
+                    text = res.getString(R.string.pref4),
                     style = MaterialTheme.typography.body2
                 )
             }
@@ -171,17 +175,17 @@ private fun BodyContent(preferences: SharedPreferences) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Pollution",
+                    text = res.getString(R.string.Pollution),
                     style = MaterialTheme.typography.subtitle1
                 )
                 Text(
-                    text = "Download pollution documentation",
+                    text = res.getString(R.string.pref5),
                     style = MaterialTheme.typography.body2
                 )
             }
             Icon(
                 Icons.Filled.Info,
-                contentDescription = "pollution",
+                contentDescription = res.getString(R.string.Pollution),
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
         }
@@ -190,7 +194,7 @@ private fun BodyContent(preferences: SharedPreferences) {
 
 
     if (openDialog1){
-        var title = "Age:"
+        var title = res.getString(R.string.Age) +":"
         var activity: String? = null
         AlertDialog(
             onDismissRequest = {openDialog1 = false},
@@ -204,7 +208,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                     age = activity
                     openDialog1 = false
                 }) {
-                    Text("Next")
+                    Text(res.getString(R.string.Next))
                 }
             },
             text = {
@@ -248,7 +252,7 @@ private fun BodyContent(preferences: SharedPreferences) {
         )
     }
     if (!openDialog1 and openDialog2){
-        var title: String = "Gender:"
+        var title: String = res.getString(R.string.Gender) + ":"
         var activity: String? = null
         AlertDialog(
             onDismissRequest = {openDialog2 = false},
@@ -262,11 +266,11 @@ private fun BodyContent(preferences: SharedPreferences) {
                     gender = activity
                     openDialog2 = false
                 }) {
-                    Text("Next")
+                    Text(res.getString(R.string.Next))
                 }
             },
             text = {
-                var radioOptions = listOf("man", "woman", "others", "NA")
+                var radioOptions = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.others), "NA")
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.indexOf(gender)]) }
                 activity=selectedOption
                 Column(
@@ -377,11 +381,11 @@ fun TextBox(preferences: SharedPreferences) {
             modifier = Modifier.weight(3f)
         ) {
             Text(
-                text = "Heuristic factor",
+                text = LocalContext.current.getString(R.string.pref6),
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = "Strength of route following\nDefault: 3.0",
+                text = LocalContext.current.getString(R.string.pref7),
                 style = MaterialTheme.typography.body2
             )
         }
@@ -430,11 +434,11 @@ fun TextBox_stop(preferences: SharedPreferences) {
             modifier = Modifier.weight(3f)
         ) {
             Text(
-                text = "Alpha factor",
+                text = LocalContext.current.getString(R.string.pref8),
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
-                text = "Stop algorithm \nDefault: 0.2",
+                text = LocalContext.current.getString(R.string.pref9),
                 style = MaterialTheme.typography.body2
             )
         }

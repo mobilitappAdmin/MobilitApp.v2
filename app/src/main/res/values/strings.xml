@@ -1,6 +1,95 @@
 <resources>
-    <string name="app_name">MobilitApp.v2</string>
-    <string name="channel_name">Mobilitapp</string>
-    <string name="channel_description">Channel used to deliver usage information\n</string>
-    <string name="channel_id">Mobilitapp</string>
+    <string name="app_name" translatable="false">MobilitApp.v2</string>
+    <string name="channel_name" translatable="false">Mobilitapp</string>
+    <string name="channel_description" translatable="false">Channel used to deliver usage information\n</string>
+    <string name="channel_id" translatable="false">Mobilitapp</string>
+
+
+
+    <!--General reusable words (Buttons/PopUps)-->
+    <string name="Start">Start</string>
+    <string name="Stop">Stop</string>
+    <string name="Started">Started</string>
+    <string name="Finished">Finished</string>
+    <string name="Upload">Upload</string>
+    <string name="Delete">Delete</string>
+    <string name="Accept">Accept</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Close">Close</string>
+    <string name="Distance">Distance</string>
+    <string name="Next">Next</string>
+    <string name="Settings">Settings</string>
+    <string name="DebugMode">Debug Mode</string>
+    <string name="About">About</string>
+    <string name="Gender">Gender</string>
+    <string name="Age">Age</string>
+    <string name="man">man</string>
+    <string name="woman">woman</string>
+    <string name="others">others</string>
+    <string name="Pollution">Pollution</string>
+
+    <string name="Bicycle">Bicycle</string>
+    <string name="Bus">Bus</string>
+    <string name="Car">Car</string>
+    <string name="e_Bicycle">e-Bicycle</string>
+    <string name="e_Scooter">e-Scooter</string>
+    <string name="Metro">Metro</string>
+    <string name="Moto">Moto</string>
+    <string name="Run">Run</string>
+    <string name="Stationary">Stationary</string>
+    <string name="Train">Train</string>
+    <string name="Tram">Tram</string>
+    <string name="Walk">Walk</string>
+
+    <!--Main-->
+    <string name="Age2">Age (years old):</string>
+
+    <!--Train Screen-->
+    <string name="GenerateData">Generate Data</string>
+
+    <string name="train1">This capture is not long enough</string>
+    <string name="train2">Size of capture</string>
+    <string name="train3">Captured successfully</string>
+    <string name="train4">Capturing</string>
+    <string name="train5">Select an activity</string>
+
+    <!--Predict Screen-->
+    <string name="Trip">Trip</string>
+    <string name="pred1">Predicted Activity</string>
+    <string name="pred2">Activities</string>
+    <string name="pred3">Show last prediction</string>
+    <string name="pred4">CO2 consumption: </string>
+    <string name="pred5">No trips detected yet :(</string>
+    <string name="pred6">Total distance</string>
+
+    <!--Preferences Screen-->
+    <string name="Preferences">Preferences</string>
+
+    <string name="pref1">Select your age range</string>
+    <string name="pref2">Select your gender</string>
+    <string name="pref3">Enable debug mode</string>
+    <string name="pref4">Access to the project website</string>
+    <string name="pref5">Download pollution documentation</string>
+    <string name="pref6">Heuristic factor</string>
+    <string name="pref7">Strength of route following \nDefault: 3.0</string>
+    <string name="pref8">Alpha factor</string>
+    <string name="pref9">Stop algorithm \nDefault: 0.2</string>
+    <!--Map-->
+    <string name="co2cons">Total CO2 consumption</string>
+    <string name="distcons">Total distance</string>
+    <string name="m1">Total distance traveled in</string>
+    <string name="m2">CO2 consumption</string>
+
+    <!--SensorLoader-->
+    <string name="SensorLoader">Selected activity</string>
+
+    <!--PredictionMap-->
+    <string name="predMap1">ML activity prediction</string>
+
+    <!--Co2 Notification-->
+    <string name="JourneyFinished">Journey finished</string>
+    <string name="n1">Total Consumption: %s</string>
+    <string name="n2">Total Consumption: %s\nYour trip generated %s of CO2. You could have saved %s of CO2 by using public transport.</string>
+    <string name="n3">Total Consumption: %s\nCongratulations! you have potentially saved %s of CO2 by avoiding the use of polluting transport.</string>
+
 </resources>

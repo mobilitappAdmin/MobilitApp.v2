@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.mobi.mobilitapp.R
 
 @Composable
 fun MapDialog(map: MutableMap<String, Int>, onDismiss: () -> Unit) {
@@ -18,7 +20,7 @@ fun MapDialog(map: MutableMap<String, Int>, onDismiss: () -> Unit) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "ML activity prediction",
+                text = LocalContext.current.getString(R.string.predMap1),
                 style = MaterialTheme.typography.h5,
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -33,7 +35,7 @@ fun MapDialog(map: MutableMap<String, Int>, onDismiss: () -> Unit) {
                 onClick = { onDismiss() },
                 modifier = Modifier.align(CenterHorizontally)
             ) {
-                Text(text = "Close")
+                Text(text = LocalContext.current.getString(R.string.Close))
             }
         }
     }

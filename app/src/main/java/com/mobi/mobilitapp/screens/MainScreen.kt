@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -63,8 +64,8 @@ private fun BottomNavigationBar (navController: NavController, items: List<AppSc
     BottomNavigation {
         items.forEach { screen ->
             BottomNavigationItem(
-                icon = { Icon(painter=painterResource(id = screen.icon), contentDescription=screen.title) },
-                label = { Text(screen.title, fontSize = 10.sp) },
+                icon = { Icon(painter=painterResource(id = screen.icon), contentDescription="screen.title") },
+                label = { Text(LocalContext.current.getString(screen.title), fontSize = 10.sp) },
                 selected = currentRoute == screen.route,
                 onClick = { navController.navigate(screen.route) {
                     popUpTo(navController.graph.findStartDestination().id){

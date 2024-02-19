@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.mobi.mobilitapp.R
 
 
 /**
@@ -25,7 +26,7 @@ fun TopBar(namePage: String) {
             LocalContentAlpha provides ContentAlpha.high,
             LocalTextStyle provides MaterialTheme.typography.h6
         ) {
-            if (namePage == "Generate data") {
+            if (namePage == LocalContext.current.getString(R.string.GenerateData)) {
                 Text(
                     text = "MobilitApp: $namePage",
                     textAlign = TextAlign.Center,
