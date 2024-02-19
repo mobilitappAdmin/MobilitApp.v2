@@ -36,8 +36,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:enabled="true" android:name="com.upc.mobilitappv2.server.UploadService" android:exported="false"/>
-        <service android:enabled="true" android:name="com.upc.mobilitappv2.multimodal.Multimodal" android:exported="false"
+        <service android:enabled="true" android:name="com.mobi.mobilitapp.server.UploadService" android:exported="false"/>
+        <service android:enabled="true" android:name="com.mobi.mobilitapp.multimodal.Multimodal" android:exported="false"
             tools:ignore="Instantiatable" />
     </application>
 
