@@ -8,6 +8,7 @@
     <string name="Delete">Eliminar</string>
     <string name="Accept">Aceptar</string>
     <string name="Cancel">Cancelar</string>
+    <string name="Deny">Denegar</string>
     <string name="Close">Cerrar</string>
     <string name="Distance">Distancia</string>
     <string name="Next">Siguiente</string>
@@ -36,7 +37,8 @@
 
     <!--Main-->
     <string name="Age2">Edad (años):</string>
-
+    <string name="LocationUse">Uso de la ubicación</string>
+    <string name="LocationPolicy">Esta aplicación recopila datos de ubicación para permitir la detección de cambios de modo de transporte y para habilitar el mapeo de su viaje, cuando la aplicación está en uso incluyendo cuando la aplicación se encuentra en segundo plano.</string>
     <!--Train Screen-->
     <string name="GenerateData">Generar Datos</string>
 
@@ -47,7 +49,7 @@
     <string name="train5">Seleccione una actividad</string>
 
     <!--Predict Screen-->
-    <string name="Trip">Viaje</string>
+    <string name="Trip">Generar Viaje</string>
     <string name="pred1">Predicción de actividad</string>
     <string name="pred2">Actividades</string>
     <string name="pred3">Muestra la última predicción</string>

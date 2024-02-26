@@ -8,6 +8,7 @@
     <string name="Delete">Suprimeix</string>
     <string name="Accept">Acceptar</string>
     <string name="Cancel">Cancel·lar</string>
+    <string name="Deny">Denegar</string>
     <string name="Close">Tanca</string>
     <string name="Distance">Distància</string>
     <string name="Next">Següent</string>
@@ -36,7 +37,8 @@
 
     <!--Main-->
     <string name="Age2">Edat (anys):</string>
-
+    <string name="LocationUse">Ús de la ubicació</string>
+    <string name="LocationPolicy">Aquesta aplicació recopila dades d\'ubicació per permetre la detecció de canvis en el mode de transport i per activar el mapeig del vostre viatge, quan l\'aplicació està en ús incloent quan l\'aplicació està en segon pla.</string>
     <!--Train Screen-->
     <string name="GenerateData">Generar Dades</string>
 
@@ -47,7 +49,7 @@
     <string name="train5">Seleccioneu una activitat</string>
 
     <!--Predict Screen-->
-    <string name="Trip">Viatge</string>
+    <string name="Trip">Generar Viatge</string>
     <string name="pred1">Predicció d\'activitat</string>
     <string name="pred2">Activitats</string>
     <string name="pred3">Mostra l\'última predicció</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">MobilitApp.v2</string>
+    <string name="app_name" translatable="false">D-MobilitApp.v2</string>
     <string name="channel_name" translatable="false">Mobilitapp</string>
     <string name="channel_description" translatable="false">Channel used to deliver usage information\n</string>
     <string name="channel_id" translatable="false">Mobilitapp</string>
@@ -15,6 +15,7 @@
     <string name="Delete">Delete</string>
     <string name="Accept">Accept</string>
     <string name="Cancel">Cancel</string>
+    <string name="Deny">Deny</string>
     <string name="Close">Close</string>
     <string name="Distance">Distance</string>
     <string name="Next">Next</string>
@@ -43,6 +44,8 @@
 
     <!--Main-->
     <string name="Age2">Age (years old):</string>
+    <string name="LocationUse">Location Use</string>
+    <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, when the app is in use including when the app is in background.</string>
 
     <!--Train Screen-->
     <string name="GenerateData">Generate Data</string>
@@ -54,7 +57,7 @@
     <string name="train5">Select an activity</string>
 
     <!--Predict Screen-->
-    <string name="Trip">Trip</string>
+    <string name="Trip">Generate Trip</string>
     <string name="pred1">Predicted Activity</string>
     <string name="pred2">Activities</string>
     <string name="pred3">Show last prediction</string>

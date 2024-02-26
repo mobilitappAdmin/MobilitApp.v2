@@ -54,7 +54,7 @@ fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
 @Composable
 private fun BodyContent(preferences: SharedPreferences) {
     val uriHandler = LocalUriHandler.current
-    val uri = "http://mobilitat.upc.edu/#"
+    val uri = "https://mobilitapp.upc.edu"
     var age: String? by remember { mutableStateOf(preferences.getString("age", "")) }
     var gender: String? by remember { mutableStateOf(preferences.getString("gender", "")) }
     var debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
@@ -120,6 +120,7 @@ private fun BodyContent(preferences: SharedPreferences) {
             Text(text = gender.toString())
         }
         Divider()
+        //APP PLAYSTORE
 
         SwitchSetting(
             title = res.getString(R.string.DebugMode),
@@ -127,7 +128,6 @@ private fun BodyContent(preferences: SharedPreferences) {
             checked = debug == true,
             preferences
         )
-
 
 
         Text(
@@ -363,11 +363,13 @@ fun SwitchSetting(
 
 
     }
+    /*
     if(checkedState.value){
         Divider(Modifier.padding(bottom= 10.dp))
         //TextBox(preferences) //heuristic factor
         TextBox_stop(preferences)
     }
+     */
     Divider()
 }
 

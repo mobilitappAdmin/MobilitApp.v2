@@ -1,6 +1,7 @@
 package com.mobi.mobilitapp
 
 import android.Manifest
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -11,6 +12,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -80,7 +82,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val systemUiController = rememberSystemUiController()
             MobilitAppv2Theme {
-                encryptedSharedPrefs(sharedPreferences)
+                encryptedSharedPrefs(sharedPreferences, this)
                 if(isSystemInDarkTheme()) systemUiController.setStatusBarColor(MaterialTheme.colors.background)
                 else systemUiController.setStatusBarColor(MaterialTheme.colors.primary)
                 // A surface container using the 'background' color from the theme
@@ -155,10 +157,38 @@ class MainActivity : ComponentActivity() {
      * @param sharedPreferences The shared preferences instance.
      */
     @Composable
-    private fun encryptedSharedPrefs(sharedPreferences: SharedPreferences) {
+    private fun encryptedSharedPrefs(sharedPreferences: SharedPreferences, context: Context) {
+        var openDialog0: Boolean by remember { mutableStateOf(!sharedPreferences.contains("location")) }
         var openDialog1: Boolean by remember { mutableStateOf(!sharedPreferences.contains("age")) }
         val res = LocalContext.current
-        if (openDialog1){
+        if (openDialog0) {
+            var title: String = res.getString(R.string.LocationUse) +":"
+            AlertDialog(
+                onDismissRequest = {(context as? Activity)?.finish()},
+                title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        // on below line we are storing data in shared preferences file.
+                        sharedPreferences.edit().putBoolean("location", true).apply()
+                        sharedPreferences.edit().commit()
+                        openDialog0 = false
+                    }) {
+                        Text(res.getString(R.string.Accept))//res.getString(R.string.Accept)
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            (context as? Activity)?.finish()
+                        }) {
+                        Text(res.getString(R.string.Deny))
+                    }
+                },
+                text = { Text(res.getString(R.string.LocationPolicy))}
+            )
+        }
+        if (!openDialog0 and openDialog1){
                 var title = res.getString(R.string.Age2)
                 var activity: String? = null
                 AlertDialog(

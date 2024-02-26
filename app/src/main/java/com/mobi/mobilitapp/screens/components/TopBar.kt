@@ -39,6 +39,7 @@ fun TopBar(namePage: String) {
                 Text(
                     text = "MobilitApp: $namePage",
                     textAlign = TextAlign.Center,
+                    fontSize = 18.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)

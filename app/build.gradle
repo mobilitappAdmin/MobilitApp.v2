@@ -8,11 +8,11 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId 'com.mobi.mobilitapp'
+        applicationId 'com.mobi.mobilitapp.debug'
         minSdk 26
         targetSdk 34
-        versionCode 40
-        versionName '5.0.1'
+        versionCode 43
+        versionName '5.0.4'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
