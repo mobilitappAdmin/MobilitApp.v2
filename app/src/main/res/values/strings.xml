@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">D-MobilitApp.v2</string>
+    <string name="app_name" translatable="false">MobilitApp.v2</string>
     <string name="channel_name" translatable="false">Mobilitapp</string>
     <string name="channel_description" translatable="false">Channel used to deliver usage information\n</string>
     <string name="channel_id" translatable="false">Mobilitapp</string>

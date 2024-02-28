@@ -121,13 +121,14 @@ private fun BodyContent(preferences: SharedPreferences) {
         }
         Divider()
         //APP PLAYSTORE
-
+        /*
         SwitchSetting(
             title = res.getString(R.string.DebugMode),
             description = res.getString(R.string.pref3),
             checked = debug == true,
             preferences
         )
+         */
 
 
         Text(

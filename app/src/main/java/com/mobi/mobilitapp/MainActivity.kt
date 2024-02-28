@@ -57,7 +57,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestPermissions()
         createNotificationChannel()
 
         // creating a master key for encryption of shared preferences.
@@ -72,6 +71,7 @@ class MainActivity : ComponentActivity() {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+
 
         android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         sensorLoader = SensorLoader(this, android_id)
@@ -189,6 +189,8 @@ class MainActivity : ComponentActivity() {
             )
         }
         if (!openDialog0 and openDialog1){
+                requestPermissions()
+
                 var title = res.getString(R.string.Age2)
                 var activity: String? = null
                 AlertDialog(
@@ -303,6 +305,9 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
+
+
+
         if (!sharedPreferences.contains("debug")){
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()
