@@ -31,6 +31,8 @@
     <string name="woman">woman</string>
     <string name="others">others</string>
     <string name="Pollution">Pollution</string>
+    <string name="Reminders">Reminders</string>
+    <string name="Battery">Battery</string>
 
     <string name="Bicycle">Bicycle</string>
     <string name="Bus">Bus</string>
@@ -49,12 +51,24 @@
     <string name="Age2">Age (years old):</string>
     <string name="LocationUse">Location Use</string>
     <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, when the app is in use including when the app is in background.</string>
+
+
+    <!--Reminder-->
     <string name="ReminderPopUp">Get usage reminders:</string>
     <string name="ReminderNotification">Reminder</string>
+    <string name="ReminderPreferences">Notification frequency</string>
+
+    <!--Battery-->
     <string name="Daily">Daily</string>
     <string name="Weekly">Weekly</string>
     <string name="Never">Never</string>
-
+    <string name="Regular">Regular</string>
+    <string name="RegularText">Regular</string>
+    <string name="Low">Low</string>
+    <string name="LowText">Low</string>
+    <string name="Minimal">Minimal</string>
+    <string name="MinimalText">Minimal</string>
+    <string name="BatteryUsage">Battery usage</string>
     <!--Train Screen-->
     <string name="GenerateData">Generate Data</string>
 

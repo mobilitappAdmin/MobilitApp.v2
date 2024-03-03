@@ -297,7 +297,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = res.getString(R.string.pred2)+": $fifo", fontSize = 10.sp)
 
             //debugo button
-            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
+            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "WALK" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
                 
             if (stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0) {
                 sendCO2notification()

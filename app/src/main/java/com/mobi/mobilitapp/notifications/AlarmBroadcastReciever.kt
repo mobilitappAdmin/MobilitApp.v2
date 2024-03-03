@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,13 +15,13 @@ import com.mobi.mobilitapp.R
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        showNotification(context,intent.getStringExtra("content")!!)
+        showNotification(context,intent.getStringExtra("content")!!,intent.getIntExtra("requestCode",0))
     }
 
-    private fun showNotification(context: Context,text: String) {
+    private fun showNotification(context: Context,text: String, requestCode: Int) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        val pendingIntent = PendingIntent.getActivity(context, 113, notificationIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, requestCode, notificationIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val mBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(

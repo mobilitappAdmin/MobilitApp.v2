@@ -31,7 +31,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -85,6 +87,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     private val uiString = mutableStateOf(context.getString(R.string.co2cons) + " %.0fg".format(0.0))
     private val uiString2 = mutableStateOf(context.getString(R.string.distcons)+" %.0fm".format(0.0))
     val mutColor = mutableStateOf(ecoGreen)
+    val battery = mutableStateOf("Regular")
 
 
     private var partialDistance = 0.0
@@ -194,14 +197,6 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         }
         return co2Table[vehicle]!!*dist/1000
     }
-    fun shallowCopy(m:Marker):AuxMarker{
-        var a = AuxMarker()
-        a.position = m.position
-        a.icon = m.icon
-        a.title = m.title
-        a.rotation = m.rotation
-        return a
-    }
     fun resetView(){
         //for(m in markersMap) m.value.remove(mMap)
         fullView  = LayoutInflater.from(context).inflate(R.layout.map_layout, null)
@@ -231,14 +226,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
             mMap.overlays.add(0,poly)
         }
         initializeMap()
-        /*for(m in markersMap){
-            mMap.overlays.add(m.value)
-            m.value.infoWindow = CustomInfoWindow(mMap)
-        }*/
+
         for(m in savedMarkersForReset) reADD(m.value)
         mMap.invalidate()
-        //val map = view.findViewById(R.id.map) as MapView
-        //initializeMap()
     }
 
     private fun reADD(a:AuxMarker){
@@ -313,9 +303,10 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
 
     fun zoomToBB(){
         myLocationOverlay.disableFollowLocation()
-        if(savedRoadsForReset.isEmpty()) return
+        if(savedRoadsForReset.isEmpty() and savedMarkersForReset.isEmpty()) return
         var l = mutableListOf<GeoPoint>()
         savedRoadsForReset.map{l.addAll(it.actualPoints)}
+        l.addAll(savedMarkersForReset.keys)
         var b = BoundingBox.fromGeoPoints(l)
 
         var ratio = (mapHeight/mapWidth).toDouble()
@@ -329,6 +320,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     fun center(){
         mMap.controller.animateTo(myLocationOverlay.myLocation,18.7,500.toLong(),if(onTrip.value and (myLocationOverlay.lastFix != null))myLocationOverlay.lastFix!!.bearing  else 0.0f)
         myLocationOverlay.enableFollowLocation()
+    }
+    fun centerTo(loc:GeoPoint){
+        mMap.controller.animateTo(loc,18.7,500.toLong())
     }
 
     fun cruise(){
@@ -408,8 +402,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         pathing()
         if(drawable == R.drawable.marker_still) geoQ.clear()
 
-
         mMap.invalidate()
+
+        if(battery.value == "Low") zoomToBB()
 
     }
 
@@ -673,15 +668,30 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                     if(onTrip.value) onCruise.value  = true
                 }
             }
-
-        myLocationOverlay.enableMyLocation()
-        myLocationOverlay.isDrawAccuracyEnabled = true
-        myLocationOverlay.enableFollowLocation()
-        myLocationOverlay.runOnFirstFix {
-            runOnUiThread {
-                center()
+        if(battery.value == "Regular"){ // regular
+            myLocationOverlay.enableMyLocation()
+            myLocationOverlay.isDrawAccuracyEnabled = true
+            myLocationOverlay.enableFollowLocation()
+            myLocationOverlay.runOnFirstFix {
+                runOnUiThread {
+                    center()
+                }
             }
+
         }
+        else{
+            myLocationOverlay.enableMyLocation()
+            myLocationOverlay.runOnFirstFix {
+                runOnUiThread {
+                    center()
+                    myLocationOverlay.disableMyLocation()
+                    myLocationOverlay.isDrawAccuracyEnabled = false
+                    myLocationOverlay.disableFollowLocation()
+                }
+            }
+
+        }
+
         mMap.overlays.add(myLocationOverlay)
         mMap.invalidate()
     }
@@ -700,7 +710,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         Button(onClick = {  clear()
             //zoomToBB()
                          },shape= CircleShape, modifier = Modifier.size(50.dp), contentPadding = PaddingValues(0.dp),colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
-            Icon(painter = painterResource(R.drawable.icons8_broom_26) , contentDescription = "Clean map", modifier = Modifier.size(25.dp),tint = Orange,
+            Icon(painter = painterResource(R.drawable.broom) , contentDescription = "Clean map", modifier = Modifier.size(25.dp),tint = Orange,
 
                 )
         }
@@ -734,8 +744,31 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         )
     }
     @Composable
+    fun noMapa(){
+        Box(Modifier.fillMaxSize().background(Color.LightGray)){
+            Column(Modifier.align(Alignment.Center).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
+                Icon(
+                    painter = painterResource(R.drawable.hide),
+                    contentDescription = "map unaviable",
+                    modifier = Modifier
+                        .size(200.dp)
+
+                        ,
+                    tint = Color.Black
+                )
+                Spacer(Modifier.size(10.dp))
+                Text(modifier = Modifier.padding(start = 20.dp,end = 20.dp), text = "Map visualization of the predictive model is unaviable due to your battery settings, but you can still get the results from the text. To enable the map, go to Preferences>Battery and select another option.", textAlign = TextAlign.Justify, fontSize = 12.sp )
+                Spacer(Modifier.size(40.dp))
+            }
+
+        }
+    }
+    @Composable
     fun appLayout() {
         val localDensity = LocalDensity.current
+
+        //check if the preferences have changed
+        battery.value = preferences?.getString("battery","Regular")!!
         Box(
             Modifier
                 .fillMaxSize()
@@ -748,66 +781,94 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
 
         )// this will be the map
         {
+            if(battery.value == "Minimal"){
+                noMapa()
+            }
+            else {
+                DrawMap()
+                //Text("H $mapHeight W $mapWidth",modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp), fontWeight = FontWeight.Bold,color = Color.Black)
 
-            DrawMap()
-            //Text("H $mapHeight W $mapWidth",modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp), fontWeight = FontWeight.Bold,color = Color.Black)
-
-            Column(
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 20.dp, end = 15.dp)){
+                Column(
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 20.dp, end = 15.dp)
+                ) {
 
 
-                if(!onTrip.value){
-                    //ButtonClearMap
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ButtonCenterMap()
+                    if (battery.value == "Regular") {
+                        if (!onTrip.value) {
+                            //ButtonClearMap
+                            Spacer(modifier = Modifier.size(10.dp))
+                            ButtonCenterMap()
+                        } else {
+                            //ButtonClearMap()
+                            ButtonCruise()
+                        }
+                    }
                 }
-                else{
-                    //ButtonClearMap()
-                    ButtonCruise()
+
+                //DATA
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(bottom = 20.dp, start = 10.dp)
+                ) {
+                    var background = Color.White.copy(alpha = 0.7f)
+
+                    Row(
+                        Modifier
+                            .clip(shape = RoundedCornerShape(15.dp))
+                            .background(background)
+                            .padding(start = 10.dp, end = 10.dp, top = 2.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.eco),
+                            contentDescription = "distance",
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(start = 2.dp)
+                                .align(CenterVertically),
+                            tint = mutColor.value
+                        )
+                        Text(
+                            CO2String.value,
+                            modifier = Modifier
+                                .padding(start = 8.dp, end = 8.dp, top = 2.dp)
+                                .align(CenterVertically),
+                            fontWeight = FontWeight.Bold,
+                            color = mutColor.value
+                        )
+                    }
+                    Spacer(Modifier.padding(2.dp))
+                    Row(
+                        Modifier
+                            .padding(end = 3.dp)
+                            .clip(shape = RoundedCornerShape(15.dp))
+                            .background(background)
+                            .padding(start = 10.dp, end = 10.dp, top = 1.dp, bottom = 1.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ruler),
+                            contentDescription = "distance",
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(start = 2.dp)
+                                .align(CenterVertically),
+                            tint = Orange
+                        )
+                        Text(
+                            DistanceString.value,
+                            modifier = Modifier
+                                .padding(start = 8.dp, end = 8.dp, top = 2.dp)
+                                .align(CenterVertically),
+                            fontWeight = FontWeight.Bold,
+                            color = Orange
+                        )
+                    }
+
+
                 }
             }
-
-            //DATA
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(bottom = 20.dp, start = 10.dp)){
-                var background = Color.White.copy(alpha = 0.7f)
-
-                Row(
-                    Modifier
-                        .clip(shape = RoundedCornerShape(15.dp))
-                        .background(background)
-                        .padding(start = 10.dp, end = 10.dp, top = 2.dp)){
-                    Icon( painter = painterResource(R.drawable.eco), contentDescription = "distance", modifier = Modifier
-                        .size(25.dp)
-                        .padding(start = 2.dp)
-                        .align(CenterVertically),tint = mutColor.value)
-                    Text(CO2String.value,modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp, top = 2.dp)
-                        .align(CenterVertically), fontWeight = FontWeight.Bold,color = mutColor.value)
-                }
-                Spacer(Modifier.padding(2.dp))
-                Row(
-                    Modifier
-                        .padding(end = 3.dp)
-                        .clip(shape = RoundedCornerShape(15.dp))
-                        .background(background)
-                        .padding(start = 10.dp, end = 10.dp, top = 1.dp, bottom = 1.dp)){
-                    Icon(painter = painterResource(R.drawable.ruler), contentDescription = "distance", modifier = Modifier
-                        .size(25.dp)
-                        .padding(start = 2.dp)
-                        .align(CenterVertically),tint = Orange)
-                    Text(DistanceString.value,modifier = Modifier
-                        .padding(start = 8.dp, end = 8.dp, top = 2.dp)
-                        .align(CenterVertically), fontWeight = FontWeight.Bold, color = Orange)
-                }
-
-
-            }
-
         }
     }
     fun formatData(data: Double, type:String = ""):String{

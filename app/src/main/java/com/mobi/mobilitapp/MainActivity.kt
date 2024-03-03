@@ -2,12 +2,9 @@ package com.mobi.mobilitapp
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -15,7 +12,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -38,12 +34,11 @@ import androidx.security.crypto.MasterKeys
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
-import com.mobi.mobilitapp.notifications.AlarmBroadcastReceiver
 import com.mobi.mobilitapp.screens.MainScreen
+import com.mobi.mobilitapp.screens.components.alertDialogBattery
 import com.mobi.mobilitapp.screens.components.alertDialogReminder
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.MobilitAppv2Theme
-import java.util.Calendar
 
 
 /**
@@ -328,9 +323,13 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
-        var openDialog3: Boolean by rememberSaveable { mutableStateOf(!sharedPreferences.contains("reminder")) }
-        if (!openDialog2 and openDialog3) {
-            alertDialogReminder(this,sharedPreferences = sharedPreferences, ongoing = {openDialog3=it})
+        var openReminder: Boolean by rememberSaveable { mutableStateOf(!sharedPreferences.contains("reminder")) }
+        if (!openDialog2 and openReminder) {
+            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder=it}, newText = {})
+        }
+        var openBattery: Boolean by rememberSaveable { mutableStateOf(!sharedPreferences.contains("battery")) }
+        if (!openReminder and openBattery) {
+            alertDialogBattery(sharedPreferences = sharedPreferences, ongoing = {openBattery=it}, newText = {})
         }
         if (!sharedPreferences.contains("debug")){
             sharedPreferences.edit().putBoolean("debug", false).apply()

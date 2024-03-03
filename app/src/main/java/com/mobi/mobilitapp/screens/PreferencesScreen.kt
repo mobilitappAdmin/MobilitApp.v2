@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.screens.components.TopBar
+import com.mobi.mobilitapp.screens.components.alertDialogBattery
+import com.mobi.mobilitapp.screens.components.alertDialogReminder
 
 /**
  * Composable function for displaying the preferences screen.
@@ -57,11 +59,15 @@ private fun BodyContent(preferences: SharedPreferences) {
     val uri = "https://mobilitapp.upc.edu"
     var age: String? by remember { mutableStateOf(preferences.getString("age", "")) }
     var gender: String? by remember { mutableStateOf(preferences.getString("gender", "")) }
+    var reminder: String? by remember { mutableStateOf(preferences.getString("reminder", "")) }
+    var battery: String? by remember { mutableStateOf(preferences.getString("battery", "")) }
     var debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
     Log.d("PREFERENCES", "age: "+age+" gender: "+gender+" debug: "+debug.toString())
 
     var openDialog2: Boolean by remember { mutableStateOf(false) }
     var openDialog1: Boolean by remember { mutableStateOf(false) }
+    var openReminder: Boolean by remember { mutableStateOf(false) }
+    var openBattery: Boolean by remember { mutableStateOf(false) }
 
     val res = LocalContext.current
 
@@ -118,6 +124,53 @@ private fun BodyContent(preferences: SharedPreferences) {
                 )
             }
             Text(text = gender.toString())
+        }
+        Divider()
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+                .clickable { openReminder = true }
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = res.getString(R.string.Reminders),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = res.getString(R.string.ReminderPreferences),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Text(text = reminder.toString())
+        }
+        Divider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+                .clickable { openBattery = true }
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = res.getString(R.string.Battery),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = res.getString(R.string.BatteryUsage),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Text(text = battery.toString())
         }
         Divider()
         //APP PLAYSTORE
@@ -308,6 +361,12 @@ private fun BodyContent(preferences: SharedPreferences) {
                 }
             }
         )
+    }
+    if(openReminder){
+        alertDialogReminder(sharedPreferences = preferences, ongoing = {openReminder=it}, newText = {reminder = it} )
+    }
+    if(openBattery){
+        alertDialogBattery(sharedPreferences = preferences, ongoing = {openBattery=it}, newText = {battery = it})
     }
 
 }

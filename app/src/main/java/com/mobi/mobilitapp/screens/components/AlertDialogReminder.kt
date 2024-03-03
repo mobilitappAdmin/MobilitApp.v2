@@ -53,19 +53,17 @@ import com.mobi.mobilitapp.ui.theme.Orange
 import java.util.Calendar
 
 @Composable
-fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ongoing: (Boolean)-> Unit){
+fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> Unit,newText: (String)-> Unit){
     //ongoing is set to false once the user clicks the button or outside the alert
     val res = LocalContext.current
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-    val screenWidth = LocalConfiguration.current.screenWidthDp
-    var activity: String = ""
+    var activity: String = sharedPreferences.getString("reminder", res.getString(R.string.Never))!!
 
     // Declaring and initializing a calendar
     val mCalendar = Calendar.getInstance()
     val mHour = mCalendar[Calendar.HOUR_OF_DAY]
     val mMinute = mCalendar[Calendar.MINUTE]
 
-    val mTime = remember { mutableStateOf("08:00") }
+    val mTime = remember { mutableStateOf(sharedPreferences.getString("reminderTime","08:00")!!) }
     var radioOptions = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never))
     AlertDialog(
         onDismissRequest = {ongoing(false)},
@@ -73,11 +71,13 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
             TextButton(onClick = {
                 // on below line we are storing data in shared preferences file.
                 sharedPreferences.edit().putString("reminder", activity).apply()
+                sharedPreferences.edit().putString("reminderTime", mTime.value).apply()
                 sharedPreferences.edit().commit()
-                if(activity != radioOptions[-1]){
-                    setReminders(context,if(activity==radioOptions[0])"daily" else "weekly",mTime.value)
+                if(activity != radioOptions.last()){
+                    setReminders(res,if(activity==radioOptions[0])"daily" else "weekly",mTime.value)
                 }
                 ongoing(false)
+                newText(activity)
             }, colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
             )) {
@@ -86,29 +86,21 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
         },
         text = {
             Column(modifier= Modifier
-                /*.height((screenHeight * 0.70).dp)
-                .fillMaxSize()*/
-                /*.background(Color.Yellow)*/
                 ){
                 Text(text = LocalContext.current.getString(R.string.ReminderPopUp),style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),)
 
                 Column(modifier = Modifier
-                    /*.fillMaxSize()*/
-                    /*.background(Color.Cyan),*/
-                    /*verticalArrangement = Arrangement.Center,*/
                     )
                 {
                     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
                     activity=selectedOption
                     radioOptions.forEach{text->
-                        Column(Modifier.padding(top = if (text == radioOptions[1])0.dp else 20.dp, bottom = if (text == radioOptions[0]) 0.dp else 20.dp)){
+                        Column(Modifier.padding(top = if (text == radioOptions[1] && activity == radioOptions[0])0.dp else 20.dp, bottom = if (text == radioOptions[0] && text == activity) 0.dp else 20.dp)){
                             Row(modifier = Modifier
                                 .fillMaxWidth()
-                                /*.background(Color.Magenta),*/
                                 ){
                                 RadioButton(
                                     selected = (text == selectedOption),
-                                    /*modifier = Modifier.background(Color.Green),*/
                                     onClick = {
                                         onOptionSelected(text)
                                         activity = text
@@ -118,7 +110,7 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
                                         .fillMaxWidth()
                                         .height(46.dp)
                                         .wrapContentHeight(align = Alignment.CenterVertically)
-                                        .padding(top = 2.dp)
+                                        .padding(top = 6.dp)
                                         .background(Color.White),
                                     fontSize = 18.sp,
                                     text = text,
@@ -126,7 +118,7 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
 
                                     )
                             }
-                            if(text == radioOptions[0] ){
+                            if(text == radioOptions[0] && activity == text){
                                 // Fetching local context
                                 val mContext = LocalContext.current
 
@@ -137,7 +129,11 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
                                         mTime.value = (if(mHour < 10 )"0" else "") +"$mHour:" +(if( mMinute <10 )"0" else "") + "$mMinute"
                                     }, mHour, mMinute, true
                                 )
-                                Button(modifier= Modifier.height(40.dp).align(Alignment.CenterHorizontally),onClick = { mTimePickerDialog.show() },enabled = (selectedOption == text), colors = ButtonDefaults.buttonColors(backgroundColor = Orange)) {
+                                Button(
+                                    modifier= Modifier.height(40.dp).padding(start = 46.dp).align(Alignment.Start),
+                                    onClick = { mTimePickerDialog.show() },enabled = (selectedOption == text),
+                                    colors = ButtonDefaults.buttonColors(backgroundColor = Orange,)
+                                ) {
                                     Text(text = mTime.value, color = Color.White, fontSize = 16.sp,)
                                 }
 
@@ -156,7 +152,8 @@ fun alertDialogReminder(context:Context,sharedPreferences: SharedPreferences,ong
 fun setReminders(context: Context, frequency:String, time:String) {
     val intent = Intent(context, AlarmBroadcastReceiver::class.java)
     intent.putExtra("content",context.getString(R.string.ReminderNotification))
-    val pendingIntent = PendingIntent.getBroadcast(context, 112, intent,
+    intent.putExtra("requestCode",113)
+    val pendingIntent = PendingIntent.getBroadcast(context, 113, intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent)
@@ -175,7 +172,6 @@ fun setReminders(context: Context, frequency:String, time:String) {
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
     }
-    Log.d("reminder set at", calendar.toString())
     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent);
 }
 
