@@ -2,9 +2,12 @@ package com.mobi.mobilitapp
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,9 +38,13 @@ import androidx.security.crypto.MasterKeys
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
+import com.mobi.mobilitapp.notifications.AlarmBroadcastReceiver
 import com.mobi.mobilitapp.screens.MainScreen
+import com.mobi.mobilitapp.screens.components.alertDialogReminder
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.MobilitAppv2Theme
+import java.util.Calendar
+
 
 /**
  * Main activity of the application.
@@ -58,7 +66,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
-        createNotificationChannel()
+        createNotificationChannels()
 
         // creating a master key for encryption of shared preferences.
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -132,24 +140,41 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(getString(R.string.channel_id), name, importance).apply {
-                description = descriptionText
-            }
-            channel.setSound(null,null)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        // for HIGH priority notifications, with sound/vibration
+        var name = getString(R.string.channel_nameHIGH)
+        var descriptionText = getString(R.string.channel_descriptionHIGH)
+        var importance = NotificationManager.IMPORTANCE_HIGH
+        var channel = NotificationChannel(getString(R.string.channel_idHIGH), name, importance).apply {
+            description = descriptionText
         }
+        channel.setSound(null,null)
+        // Register the channel with the system
+        var notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+
+        // for LOW priority notifications, silent
+        name = getString(R.string.channel_nameLOW)
+        descriptionText = getString(R.string.channel_descriptionLOW)
+        importance = NotificationManager.IMPORTANCE_LOW
+        channel = NotificationChannel(getString(R.string.channel_idLOW), name, importance).apply {
+            description = descriptionText
+        }
+        channel.setSound(null,null)
+        // Register the channel with the system
+        notificationManager=
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+
     }
+
+
 
     /**
      * Creates a composable function for the encrypted shared preferences dialog.
@@ -302,6 +327,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             )
+        }
+        var openDialog3: Boolean by rememberSaveable { mutableStateOf(!sharedPreferences.contains("reminder")) }
+        if (!openDialog2 and openDialog3) {
+            alertDialogReminder(this,sharedPreferences = sharedPreferences, ongoing = {openDialog3=it})
         }
         if (!sharedPreferences.contains("debug")){
             sharedPreferences.edit().putBoolean("debug", false).apply()

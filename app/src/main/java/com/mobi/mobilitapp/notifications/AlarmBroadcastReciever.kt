@@ -1,0 +1,47 @@
+package com.mobi.mobilitapp.notifications
+
+import android.Manifest
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.mobi.mobilitapp.MainActivity
+import com.mobi.mobilitapp.R
+
+
+class AlarmBroadcastReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        showNotification(context,intent.getStringExtra("content")!!)
+    }
+
+    private fun showNotification(context: Context,text: String) {
+        val notificationIntent = Intent(context, MainActivity::class.java)
+        notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val pendingIntent = PendingIntent.getActivity(context, 113, notificationIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val mBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(
+                context,
+                context.getString(R.string.channel_idLOW)
+            )
+                .setSmallIcon(R.mipmap.ic_launcher) // notification icon
+                .setContentTitle(text) // title for notification
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+
+
+        with(NotificationManagerCompat.from(context)) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) { return }
+            notify(1, mBuilder.build())
+        }
+    }
+}
