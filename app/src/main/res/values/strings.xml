@@ -29,7 +29,7 @@
     <string name="Age">Age</string>
     <string name="man">man</string>
     <string name="woman">woman</string>
-    <string name="others">others</string>
+    <string name="other">other</string>
     <string name="Pollution">Pollution</string>
     <string name="Reminders">Reminders</string>
     <string name="Battery">Battery</string>
@@ -104,6 +104,7 @@
     <string name="distcons">Total distance</string>
     <string name="m1">Total distance traveled in</string>
     <string name="m2">CO2 consumption</string>
+    <string name="mapDisabled">Map visualization of the predictive model is unaviable due to your battery settings, but you can still get predictions from the text window. To enable the map, go to Preferences>Battery and select another option.</string>
 
     <!--SensorLoader-->
     <string name="SensorLoader">Selected activity</string>

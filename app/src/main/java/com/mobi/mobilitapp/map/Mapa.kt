@@ -757,7 +757,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                     tint = Color.Black
                 )
                 Spacer(Modifier.size(10.dp))
-                Text(modifier = Modifier.padding(start = 20.dp,end = 20.dp), text = "Map visualization of the predictive model is unaviable due to your battery settings, but you can still get the results from the text. To enable the map, go to Preferences>Battery and select another option.", textAlign = TextAlign.Justify, fontSize = 12.sp )
+                Text(modifier = Modifier.padding(start = 20.dp,end = 20.dp), text = context.getString(R.string.mapDisabled) , textAlign = TextAlign.Justify, fontSize = 12.sp )
                 Spacer(Modifier.size(40.dp))
             }
 

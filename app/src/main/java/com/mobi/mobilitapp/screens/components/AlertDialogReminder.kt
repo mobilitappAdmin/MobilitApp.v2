@@ -74,7 +74,7 @@ fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-
                 sharedPreferences.edit().putString("reminderTime", mTime.value).apply()
                 sharedPreferences.edit().commit()
                 if(activity != radioOptions.last()){
-                    setReminders(res,if(activity==radioOptions[0])"daily" else "weekly",mTime.value)
+                    setReminders(res,if(activity==radioOptions[0])"daily" else "weekly",mTime.value,113)
                 }
                 ongoing(false)
                 newText(activity)
@@ -149,11 +149,11 @@ fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-
     )
 }
 
-fun setReminders(context: Context, frequency:String, time:String) {
+fun setReminders(context: Context, frequency:String, time:String, requestCode:Int) {
     val intent = Intent(context, AlarmBroadcastReceiver::class.java)
     intent.putExtra("content",context.getString(R.string.ReminderNotification))
-    intent.putExtra("requestCode",113)
-    val pendingIntent = PendingIntent.getBroadcast(context, 113, intent,
+    intent.putExtra("requestCode",requestCode)
+    val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent)
