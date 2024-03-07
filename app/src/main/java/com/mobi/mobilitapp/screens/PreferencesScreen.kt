@@ -28,7 +28,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobi.mobilitapp.R
+import com.mobi.mobilitapp.getArray
+import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.TopBar
+import com.mobi.mobilitapp.screens.components.isValidEmail
 
 /**
  * Composable function for displaying the preferences screen.
@@ -62,6 +65,7 @@ private fun BodyContent(preferences: SharedPreferences) {
 
     var openDialog2: Boolean by remember { mutableStateOf(false) }
     var openDialog1: Boolean by remember { mutableStateOf(false) }
+    var emailDialog: Boolean by remember { mutableStateOf(false) }
 
     val res = LocalContext.current
 
@@ -69,7 +73,7 @@ private fun BodyContent(preferences: SharedPreferences) {
         Text(
             text = res.getString(R.string.Settings),
             style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(10.dp)
         )
 
         Divider()
@@ -134,7 +138,7 @@ private fun BodyContent(preferences: SharedPreferences) {
         Text(
             text = res.getString(R.string.About),
             style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(10.dp)
         )
         Divider()
         Row(
@@ -168,7 +172,7 @@ private fun BodyContent(preferences: SharedPreferences) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp)
+                .height(85.dp)
                 .padding(horizontal = 16.dp)
                 .clickable { uriHandler.openUri("http://147.83.252.137:8080/pollution") }
         ){
@@ -181,7 +185,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                 )
                 Text(
                     text = res.getString(R.string.pref5),
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.caption
                 )
             }
             Icon(
@@ -191,6 +195,57 @@ private fun BodyContent(preferences: SharedPreferences) {
             )
         }
         Divider()
+        Text(
+            text = res.getString(R.string.draw),
+            style = MaterialTheme.typography.h5,
+            modifier = Modifier.padding(10.dp)
+        )
+        Divider()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+                .clickable { emailDialog = true }
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = res.getString(R.string.email),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                preferences.getString("email", "")?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(72.dp)
+                .padding(horizontal = 16.dp)
+        ){
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = res.getString(R.string.drawProgress),
+                    style = MaterialTheme.typography.subtitle1
+                )
+                LinearProgressIndicator(
+                    progress = getProgressRaffle(getArray("draw", preferences),
+                        preferences.getString("email", "False").toString()
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 
 
@@ -307,6 +362,44 @@ private fun BodyContent(preferences: SharedPreferences) {
                         }
                     }
                 }
+            }
+        )
+    }
+    if (emailDialog) {
+        var title: String = res.getString(R.string.email) +":"
+        var email by remember { mutableStateOf("") }
+        var valid by remember { mutableStateOf(false) }
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
+            },
+            confirmButton = {
+                Button(enabled = valid,
+                    onClick = {
+                        // on below line we are storing data in shared preferences file.
+                        if (valid) {
+                            preferences.edit().putString("email", email).apply()
+                            preferences.edit().commit()
+                        }
+                        emailDialog = false
+                    }) {
+                    Text(res.getString(R.string.Accept))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        preferences.edit().putString("email", "False").apply()
+                        preferences.edit().commit()
+                        emailDialog = false
+                    }) {
+                    Text(res.getString(R.string.Deny))
+                }
+            },
+            text = {
+                val (email_, valid_) = ValidateEmail()
+                email = email_
+                valid = valid_
             }
         )
     }
@@ -478,6 +571,43 @@ fun TextBox_stop(preferences: SharedPreferences) {
     }
 
 
+}
+
+@Composable
+fun ValidateEmail(): Pair<String, Boolean> {
+    var email by remember { mutableStateOf("") }
+    var valid by remember { mutableStateOf(false) }
+
+    Column (modifier = Modifier.padding(16.dp)) {
+        Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2)
+        Spacer(modifier = Modifier.height(height = 20.dp))
+        EmailTextField(email = email, onEmailChange = { email = it })
+
+        if (email.isNotEmpty()) {
+            if (isValidEmail(email)) {
+                Text(text = LocalContext.current.getString(R.string.emailValid), color = Color.Blue)
+                valid = true
+            } else {
+                Text(text = LocalContext.current.getString(R.string.emailNoValid), color = Color.Red)
+                valid = false
+            }
+        }
+    }
+
+    return Pair(email, valid)
+}
+
+fun getProgressRaffle(array: Array<String?>?, email: String): Float {
+    if (email == "False") {
+        return 0f
+    }
+    if (array != null) {
+        Log.d("PROGRESO size", array.size.toString())
+    }
+    if (array!!.size >= 3){
+        return 1f
+    }
+    return array.size / 3f
 }
 
 

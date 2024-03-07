@@ -45,7 +45,6 @@ class StopService(alpha: Double, max_radium: Int, num_points: Int, covering_thre
      */
     fun addLocation(loc: Location): Pair<Float, Boolean> {
         fifoLocations.add(loc)
-        Log.d("STOP num loc", fifoLocations.size.toString())
         if (fifoLocations.size > num_points) {
             fifoLocations.removeFirst()
         }
@@ -58,7 +57,6 @@ class StopService(alpha: Double, max_radium: Int, num_points: Int, covering_thre
             alpha = alpha_factor*dist
         }
 
-        Log.d("STOP alpha", get_current_alpha().toString())
 
         return checkStop() to (checkStop() >= threshold)
     }

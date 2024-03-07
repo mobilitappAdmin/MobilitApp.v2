@@ -86,5 +86,11 @@
     <string name="n1">Consum total: %s</string>
     <string name="n2">Consum total: %s\nEl vostre viatge ha generat %s de CO2. Podríeu haver estalviat %s de CO2 utilitzant el transport públic.</string>
     <string name="n3">Consum total: %s\nEnhorabona! Heu estalviat potencialment %s de CO2 evitant l\'ús de transports contaminants.</string>
+    <string name="emailInfo">Aquest email es requereix per a la participació al sorteig organitzat per la UPC. Aquesta informació només serà utilitzada per contactar amb el guanyador. Fes clic a denegar si no vols participar.</string>
+    <string name="emailValid">El correu electrònic és vàlid</string>
+    <string name="emailNoValid">El correu electrònic no és vàlid</string>
+    <string name="draw">Sorteig</string>
+    <string name="email">Correu electrònic</string>
+    <string name="drawProgress">" Progrés al sorteig"</string>sdf#
 
 </resources>

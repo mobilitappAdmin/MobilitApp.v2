@@ -27,7 +27,7 @@ import com.mobi.mobilitapp.sensors.SensorLoader
  */
 @Composable
 fun AppNavigation(navController: NavHostController, context: Context, sensorLoader: SensorLoader, multiModal: Multimodal, sharedPreferences: SharedPreferences,mapa:Mapa) {
-    NavHost(navController = navController, startDestination = AppScreens.TrainScreen.route) {
+    NavHost(navController = navController, startDestination = AppScreens.PredictScreen.route) {
         composable(route = AppScreens.TrainScreen.route) {
             TrainScreen(sensorLoader)
         }

@@ -51,6 +51,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     private var accArray: MutableList<FloatArray> = ArrayList()
     private var gyrArray: MutableList<FloatArray> = ArrayList()
     private var magArray: MutableList<FloatArray> = ArrayList()
+    private var dateArray: MutableList<String> = ArrayList()
 
     private var fifoAcc: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
     private var fifoMag: LinkedList<MutableList<FloatArray>> = LinkedList<MutableList<FloatArray>>()
@@ -105,6 +106,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
         accArray=ArrayList()
         magArray=ArrayList()
         gyrArray=ArrayList()
+        dateArray=ArrayList()
 
         accData = emptyArray<Float>().toFloatArray()
         gyrData = emptyArray<Float>().toFloatArray()
@@ -294,6 +296,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                 magArray.add(magData)
                 accArray.add(accData)
                 gyrArray.add(gyrData)
+                dateArray.add(currentDT.toString())
 
                 if (activity == "Multimodal") {
                     currentAccWindow.add(accData)
@@ -301,8 +304,8 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                     currentGyrWindow.add(gyrData)
                     currentDateWindow.add(Calendar.getInstance().time)
                 }
-
                 //val output = "Acc -> x: $acc_x, y: $acc_y, z: $acc_z  ->  $currentDT"
+
                 //val output3 = "Mag -> x: $mag_x, y: $mag_y, z: $mag_z  ->  $currentDT"
                 //val output2 = "Gyr -> x: $gyr_x, y: $gyr_y, z: $gyr_z  ->  $currentDT"
                 //Log.d("SENSORS", "New analyzed window $output")
@@ -510,7 +513,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
                         csv.open()
                     } else {
                         csv.writeLine(
-                            SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().time) +
+                            dateArray[i] +
                                     "," + accArray[i][0].toString() + "," + accArray[i][1].toString() + "," + accArray[i][2].toString() +
                                     "," + magArray[i][0].toString() + "," + magArray[i][1].toString() + "," + magArray[i][2].toString() +
                                     "," + gyrArray[i][0].toString() + "," + gyrArray[i][1].toString() + "," + gyrArray[i][2].toString())

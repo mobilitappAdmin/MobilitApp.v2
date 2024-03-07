@@ -15,18 +15,22 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
+import com.mobi.mobilitapp.getArray
+import com.mobi.mobilitapp.helper.formatDate
+import com.mobi.mobilitapp.helper.indrawDays
+import com.mobi.mobilitapp.saveArray
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.server.UploadService
 import java.io.File
 import java.lang.Math.abs
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 import kotlin.math.cos
 import kotlin.math.sqrt
-import kotlin.math.round
 
 
 /**
@@ -151,7 +155,12 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         startDate = Date()
         captureHash = abs((startDate.toString()+ANDROID_ID).hashCode())
         stop = Pair(0.0f, false)
-        userInfoService = UserInfo(FILEPATH, captureHash.toString()+'_'+"UserInfo.csv")
+        val email = preferences.getString("email", "False")
+        userInfoService = if (email != null && email != "False") {
+            UserInfo(FILEPATH, captureHash.toString()+"_"+email+"_"+"UserInfo.csv")
+        } else {
+            UserInfo(FILEPATH, captureHash.toString() + '_' + "UserInfo.csv")
+        }
         mlService =  MLService(context)
         mlService.initialize() //load Model
         stopService = StopService(alpha = preferences.getFloat("alpha",0f).toDouble(), max_radium = 30, num_points = 90, covering_threshold = 75.0F)
@@ -242,7 +251,6 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                             macroState = prediction
                             predictionSummary = summary
 
-                            Log.d("ML", "call")
 
                             ++othersRow
                             ++ml_calls
@@ -473,12 +481,45 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     }
 
     fun pushUserInfo(): Boolean {
+        // Sorteo
+        if (checkDrawValidity()) {
+            val email = preferences.getString("email", "")
+            if (email != "" && email != "False") {
+                // save the day
+                if (indrawDays(startDate)) {
+                    val today = formatDate(startDate)
+                    var daysArray = getArray("draw", preferences)
+                    if (daysArray != null) {
+                        if (!daysArray.contains(today)){
+                            daysArray += today
+                            saveArray(daysArray, "draw", preferences)
+                        }
+                    }
+                    else {
+                        saveArray(arrayOf(today), "draw", preferences)
+                    }
+                }
+            }
+        }
+        // SORTEO
         val intent = Intent(context, UploadService::class.java)
         intent.putExtra("USERINFO", "Uploading...")
         context.startService(intent)
 
         return true
     }
+    private fun checkDrawValidity(): Boolean {
+        val dist = computeDistance(locations[0].latitude, locations[0].longitude, locations[locations.size-1].latitude, locations[locations.size-1].longitude)
+        val time = differenceInMinutes(startDate, Date())
+
+        return dist >= 100f && time >= 3f
+    }
+
+    private fun differenceInMinutes(date1: Date, date2: Date): Float {
+        val diffInMillis = date2.time - date1.time
+        return diffInMillis / (60f * 1000f)
+    }
+
 
     /**
      * Delete userinfo files

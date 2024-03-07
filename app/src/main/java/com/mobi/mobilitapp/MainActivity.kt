@@ -12,7 +12,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -22,6 +21,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +35,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.MainScreen
+import com.mobi.mobilitapp.screens.components.EmailTextField
+import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.MobilitAppv2Theme
 
@@ -161,7 +163,7 @@ class MainActivity : ComponentActivity() {
         var openDialog0: Boolean by remember { mutableStateOf(!sharedPreferences.contains("location")) }
         var openDialog1: Boolean by remember { mutableStateOf(!sharedPreferences.contains("age")) }
         val res = LocalContext.current
-        if (openDialog0) {
+        if (openDialog0) { // Location permission
             var title: String = res.getString(R.string.LocationUse) +":"
             AlertDialog(
                 onDismissRequest = {(context as? Activity)?.finish()},
@@ -188,7 +190,7 @@ class MainActivity : ComponentActivity() {
                 text = { Text(res.getString(R.string.LocationPolicy))}
             )
         }
-        if (!openDialog0 and openDialog1){
+        if (!openDialog0 and openDialog1){ //Age
                 requestPermissions()
 
                 var title = res.getString(R.string.Age2)
@@ -248,7 +250,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
         var openDialog2: Boolean by remember { mutableStateOf(!sharedPreferences.contains("gender")) }
-        if (!openDialog1 and openDialog2){
+        if (!openDialog1 and openDialog2){ // gender
             var title: String = res.getString(R.string.Gender) +":"
             var activity: String? = null
             AlertDialog(
@@ -305,6 +307,45 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
+        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
+        if (!openDialog2 and mailSorteig) { //email sorteig
+            var title: String = LocalContext.current.getString(R.string.email) +":"
+            var email by remember { mutableStateOf("") }
+            var valid by remember { mutableStateOf(false) }
+            AlertDialog(
+                onDismissRequest = {},
+                title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
+                },
+                confirmButton = {
+                    Button(enabled = valid,
+                        onClick = {
+                        // on below line we are storing data in shared preferences file.
+                        if (valid) {
+                            sharedPreferences.edit().putString("email", email).apply()
+                            sharedPreferences.edit().commit()
+                        }
+                        mailSorteig = false
+                    }) {
+                        Text(res.getString(R.string.Accept))
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            sharedPreferences.edit().putString("email", "False").apply()
+                            sharedPreferences.edit().commit()
+                            mailSorteig = false
+                        }) {
+                        Text(res.getString(R.string.Deny))
+                    }
+                },
+                text = {
+                    val (email_, valid_) = ValidateEmail()
+                    email = email_
+                    valid = valid_
+                }
+            )
+        }
 
 
 
@@ -312,10 +353,38 @@ class MainActivity : ComponentActivity() {
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()
         }
+        if (!sharedPreferences.contains("draw")){
+            saveArray(arrayOf(), "draw", sharedPreferences)
+        }
+
         //if (!sharedPreferences.contains("heuristic_fact")){
             sharedPreferences.edit().putFloat("heuristic_fact", 2.5f).apply()
             sharedPreferences.edit().putFloat("alpha", 0.2f).apply()
             sharedPreferences.edit().commit()
         //}
+    }
+
+    @Composable
+    fun ValidateEmail(): Pair<String, Boolean> {
+        var email by remember { mutableStateOf("") }
+        var valid by remember { mutableStateOf(false) }
+
+        Column (modifier = Modifier.padding(16.dp)) {
+            Text(LocalContext.current.getString(R.string.emailInfo))
+            Spacer(modifier = Modifier.height(height = 20.dp))
+            EmailTextField(email = email, onEmailChange = { email = it })
+
+            if (email.isNotEmpty()) {
+                if (isValidEmail(email)) {
+                    Text(text = LocalContext.current.getString(R.string.emailValid), color = Color.Blue)
+                    valid = true
+                } else {
+                    Text(text = LocalContext.current.getString(R.string.emailNoValid), color = Color.Red)
+                    valid = false
+                }
+            }
+        }
+
+        return Pair(email, valid)
     }
 }

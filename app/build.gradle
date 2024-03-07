@@ -5,10 +5,10 @@ plugins {
 
 android {
     namespace 'com.mobi.mobilitapp'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
-        applicationId 'com.mobi.mobilitapp'
+        applicationId 'com.mobi.mobilitapp.debug'
         minSdk 26
         targetSdk 34
         versionCode 44
