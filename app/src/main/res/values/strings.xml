@@ -100,5 +100,9 @@
     <string name="draw">Draw</string>
     <string name="email">Email</string>
     <string name="drawProgress">Draw progress</string>
+    <string name="infoDrawProgress">In the draw organized by the UPC, you must have participated in a minimum of 3 days of the 5 total days that the event lasts.</string>
+    <string name="currenProgress">Currently you have participated in</string>
+    <string name="days">days</string>
+    <string name="activateEmail">To participate in the draw activate your email</string>
 
 </resources>

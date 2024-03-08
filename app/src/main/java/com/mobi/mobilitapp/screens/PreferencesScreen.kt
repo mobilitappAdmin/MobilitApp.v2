@@ -66,6 +66,7 @@ private fun BodyContent(preferences: SharedPreferences) {
     var openDialog2: Boolean by remember { mutableStateOf(false) }
     var openDialog1: Boolean by remember { mutableStateOf(false) }
     var emailDialog: Boolean by remember { mutableStateOf(false) }
+    var progressDialog: Boolean by remember { mutableStateOf(false) }
 
     val res = LocalContext.current
 
@@ -230,6 +231,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                 .fillMaxWidth()
                 .height(72.dp)
                 .padding(horizontal = 16.dp)
+                .clickable { progressDialog = true }
         ){
             Column(
                 modifier = Modifier.weight(1f)
@@ -403,7 +405,43 @@ private fun BodyContent(preferences: SharedPreferences) {
             }
         )
     }
-
+    if (progressDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text(LocalContext.current.getString(R.string.drawProgress), style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        progressDialog = false
+                    }) {
+                    Text(res.getString(R.string.Accept))
+                }
+            },
+            text = {
+                val days =getArray(
+                    "draw",
+                    preferences
+                )
+                val email = preferences.getString("email", "False").toString()
+                Column (modifier = Modifier.padding(16.dp)) {
+                    Text(res.getString(R.string.infoDrawProgress))
+                    if (email != "False") {
+                        Text(
+                            "${res.getString(R.string.currenProgress)} ${days.size} ${res.getString(R.string.days)}.",
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        )
+                    }
+                    else {
+                        Text(
+                            res.getString(R.string.activateEmail),
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
+            }
+        )
+    }
 }
 
 

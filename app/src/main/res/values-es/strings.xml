@@ -92,5 +92,9 @@
     <string name="draw">Sorteo</string>
     <string name="email">Correo electrónico</string>
     <string name="drawProgress">Progreso en el sorteo</string>
+    <string name="infoDrawProgress">"En el sorteo organizado por la UPC se requiere de haber participado en un mínimo de 3 días de los 5 días totales que dura el evento. "</string>
+    <string name="currenProgress">Actualmente has participado en</string>
+    <string name="days">días</string>
+    <string name="activateEmail">Para participar en el sorteo activa tu correo electrónico</string>
 
 </resources>

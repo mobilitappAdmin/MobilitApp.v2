@@ -91,6 +91,11 @@
     <string name="emailNoValid">El correu electrònic no és vàlid</string>
     <string name="draw">Sorteig</string>
     <string name="email">Correu electrònic</string>
-    <string name="drawProgress">" Progrés al sorteig"</string>sdf#
+    <string name="drawProgress">" Progrés al sorteig"</string>
+    <string name="infoDrawProgress">Al sorteig organitzat per la UPC es requereix haver participat en un mínim de 3 dies dels 5 dies totals que dura l\'esdeveniment.</string>
+    <string name="currenProgress">Actualment has participat a</string>
+    <string name="days">dies</string>
+    <string name="activateEmail">Per participar al sorteig activa el teu correu electrònic</string>
+    sdf#
 
 </resources>
