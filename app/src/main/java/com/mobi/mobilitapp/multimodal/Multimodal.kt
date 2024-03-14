@@ -509,10 +509,18 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         return true
     }
     private fun checkDrawValidity(): Boolean {
-        val dist = computeDistance(locations[0].latitude, locations[0].longitude, locations[locations.size-1].latitude, locations[locations.size-1].longitude)
-        val time = differenceInMinutes(startDate, Date())
+        if (locations.size >= 2) {
+            val dist = computeDistance(
+                locations[0].latitude,
+                locations[0].longitude,
+                locations[locations.size - 1].latitude,
+                locations[locations.size - 1].longitude
+            )
+            val time = differenceInMinutes(startDate, Date())
 
-        return dist >= 100f && time >= 3f
+            return dist >= 0f && time >= 0f
+        }
+        return false
     }
 
     private fun differenceInMinutes(date1: Date, date2: Date): Float {
