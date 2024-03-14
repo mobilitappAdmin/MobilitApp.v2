@@ -159,7 +159,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                     }
                     Text(text = reminder.toString())
                 }
-
+                //ASa//
                 Divider()
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
