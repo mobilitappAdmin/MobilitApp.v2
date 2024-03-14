@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,8 @@ import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.MainScreen
 import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.isValidEmail
+import com.mobi.mobilitapp.screens.components.selectableButtonList
+import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.MobilitAppv2Theme
 import com.mobi.mobilitapp.ui.theme.Orange

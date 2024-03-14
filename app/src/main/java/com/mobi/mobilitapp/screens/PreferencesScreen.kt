@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -79,234 +80,234 @@ private fun BodyContent(preferences: SharedPreferences) {
 
     val res = LocalContext.current
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = res.getString(R.string.Settings),
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        Divider()
-        Column(Modifier.clickable{ openPreferences = true}){
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-
-
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.Age),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    Text(
-                        text = res.getString(R.string.pref1),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                Text(text = age.toString())
-            }
-            Divider()
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.Gender),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    Text(
-                        text = res.getString(R.string.pref2),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                Text(text = gender.toString())
-            }
-            Divider()
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.Reminders),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    Text(
-                        text = res.getString(R.string.ReminderPreferences),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                Text(text = reminder.toString())
-            }
-            Divider()
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.Battery),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    Text(
-                        text = res.getString(R.string.BatteryUsage),
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-                Text(text = battery.toString())
-            }
-
-        }
-
-
-
-        Divider()
-        //APP PLAYSTORE
-        /*
-        SwitchSetting(
-            title = res.getString(R.string.DebugMode),
-            description = res.getString(R.string.pref3),
-            checked = debug == true,
-            preferences
-        )
-         */
-
-
-        Text(
-            text = res.getString(R.string.About),
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(10.dp)
-        )
-        Divider()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { uriHandler.openUri(uri) }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Mobilitat Info",
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Text(
-                    text = res.getString(R.string.pref4),
-                    style = MaterialTheme.typography.body2
-                )
-            }
-            Icon(
-                Icons.Filled.Search,
-                contentDescription = "web",
-                modifier = Modifier.size(ButtonDefaults.IconSize)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item (){
+            Text(
+                text = res.getString(R.string.Settings),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(16.dp)
             )
-        }
-        Divider()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(85.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { uriHandler.openUri("http://147.83.252.137:8080/pollution") }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = res.getString(R.string.Pollution),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Text(
-                    text = res.getString(R.string.pref5),
-                    style = MaterialTheme.typography.caption
-                )
+
+            Divider()
+            Column(Modifier.clickable { openPreferences = true }) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp)
+
+
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = res.getString(R.string.Age),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                        Text(
+                            text = res.getString(R.string.pref1),
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                    Text(text = age.toString())
+                }
+                Divider()
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp)
+
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = res.getString(R.string.Gender),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                        Text(
+                            text = res.getString(R.string.pref2),
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                    Text(text = gender.toString())
+                }
+                Divider()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = res.getString(R.string.Reminders),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                        Text(
+                            text = res.getString(R.string.ReminderPreferences),
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                    Text(text = reminder.toString())
+                }
+                Divider()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = res.getString(R.string.Battery),
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                        Text(
+                            text = res.getString(R.string.BatteryUsage),
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                    Text(text = battery.toString())
+                }
+
             }
-            Icon(
-                Icons.Filled.Info,
-                contentDescription = res.getString(R.string.Pollution),
-                modifier = Modifier.size(ButtonDefaults.IconSize)
+
+            //APP PLAYSTORE
+            /*
+            SwitchSetting(
+                title = res.getString(R.string.DebugMode),
+                description = res.getString(R.string.pref3),
+                checked = debug == true,
+                preferences
             )
-        }
-        Divider()
-        Text(
-            text = res.getString(R.string.draw),
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(10.dp)
-        )
-        Divider()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { emailDialog = true }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
+             */
+
+            Text(
+                text = res.getString(R.string.draw),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(10.dp)
+            )
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+                    .clickable { emailDialog = true }
             ) {
-                Text(
-                    text = res.getString(R.string.email),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                preferences.getString("email", "")?.let {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
-                        text = it,
-                        style = MaterialTheme.typography.body2
+                        text = res.getString(R.string.email),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    preferences.getString("email", "")?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.body2
+                        )
+                    }
+                }
+            }
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+                    .clickable { progressDialog = true }
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.drawProgress),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    LinearProgressIndicator(
+                        progress = getProgressRaffle(
+                            getArray("draw", preferences),
+                            preferences.getString("email", "False").toString()
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { progressDialog = true }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
+            Text(
+                text = res.getString(R.string.About),
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(10.dp)
+            )
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+                    .clickable { uriHandler.openUri(uri) }
             ) {
-                Text(
-                    text = res.getString(R.string.drawProgress),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                LinearProgressIndicator(
-                    progress = getProgressRaffle(getArray("draw", preferences),
-                        preferences.getString("email", "False").toString()
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Mobilitat Info",
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.pref4),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Icon(
+                    Icons.Filled.Search,
+                    contentDescription = "web",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
             }
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(85.dp)
+                    .padding(horizontal = 16.dp)
+                    .clickable { uriHandler.openUri("http://147.83.252.137:8080/pollution") }
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.Pollution),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.pref5),
+                        style = MaterialTheme.typography.caption
+                    )
+                }
+                Icon(
+                    Icons.Filled.Info,
+                    contentDescription = res.getString(R.string.Pollution),
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+            }
+            Divider()
         }
     }
 
