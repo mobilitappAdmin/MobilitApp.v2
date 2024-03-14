@@ -174,10 +174,6 @@ class MainActivity : ComponentActivity() {
 
 
     }
-    //sadnfokpsnfoisdnfnasdfoipasdnfjkdsdnjkfkdaskj
-
-
-
     /**
      * Creates a composable function for the encrypted shared preferences dialog.
      *
