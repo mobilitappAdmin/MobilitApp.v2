@@ -183,9 +183,9 @@ class MainActivity : ComponentActivity() {
         var openPreferences: Boolean by rememberSaveable { mutableStateOf(!(sharedPreferences.contains("age") and
                                                                             sharedPreferences.contains("gender") and
                                                                             sharedPreferences.contains("battery")
-//                                                                            and sharedPreferences.contains("reminder")
+                                                                            and sharedPreferences.contains("reminder")
                                                             )) }
-        var openReminder: Boolean by remember { mutableStateOf(!sharedPreferences.contains("reminder")) }
+//        var openReminder: Boolean by remember { mutableStateOf(!sharedPreferences.contains("reminder")) }
         val res = LocalContext.current
         if (openLocation) {
             var title: String = res.getString(R.string.LocationUse) +":"
@@ -251,13 +251,13 @@ class MainActivity : ComponentActivity() {
                             selectedText = {},
                             extraText = null
                         )
-                        /*selectableButtonListReminders(
+                        selectableButtonListReminders(
                             sharedPreferences = sharedPreferences,
                             options = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never)),
                             prefName = "reminder" ,
                             title = res.getString(R.string.Reminders),
                             selectedText = {},
-                        )*/
+                        )
                         selectableButtonList(
                             sharedPreferences = sharedPreferences,
                             options = listOf(res.getString(R.string.Minimal), res.getString(R.string.Low),res.getString(R.string.Regular)),
@@ -270,9 +270,9 @@ class MainActivity : ComponentActivity() {
                 }
             )
         }
-        if (!openPreferences and openReminder) {
-            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
-        }
+//        if (!openPreferences and openReminder) {
+//            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
+//        }
         if (!sharedPreferences.contains("debug")){
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()

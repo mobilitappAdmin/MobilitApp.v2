@@ -1,14 +1,10 @@
 package com.mobi.mobilitapp.screens.components
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
+import android.app.TimePickerDialog
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,35 +14,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mobi.mobilitapp.R
-import com.mobi.mobilitapp.notifications.AlarmBroadcastReceiver
-import com.mobi.mobilitapp.ui.theme.LightOrange
-import com.mobi.mobilitapp.ui.theme.LighterOrange
+import com.mobi.mobilitapp.notifications.cancelReminders
+import com.mobi.mobilitapp.notifications.setReminders
 import com.mobi.mobilitapp.ui.theme.Orange
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
@@ -136,9 +133,10 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
     var activity: String = sharedPreferences.getString(prefName, options.last())!!
     sharedPreferences.edit().putString(prefName, activity).apply();
 
+
     val baseRequestCode = 110
     val times = remember { getTimes(sharedPreferences).toMutableStateList()}
-    val size = remember { mutableStateOf(times.size)}
+    val size_time = remember { mutableStateOf(times.size)}
     val calendars  = remember{ MutableList(times.size) {Calendar.getInstance()} }
 
     val selected = remember { mutableStateOf(options.indexOf(activity)) }
@@ -146,7 +144,7 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
     cancelReminders(res, baseRequestCode)
     if(selected.value == 0){ // daily
         times.forEachIndexed(){index, item->
-            setReminderos(res,"daily",item,baseRequestCode + index)
+            setReminders(res,"daily",item,baseRequestCode + index)
         }
     } else if(selected.value == 1){
             setReminders(res,"weekly","",baseRequestCode)
@@ -157,7 +155,7 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
         Row(
             Modifier
                 .fillMaxWidth()
-                .height(36.dp)) {
+                .height(36.dp)){
             options.forEachIndexed { index, text ->
                 Button(
                     onClick = {
@@ -188,44 +186,61 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
         //if Daily, show time options
         if(selected.value == 0){
             //timer buttons
-            Row(verticalAlignment = Alignment.CenterVertically){
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)){
                 calendars.forEachIndexed{index, item->
                     sharedPreferences.edit().putString("reminderTimer$index", times[index]).apply()
                     OutlinedButton(
                         onClick = {
-                            calendars.removeAt(index)
-                            times.removeAt(index)
-                            size.value -= 1
-                            sharedPreferences.edit().putString("reminderTimer${times.size}", "").apply()
+
+                            val mHour = calendars[index][Calendar.HOUR_OF_DAY]
+                            val mMinute = calendars[index][Calendar.MINUTE]
+                            val mTimePickerDialog = TimePickerDialog(
+                                    res,
+                            {_, mHour : Int, mMinute: Int ->
+                                times[index] = (if(mHour < 10 )"0" else "") +"$mHour:" +(if( mMinute <10 )"0" else "") + "$mMinute"
+                            }, mHour, mMinute, true
+                            )
+                            mTimePickerDialog.show()
                                   },
-                        border = BorderStroke(2.dp, LightOrange),
+                        border = BorderStroke(2.dp, Orange),
                         shape = CircleShape,
                         modifier = Modifier
                             .height(30.dp)
-                            .weight(1f),
-                        contentPadding = PaddingValues(1.dp),
+
+                        ,
+                        contentPadding = PaddingValues(start = 10.dp,end = 10.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange),
 
 
 
                     ) {
-                        Text(times[index])
+                        Text(times[index],Modifier.padding(top = 2.dp,start = 5.dp, end = 5.dp).wrapContentHeight(align = Alignment.CenterVertically), fontSize = 14.sp)
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "remove timer",
+                            modifier = Modifier.size(18.dp).
+                            clickable {
+                                calendars.removeAt(index)
+                                times.removeAt(index)
+                                size_time.value -= 1
+                                sharedPreferences.edit().putString("reminderTimer${times.size}", "").apply() }
+                        )
                     }
                 }
 
                 //add button
-                if(size.value < 3){
+                if(size_time.value < 3){
                     OutlinedButton(
                         onClick = {
                             calendars.add(Calendar.getInstance());
                             times.add("08:00")
-                            size.value +=1
+                            size_time.value +=1
                         },
-                        border = BorderStroke(2.dp, LightOrange),
+                        border = BorderStroke(2.dp, Orange),
                         shape = CircleShape,
                         modifier = Modifier
                             .size(30.dp)
-                            .weight(1f),
+                            ,
                         contentPadding = PaddingValues(1.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange)
 
@@ -261,39 +276,3 @@ fun getTimes(sharedPreferences: SharedPreferences):List<String>{
     return times
 }
 
-fun setReminderos(context: Context, frequency:String, time:String, requestCode:Int) {
-    val intent = Intent(context, AlarmBroadcastReceiver::class.java)
-    intent.putExtra("content",context.getString(R.string.ReminderNotification))
-    intent.putExtra("requestCode",requestCode)
-    val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-    val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
-    alarmManager.cancel(pendingIntent)
-    val calendar: Calendar = Calendar.getInstance()
-    if(frequency == "daily"){
-        var t = time.split(":")
-        calendar.set(Calendar.HOUR_OF_DAY,t[0].toInt())
-        calendar.set(Calendar.MINUTE, t[1].toInt())
-        calendar.set(Calendar.SECOND, 0)
-    }
-    else{//weekly
-        calendar.set(Calendar.DAY_OF_WEEK,1)
-        calendar.set(Calendar.HOUR_OF_DAY, 16)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-    }
-    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent);
-}
-
-fun cancelReminders(context: Context, baseRequestCode:Int){
-    for(i in (0..2)) {
-        var requestCode = baseRequestCode + i
-        val intent = Intent(context, AlarmBroadcastReceiver::class.java)
-        intent.putExtra("content", context.getString(R.string.ReminderNotification))
-        intent.putExtra("requestCode", requestCode)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context, requestCode, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        ).cancel()
-    }
-}

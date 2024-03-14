@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
@@ -33,6 +35,7 @@ import com.mobi.mobilitapp.screens.components.alertDialogReminder
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
 import com.mobi.mobilitapp.ui.theme.Orange
+import com.mobi.mobilitapp.ui.theme.SoftGray
 
 /**
  * Composable function for displaying the preferences screen.
@@ -67,7 +70,7 @@ private fun BodyContent(preferences: SharedPreferences) {
     Log.d("PREFERENCES", "age: "+age+" gender: "+gender+" debug: "+debug.toString())
 
     var openPreferences: Boolean by remember { mutableStateOf(false) }
-    var openReminder: Boolean by remember { mutableStateOf(false) }
+//    var openReminder: Boolean by remember { mutableStateOf(false) }
 
     val res = LocalContext.current
 
@@ -139,6 +142,28 @@ private fun BodyContent(preferences: SharedPreferences) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
+                        text = res.getString(R.string.Reminders),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.ReminderPreferences),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Text(text = reminder.toString())
+            }
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
                         text = res.getString(R.string.Battery),
                         style = MaterialTheme.typography.subtitle1
                     )
@@ -152,29 +177,6 @@ private fun BodyContent(preferences: SharedPreferences) {
 
         }
 
-        Divider()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { openReminder = true }
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = res.getString(R.string.Reminders),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Text(
-                    text = res.getString(R.string.ReminderPreferences),
-                    style = MaterialTheme.typography.body2
-                )
-            }
-            Text(text = reminder.toString())
-        }
 
 
         Divider()
@@ -253,6 +255,7 @@ private fun BodyContent(preferences: SharedPreferences) {
     if(openPreferences){
         val res = LocalContext.current
         AlertDialog(
+//            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
             onDismissRequest = {/*openPreferences = false*/},
             confirmButton = {
                 TextButton(onClick = {
@@ -284,13 +287,13 @@ private fun BodyContent(preferences: SharedPreferences) {
                         selectedText = {gender = it},
                         extraText = null
                     )
-                    /*selectableButtonListReminders(
+                    selectableButtonListReminders(
                         sharedPreferences = preferences,
                         options = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never)),
                         prefName = "reminder" ,
                         title = res.getString(R.string.Reminders),
                         selectedText = {reminder = it},
-                    )*/
+                    )
                     selectableButtonList(
                         sharedPreferences = preferences,
                         options = listOf(res.getString(R.string.Minimal), res.getString(R.string.Low),res.getString(R.string.Regular)),
@@ -303,9 +306,9 @@ private fun BodyContent(preferences: SharedPreferences) {
             }
         )
     }
-    if(openReminder){
-        alertDialogReminder(sharedPreferences = preferences, ongoing = {openReminder = it} , newText = {reminder = it} )
-    }
+//    if(openReminder){
+//        alertDialogReminder(sharedPreferences = preferences, ongoing = {openReminder = it} , newText = {reminder = it} )
+//    }
 
 }
 

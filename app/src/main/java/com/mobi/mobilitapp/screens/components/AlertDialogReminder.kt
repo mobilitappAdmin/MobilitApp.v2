@@ -49,8 +49,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.notifications.AlarmBroadcastReceiver
+import com.mobi.mobilitapp.notifications.setReminders
 import com.mobi.mobilitapp.ui.theme.Orange
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.GregorianCalendar
 
 @Composable
 fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> Unit,newText: (String)-> Unit){
@@ -111,7 +115,7 @@ fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-
                                         .height(46.dp)
                                         .wrapContentHeight(align = Alignment.CenterVertically)
                                         .padding(top = 6.dp)
-                                        .background(Color.White),
+                                        ,
                                     fontSize = 18.sp,
                                     text = text,
 
@@ -149,29 +153,43 @@ fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-
     )
 }
 
-fun setReminders(context: Context, frequency:String, time:String, requestCode:Int) {
-    val intent = Intent(context, AlarmBroadcastReceiver::class.java)
-    intent.putExtra("content",context.getString(R.string.ReminderNotification))
-    intent.putExtra("requestCode",requestCode)
-    val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-    val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
-    alarmManager.cancel(pendingIntent)
-    val calendar: Calendar = Calendar.getInstance()
-    if(frequency == "daily"){
-        var t = time.split(":")
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.HOUR_OF_DAY,t[0].toInt())
-        calendar.set(Calendar.MINUTE, t[1].toInt())
-        calendar.set(Calendar.SECOND, 0)
-    }
-    else{//weekly
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.set(Calendar.DAY_OF_WEEK,1)
-        calendar.set(Calendar.HOUR_OF_DAY, 16)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-    }
-    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent);
-}
+//fun setReminders(context: Context, frequency:String, time:String, requestCode:Int) {
+//    val intent = Intent(context, AlarmBroadcastReceiver::class.java)
+//    intent.putExtra("content",context.getString(R.string.ReminderNotification))
+//    intent.putExtra("requestCode",requestCode)
+//    val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
+//        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+//    val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
+//    alarmManager.cancel(pendingIntent)
+//    val calendar = GregorianCalendar.getInstance()
+//    if(frequency == "daily"){
+//        var t = time.split(":")
+////        if (calendar.get(Calendar.HOUR_OF_DAY) >= t[0].toInt()) {
+////            calendar.add(Calendar.DAY_OF_MONTH, 1)
+////        }
+//        calendar.set(Calendar.HOUR_OF_DAY, t[0].toInt())
+//        calendar.set(Calendar.MINUTE, t[1].toInt())
+//        calendar.set(Calendar.SECOND, 0)
+//        calendar.set(Calendar.MILLISECOND, 0)
+//        Log.d("calendar Current Time", Date(System.currentTimeMillis()).toString())
+//        Log.d("calendar set at" , calendar.time.toString())
+//
+////        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,  24 *60*60*1000, pendingIntent);
+//
+//    }
+//    else{//weekly
+//        val hour = 9
+//        calendar.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY)
+//        calendar.set(Calendar.HOUR_OF_DAY, hour)
+//        calendar.set(Calendar.MINUTE, 0)
+//        calendar.set(Calendar.SECOND, 0)
+//        if(calendar.timeInMillis < System.currentTimeMillis()){
+//            calendar.add(Calendar.DAY_OF_MONTH,7)
+//        }
+//        Log.d("calendar set at" , calendar.time.toString())
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,  7 * 24 *60*60*1000, pendingIntent);
+//    }
+//
+//}
 

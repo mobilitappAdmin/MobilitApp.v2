@@ -6,15 +6,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.mobi.mobilitapp.MainActivity
 import com.mobi.mobilitapp.R
+import java.util.Date
 
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d("calendar Notification received", Date(System.currentTimeMillis()).toString())
         showNotification(context,intent.getStringExtra("content")!!,intent.getIntExtra("requestCode",0))
     }
 
@@ -26,7 +29,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         val mBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(
                 context,
-                context.getString(R.string.channel_idLOW)
+                context.getString(R.string.channel_idHIGH)
             )
                 .setSmallIcon(R.mipmap.ic_launcher) // notification icon
                 .setContentTitle(text) // title for notification

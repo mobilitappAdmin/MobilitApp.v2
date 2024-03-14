@@ -757,7 +757,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
                     tint = Color.Black
                 )
                 Spacer(Modifier.size(10.dp))
-                Text(modifier = Modifier.padding(start = 20.dp,end = 20.dp), text = context.getString(R.string.mapDisabled) , textAlign = TextAlign.Justify, fontSize = 12.sp )
+                Text(modifier = Modifier.padding(start = 20.dp,end = 20.dp), text = context.getString(R.string.mapDisabled) , textAlign = TextAlign.Justify, fontSize = 12.sp, color = Color.Black )
                 Spacer(Modifier.size(40.dp))
             }
 
