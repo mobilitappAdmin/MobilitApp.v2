@@ -19,8 +19,10 @@
     <string name="Age">Edat</string>
     <string name="man">home</string>
     <string name="woman">dona</string>
-    <string name="others">altres</string>
+    <string name="other">altre</string>
     <string name="Pollution">Contaminació</string>
+    <string name="Reminders">Recordatoris</string>
+    <string name="Battery">Bateria</string>
 
     <string name="Bicycle">Bicicleta</string>
     <string name="Bus">Autobús</string>
@@ -39,6 +41,25 @@
     <string name="Age2">Edat (anys):</string>
     <string name="LocationUse">Ús de la ubicació</string>
     <string name="LocationPolicy">Aquesta aplicació recopila dades d\'ubicació per permetre la detecció de canvis en el mode de transport i per activar el mapeig del vostre viatge, quan l\'aplicació està en ús incloent quan l\'aplicació està en segon pla.</string>
+
+
+    <!--Recordatori-->
+    <string name="ReminderPopUp">Rebre recordatoris d\'ús:</string>
+    <string name="ReminderNotification">Recordatori</string>
+    <string name="ReminderPreferences">Freqüència de notificacions</string>
+
+    <!--Bateria-->
+    <string name="Daily">Diari</string>
+    <string name="Weekly">Semanal</string>
+    <string name="Never">Mai</string>
+    <string name="Regular">Regular</string>
+    <string name="RegularText">Normal</string>
+    <string name="Low">Low</string>
+    <string name="LowText">Baix</string>
+    <string name="Minimal">Minimal</string>
+    <string name="MinimalText">Mínim</string>
+    <string name="BatteryUsage">Ús de la bateria</string>
+
     <!--Train Screen-->
     <string name="GenerateData">Generar Dades</string>
 
@@ -96,6 +117,6 @@
     <string name="currenProgress">Actualment has participat a</string>
     <string name="days">dies</string>
     <string name="activateEmail">Per participar al sorteig activa el teu correu electrònic</string>
-    sdf#
+    <string name="mapDisabled">La visualització del model predictiu al mapa no està disponible a causa de la configuració d\'estalvi de bateria, però encara podeu obtenir les prediccions a través finestra de text. Per habilitar el mapa, aneu a Preferències>Bateria i seleccioneu una altra opció.</string>
 
 </resources>

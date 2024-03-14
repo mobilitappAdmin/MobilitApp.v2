@@ -21,6 +21,7 @@ val ecoRed = Color(0xFFFF6D60)
 val SoftGray = Color(0xFF282828)
 val SofterGray = Color(0xFFADA8A8)
 val LightOrange = Color(0xFFDD9A88)
+val LighterOrange = Color(0xFFdebbb1)
 // map colors
 val purpl = Color(0xff9551ea)
 val blue = Color(0xff2468c4)

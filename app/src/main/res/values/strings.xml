@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name" translatable="false">MobilitApp.v2</string>
-    <string name="channel_name" translatable="false">Mobilitapp</string>
-    <string name="channel_description" translatable="false">Channel used to deliver usage information\n</string>
-    <string name="channel_id" translatable="false">Mobilitapp</string>
+    <string name="app_name" translatable="false">D-MobilitApp.v2</string>
+    <string name="channel_nameHIGH" translatable="false">Mobilitapp</string>
+    <string name="channel_nameLOW" translatable="false">MobilitappReminders</string>
+    <string name="channel_descriptionHIGH" translatable="false">Channel used to deliver usage information\n</string>
+    <string name="channel_descriptionLOW" translatable="false">Channel used to deliver reminders\n</string>
+    <string name="channel_idHIGH" translatable="false">Mobilitapp</string>
+    <string name="channel_idLOW" translatable="false">MobilitappReminders</string>
 
 
 
@@ -26,8 +29,10 @@
     <string name="Age">Age</string>
     <string name="man">man</string>
     <string name="woman">woman</string>
-    <string name="others">others</string>
+    <string name="other">other</string>
     <string name="Pollution">Pollution</string>
+    <string name="Reminders">Reminders</string>
+    <string name="Battery">Battery</string>
 
     <string name="Bicycle">Bicycle</string>
     <string name="Bus">Bus</string>
@@ -47,6 +52,23 @@
     <string name="LocationUse">Location Use</string>
     <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, when the app is in use including when the app is in background.</string>
 
+
+    <!--Reminder-->
+    <string name="ReminderPopUp">Get usage reminders:</string>
+    <string name="ReminderNotification">Reminder</string>
+    <string name="ReminderPreferences">Notification frequency</string>
+
+    <!--Battery-->
+    <string name="Daily">Daily</string>
+    <string name="Weekly">Weekly</string>
+    <string name="Never">Never</string>
+    <string name="Regular">Regular</string>
+    <string name="RegularText">Regular</string>
+    <string name="Low">Low</string>
+    <string name="LowText">Low</string>
+    <string name="Minimal">Minimal</string>
+    <string name="MinimalText">Minimal</string>
+    <string name="BatteryUsage">Battery usage</string>
     <!--Train Screen-->
     <string name="GenerateData">Generate Data</string>
 
@@ -82,6 +104,7 @@
     <string name="distcons">Total distance</string>
     <string name="m1">Total distance traveled in</string>
     <string name="m2">CO2 consumption</string>
+    <string name="mapDisabled">Map visualization of the predictive model is unaviable due to your battery settings, but you can still get predictions from the text window. To enable the map, go to Preferences>Battery and select another option.</string>
 
     <!--SensorLoader-->
     <string name="SensorLoader">Selected activity</string>

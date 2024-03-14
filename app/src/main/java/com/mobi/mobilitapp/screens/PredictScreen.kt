@@ -2,6 +2,7 @@ package com.mobi.mobilitapp.screens
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
 import androidx.compose.animation.*
@@ -40,6 +41,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.mobi.mobilitapp.MainActivity
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
@@ -121,10 +123,15 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
 
     fun sendCO2notification(){
+
+        val notificationIntent = Intent(context, MainActivity::class.java)
+        notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val pendingIntent = PendingIntent.getActivity(context, 114, notificationIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
         val mBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(
                 context,
-                context.getString(R.string.channel_id)
+                context.getString(R.string.channel_idHIGH)
             )
                 .setSmallIcon(R.mipmap.ic_launcher) // notification icon
                 .setContentTitle(context.getString(R.string.JourneyFinished)) // title for notification
@@ -136,6 +143,8 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         else
                             context.getString(R.string.n3,"${mapa.formatData(mapa.totalCO2, "CO2")}","${mapa.formatData(((mapa.totalDistance * mapa.co2Table["car"]!!/1000)-mapa.totalCO2),"CO2")}")
                     ))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
         with(NotificationManagerCompat.from(context)) {
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -288,7 +297,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             Text(text = res.getString(R.string.pred2)+": $fifo", fontSize = 10.sp)
 
             //debugo button
-            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "Bus" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
+            //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "WALK" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
                 
             if (stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0) {
                 sendCO2notification()

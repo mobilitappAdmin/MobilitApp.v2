@@ -19,8 +19,10 @@
     <string name="Age">Edad</string>
     <string name="man">hombre</string>
     <string name="woman">mujer</string>
-    <string name="others">otros</string>
+    <string name="other">otro</string>
     <string name="Pollution">Contaminación</string>
+    <string name="Reminders">Recordatorios</string>
+    <string name="Battery">Batería</string>
 
     <string name="Bicycle">Bicicleta</string>
     <string name="Bus">Autobús</string>
@@ -39,6 +41,23 @@
     <string name="Age2">Edad (años):</string>
     <string name="LocationUse">Uso de la ubicación</string>
     <string name="LocationPolicy">Esta aplicación recopila datos de ubicación para permitir la detección de cambios de modo de transporte y para habilitar el mapeo de su viaje, cuando la aplicación está en uso incluyendo cuando la aplicación se encuentra en segundo plano.</string>
+
+
+    <string name="ReminderPopUp">Recibir recordatorios de uso:</string>
+    <string name="ReminderNotification">Recordatorio</string>
+    <string name="ReminderPreferences">Frecuencia de notificación</string>
+
+    <!--Bateria-->
+    <string name="Daily">Diario</string>
+    <string name="Weekly">Semanal</string>
+    <string name="Never">Nunca</string>
+    <string name="Regular">Regular</string>
+    <string name="RegularText">Normal</string>
+    <string name="Low">Low</string>
+    <string name="LowText">Bajo</string>
+    <string name="Minimal">Minimal</string>
+    <string name="MinimalText">Mínimo</string>
+    <string name="BatteryUsage">Uso de la batería</string>
     <!--Train Screen-->
     <string name="GenerateData">Generar Datos</string>
 
@@ -96,5 +115,6 @@
     <string name="currenProgress">Actualmente has participado en</string>
     <string name="days">días</string>
     <string name="activateEmail">Para participar en el sorteo activa tu correo electrónico</string>
+    <string name="mapDisabled">La visualización del modelo predictivo en el mapa no está disponible debido a la configuración de ahorro de batería, pero todavía puede obtener las predicciones a través de ventana de texto. Para habilitar el mapa, vaya a Preferencias>Batería y seleccione otra opción.</string>
 
 </resources>

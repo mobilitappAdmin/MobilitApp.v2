@@ -12,6 +12,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +41,8 @@ import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.MobilitAppv2Theme
+import com.mobi.mobilitapp.ui.theme.Orange
+
 
 /**
  * Main activity of the application.
@@ -59,7 +63,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        createNotificationChannel()
+        createNotificationChannels()
 
         // creating a master key for encryption of shared preferences.
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -134,24 +138,41 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(getString(R.string.channel_id), name, importance).apply {
-                description = descriptionText
-            }
-            channel.setSound(null,null)
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        // for HIGH priority notifications, with sound/vibration
+        var name = getString(R.string.channel_nameHIGH)
+        var descriptionText = getString(R.string.channel_descriptionHIGH)
+        var importance = NotificationManager.IMPORTANCE_HIGH
+        var channel = NotificationChannel(getString(R.string.channel_idHIGH), name, importance).apply {
+            description = descriptionText
         }
+        channel.setSound(null,null)
+        // Register the channel with the system
+        var notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+
+        // for LOW priority notifications, silent
+        name = getString(R.string.channel_nameLOW)
+        descriptionText = getString(R.string.channel_descriptionLOW)
+        importance = NotificationManager.IMPORTANCE_LOW
+        channel = NotificationChannel(getString(R.string.channel_idLOW), name, importance).apply {
+            description = descriptionText
+        }
+        channel.setSound(null,null)
+        // Register the channel with the system
+        notificationManager=
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+
+
     }
+
+
 
     /**
      * Creates a composable function for the encrypted shared preferences dialog.
@@ -160,155 +181,103 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     private fun encryptedSharedPrefs(sharedPreferences: SharedPreferences, context: Context) {
-        var openDialog0: Boolean by remember { mutableStateOf(!sharedPreferences.contains("location")) }
-        var openDialog1: Boolean by remember { mutableStateOf(!sharedPreferences.contains("age")) }
+        var openLocation: Boolean by remember { mutableStateOf(!sharedPreferences.contains("location")) }
+        var openPreferences: Boolean by rememberSaveable { mutableStateOf(!(sharedPreferences.contains("age") and
+                                                                            sharedPreferences.contains("gender") and
+                                                                            sharedPreferences.contains("battery")
+                                                                            and sharedPreferences.contains("reminder")
+                                                            )) }
+//        var openReminder: Boolean by remember { mutableStateOf(!sharedPreferences.contains("reminder")) }
         val res = LocalContext.current
-        if (openDialog0) { // Location permission
+        if (openLocation) {
             var title: String = res.getString(R.string.LocationUse) +":"
             AlertDialog(
                 onDismissRequest = {(context as? Activity)?.finish()},
                 title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
                 },
                 confirmButton = {
-                    Button(onClick = {
-                        // on below line we are storing data in shared preferences file.
-                        sharedPreferences.edit().putBoolean("location", true).apply()
-                        sharedPreferences.edit().commit()
-                        openDialog0 = false
-                    }) {
-                        Text(res.getString(R.string.Accept))//res.getString(R.string.Accept)
+                    TextButton(
+                        onClick = {
+                            // on below line we are storing data in shared preferences file.
+                            sharedPreferences.edit().putBoolean("location", true).apply()
+                            sharedPreferences.edit().commit()
+                            openLocation = false
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent,))
+                    {
+                        Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                     }
                 },
                 dismissButton = {
-                    Button(
+                    TextButton(
                         onClick = {
                             (context as? Activity)?.finish()
                         }) {
-                        Text(res.getString(R.string.Deny))
+                        Text(text = res.getString(R.string.Deny),color = Orange,style = TextStyle(fontSize = 16.sp))
                     }
+
                 },
-                text = { Text(res.getString(R.string.LocationPolicy))}
+                text = { Text(res.getString(R.string.LocationPolicy), fontSize = 12.sp, textAlign = TextAlign.Justify)}
             )
         }
-        if (!openDialog0 and openDialog1){ //Age
-                requestPermissions()
 
-                var title = res.getString(R.string.Age2)
-                var activity: String? = null
-                AlertDialog(
-                    onDismissRequest = {openDialog1 = false},
-                    title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-                    },
-                    confirmButton = {
-                        Button(onClick = {
-                            // on below line we are storing data in shared preferences file.
-                            sharedPreferences.edit().putString("age", activity).apply()
-                            sharedPreferences.edit().commit()
-                            openDialog1 = false
-                        }) {
-                            Text(res.getString(R.string.Next))
-                        }
-                    },
-                    text = {
-                        var radioOptions = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA")
-                        val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
-                        activity=selectedOption
-                        Column(
-                            modifier= Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            radioOptions.forEach { text ->
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .selectable(
-                                            selected = (text == selectedOption),
-                                            onClick = { onOptionSelected(text) }
-                                        )
-                                        .padding(horizontal = 16.dp)
-                                ){
-                                    RadioButton(
-                                        selected = (text == selectedOption),
-                                        modifier = Modifier.padding(all = Dp(value = 2F)),
-                                        onClick = {
-                                            onOptionSelected(text)
-                                            activity = text
-                                        })
-                                    Text(
-                                        fontSize = 18.sp,
-                                        text = text,
-                                        modifier = Modifier.padding(start = 2.dp, top=16.dp)
-                                    )
 
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-        var openDialog2: Boolean by remember { mutableStateOf(!sharedPreferences.contains("gender")) }
-        if (!openDialog1 and openDialog2){ // gender
-            var title: String = res.getString(R.string.Gender) +":"
-            var activity: String? = null
+        if (!openLocation and openPreferences) {
+            requestPermissions()
             AlertDialog(
-                onDismissRequest = {openDialog2 = false},
-                title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-                },
+                onDismissRequest = {/*openPreferences = false*/},
                 confirmButton = {
-                    Button(onClick = {
+                    TextButton(onClick = {
                         // on below line we are storing data in shared preferences file.
-                        sharedPreferences.edit().putString("gender", activity).apply()
                         sharedPreferences.edit().commit()
-                        openDialog2 = false
-                    }) {
-                        Text(res.getString(R.string.Next))
+                        openPreferences = false
+                    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent,)) {
+                        Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                     }
                 },
                 text = {
-                    var radioOptions = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.others), "NA")
-                    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.size -1]) }
-                    activity=selectedOption
-                    Column(
-                        modifier= Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        radioOptions.forEach { text ->
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .selectable(
-                                        selected = (text == selectedOption),
-                                        onClick = { onOptionSelected(text) }
-                                    )
-                                    .padding(horizontal = 16.dp)
-                            ){
-                                RadioButton(
-                                    selected = (text == selectedOption),
-                                    modifier = Modifier.padding(all = Dp(value = 2F)),
-                                    onClick = {
-                                        onOptionSelected(text)
-                                        activity = text
-                                    })
-                                Text(
-                                    fontSize = 18.sp,
-                                    text = text,
-                                    modifier = Modifier.padding(start = 2.dp, top=16.dp)
-                                )
-
-                            }
-                        }
+                    Column(Modifier.fillMaxWidth())
+                    {
+                        selectableButtonList(
+                            sharedPreferences = sharedPreferences,
+                            options = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA"),
+                            prefName = "age" ,
+                            title = res.getString(R.string.Age),
+                            selectedText = {},
+                            extraText = null,
+                        )
+                        selectableButtonList(
+                            sharedPreferences = sharedPreferences,
+                            options = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.other), "NA"),
+                            prefName = "gender" ,
+                            title = res.getString(R.string.Gender),
+                            selectedText = {},
+                            extraText = null
+                        )
+                        selectableButtonListReminders(
+                            sharedPreferences = sharedPreferences,
+                            options = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never)),
+                            prefName = "reminder" ,
+                            title = res.getString(R.string.Reminders),
+                            selectedText = {},
+                        )
+                        selectableButtonList(
+                            sharedPreferences = sharedPreferences,
+                            options = listOf(res.getString(R.string.Minimal), res.getString(R.string.Low),res.getString(R.string.Regular)),
+                            prefName = "battery" ,
+                            title = res.getString(R.string.Battery),
+                            selectedText = {},
+                            extraText = listOf(res.getString(R.string.MinimalText), res.getString(R.string.LowText),res.getString(R.string.RegularText))
+                        )
                     }
                 }
             )
         }
+//        if (!openPreferences and openReminder) {
+//            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
+//        }
         var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
-        if (!openDialog2 and mailSorteig) { //email sorteig
+        if (!openPreferences and mailSorteig) { //email sorteig
             var title: String = LocalContext.current.getString(R.string.email) +":"
             var email by remember { mutableStateOf("") }
             var valid by remember { mutableStateOf(false) }

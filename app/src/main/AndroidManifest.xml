@@ -39,6 +39,12 @@
         <service android:enabled="true" android:name="com.mobi.mobilitapp.server.UploadService" android:exported="false"/>
         <service android:enabled="true" android:name="com.mobi.mobilitapp.multimodal.Multimodal" android:exported="false"
             tools:ignore="Instantiatable" />
+        <receiver
+            android:name=".notifications.AlarmBroadcastReceiver"
+            android:exported="true"
+            >
+        </receiver>
+
     </application>
 
 </manifest>

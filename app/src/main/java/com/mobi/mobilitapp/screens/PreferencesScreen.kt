@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
@@ -32,6 +34,11 @@ import com.mobi.mobilitapp.getArray
 import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.TopBar
 import com.mobi.mobilitapp.screens.components.isValidEmail
+import com.mobi.mobilitapp.screens.components.alertDialogReminder
+import com.mobi.mobilitapp.screens.components.selectableButtonList
+import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
+import com.mobi.mobilitapp.ui.theme.Orange
+import com.mobi.mobilitapp.ui.theme.SoftGray
 
 /**
  * Composable function for displaying the preferences screen.
@@ -60,11 +67,13 @@ private fun BodyContent(preferences: SharedPreferences) {
     val uri = "https://mobilitapp.upc.edu"
     var age: String? by remember { mutableStateOf(preferences.getString("age", "")) }
     var gender: String? by remember { mutableStateOf(preferences.getString("gender", "")) }
+    var reminder: String? by remember { mutableStateOf(preferences.getString("reminder", "")) }
+    var battery: String? by remember { mutableStateOf(preferences.getString("battery", "")) }
     var debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
     Log.d("PREFERENCES", "age: "+age+" gender: "+gender+" debug: "+debug.toString())
 
-    var openDialog2: Boolean by remember { mutableStateOf(false) }
-    var openDialog1: Boolean by remember { mutableStateOf(false) }
+    var openPreferences: Boolean by remember { mutableStateOf(false) }
+//    var openReminder: Boolean by remember { mutableStateOf(false) }
     var emailDialog: Boolean by remember { mutableStateOf(false) }
     var progressDialog: Boolean by remember { mutableStateOf(false) }
 
@@ -74,56 +83,107 @@ private fun BodyContent(preferences: SharedPreferences) {
         Text(
             text = res.getString(R.string.Settings),
             style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(16.dp)
         )
 
         Divider()
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { openDialog1 = true }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = res.getString(R.string.Age),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Text(
-                    text = res.getString(R.string.pref1),
-                    style = MaterialTheme.typography.body2
-                )
-            }
-            Text(text = age.toString())
-        }
-        Divider()
+        Column(Modifier.clickable{ openPreferences = true}){
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(72.dp)
-                .padding(horizontal = 16.dp)
-                .clickable { openDialog2 = true }
-        ){
-            Column(
-                modifier = Modifier.weight(1f)
+
             ) {
-                Text(
-                    text = res.getString(R.string.Gender),
-                    style = MaterialTheme.typography.subtitle1
-                )
-                Text(
-                    text = res.getString(R.string.pref2),
-                    style = MaterialTheme.typography.body2
-                )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.Age),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.pref1),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Text(text = age.toString())
             }
-            Text(text = gender.toString())
+            Divider()
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.Gender),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.pref2),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Text(text = gender.toString())
+            }
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.Reminders),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.ReminderPreferences),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Text(text = reminder.toString())
+            }
+            Divider()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = res.getString(R.string.Battery),
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = res.getString(R.string.BatteryUsage),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Text(text = battery.toString())
+            }
+
         }
+
+
+
         Divider()
         //APP PLAYSTORE
         /*
@@ -250,123 +310,64 @@ private fun BodyContent(preferences: SharedPreferences) {
         }
     }
 
-
-    if (openDialog1){
-        var title = res.getString(R.string.Age) +":"
-        var activity: String? = null
+    if(openPreferences){
+        val res = LocalContext.current
         AlertDialog(
-            onDismissRequest = {openDialog1 = false},
-            title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-            },
+//            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
+            onDismissRequest = {/*openPreferences = false*/},
             confirmButton = {
-                Button(onClick = {
+                TextButton(onClick = {
                     // on below line we are storing data in shared preferences file.
-                    preferences.edit().putString("age", activity).apply()
                     preferences.edit().commit()
-                    age = activity
-                    openDialog1 = false
-                }) {
-                    Text(res.getString(R.string.Next))
+                    openPreferences = false
+                }, colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Transparent,
+                )) {
+                    Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                 }
             },
             text = {
-                var radioOptions = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA")
-                val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.indexOf(age)]) }
-                activity=selectedOption
-                Column(
-                    modifier= Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    radioOptions.forEach { text ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = (text == selectedOption),
-                                    onClick = { onOptionSelected(text) }
-                                )
-                                .padding(horizontal = 16.dp)
-                        ){
-                            RadioButton(
-                                selected = (text == selectedOption),
-                                modifier = Modifier.padding(all = Dp(value = 2F)),
-                                onClick = {
-                                    onOptionSelected(text)
-                                    activity = text
-                                })
-                            Text(
-                                fontSize = 18.sp,
-                                text = text,
-                                modifier = Modifier.padding(start = 2.dp, top=16.dp)
-                            )
-
-                        }
-                    }
+                Column(Modifier.fillMaxWidth())
+                {
+                    selectableButtonList(
+                        sharedPreferences = preferences,
+                        options = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA"),
+                        prefName = "age" ,
+                        title = res.getString(R.string.Age),
+                        selectedText = {age = it},
+                        extraText = null,
+                    )
+                    selectableButtonList(
+                        sharedPreferences = preferences,
+                        options = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.other), "NA"),
+                        prefName = "gender" ,
+                        title = res.getString(R.string.Gender),
+                        selectedText = {gender = it},
+                        extraText = null
+                    )
+                    selectableButtonListReminders(
+                        sharedPreferences = preferences,
+                        options = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never)),
+                        prefName = "reminder" ,
+                        title = res.getString(R.string.Reminders),
+                        selectedText = {reminder = it},
+                    )
+                    selectableButtonList(
+                        sharedPreferences = preferences,
+                        options = listOf(res.getString(R.string.Minimal), res.getString(R.string.Low),res.getString(R.string.Regular)),
+                        prefName = "battery" ,
+                        title = res.getString(R.string.Battery),
+                        selectedText = {battery = it},
+                        extraText = listOf(res.getString(R.string.MinimalText), res.getString(R.string.LowText),res.getString(R.string.RegularText))
+                    )
                 }
             }
         )
     }
-    if (!openDialog1 and openDialog2){
-        var title: String = res.getString(R.string.Gender) + ":"
-        var activity: String? = null
-        AlertDialog(
-            onDismissRequest = {openDialog2 = false},
-            title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-            },
-            confirmButton = {
-                Button(onClick = {
-                    // on below line we are storing data in shared preferences file.
-                    preferences.edit().putString("gender", activity).apply()
-                    preferences.edit().commit()
-                    gender = activity
-                    openDialog2 = false
-                }) {
-                    Text(res.getString(R.string.Next))
-                }
-            },
-            text = {
-                var radioOptions = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.others), "NA")
-                val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[radioOptions.indexOf(gender)]) }
-                activity=selectedOption
-                Column(
-                    modifier= Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    radioOptions.forEach { text ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .selectable(
-                                    selected = (text == selectedOption),
-                                    onClick = { onOptionSelected(text) }
-                                )
-                                .padding(horizontal = 16.dp)
-                        ){
-                            RadioButton(
-                                selected = (text == selectedOption),
-                                modifier = Modifier.padding(all = Dp(value = 2F)),
-                                onClick = {
-                                    onOptionSelected(text)
-                                    activity = text
-                                })
-                            Text(
-                                fontSize = 18.sp,
-                                text = text,
-                                modifier = Modifier.padding(start = 2.dp, top=16.dp)
-                            )
+//    if(openReminder){
+//        alertDialogReminder(sharedPreferences = preferences, ongoing = {openReminder = it} , newText = {reminder = it} )
+//    }
 
-                        }
-                    }
-                }
-            }
-        )
-    }
     if (emailDialog) {
         var title: String = res.getString(R.string.email) +":"
         var email by remember { mutableStateOf("") }
