@@ -114,7 +114,7 @@
     <string name="infoDrawProgress">"En el sorteo organizado por la UPC se requiere de haber participado en un mínimo de 3 días de los 5 días totales que dura el evento. "</string>
     <string name="currenProgress">Actualmente has participado en</string>
     <string name="days">días</string>
-    <string name="activateEmail">Activar sólo las funcionalidades básicas del mapa.</string>
+    <string name="activateEmail">Para participar en el sorteo activa tu correo electrónico</string>
     <string name="mapDisabled">La visualización del modelo predictivo en el mapa no está disponible debido a la configuración de ahorro de batería, pero todavía puede obtener las predicciones a través de ventana de texto. Para habilitar el mapa, vaya a Preferencias>Batería y seleccione otra opción.</string>
     <string name="batteryDiclaimer">La configuración de la batería no tiene ningún efecto sobre el rendimiento del modelo predictivo.</string>
 
