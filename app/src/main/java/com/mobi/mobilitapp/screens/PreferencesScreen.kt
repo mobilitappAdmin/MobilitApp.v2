@@ -66,10 +66,17 @@ fun PreferencesScreen(context: Context, preferences: SharedPreferences) {
 private fun BodyContent(preferences: SharedPreferences) {
     val uriHandler = LocalUriHandler.current
     val uri = "https://mobilitapp.upc.edu"
+    val res = LocalContext.current
+
+    val tradGender = mapOf("Man" to res.getString(R.string.man), "Woman" to res.getString(R.string.woman), "Other" to res.getString(R.string.other) , "NA" to "NA")
+    val tradReminder = mapOf("Daily" to res.getString(R.string.Daily), "Weekly" to res.getString(R.string.Weekly), "Never" to res.getString(R.string.Never))
+    val tradBattery = mapOf("Minimal" to res.getString(R.string.Minimal), "Low" to res.getString(R.string.Low),"Regular" to res.getString(R.string.Regular))
+
+
     var age: String? by remember { mutableStateOf(preferences.getString("age", "")) }
-    var gender: String? by remember { mutableStateOf(preferences.getString("gender", "")) }
-    var reminder: String? by remember { mutableStateOf(preferences.getString("reminder", "")) }
-    var battery: String? by remember { mutableStateOf(preferences.getString("battery", "")) }
+    var gender: String? by remember { mutableStateOf(tradGender[preferences.getString("gender", "NA")]) }
+    var reminder: String? by remember { mutableStateOf(tradReminder[preferences.getString("reminder", "Never")]) }
+    var battery: String? by remember { mutableStateOf(tradBattery[preferences.getString("battery", "Regular")]) }
     var debug: Boolean? by remember { mutableStateOf(preferences.getBoolean("debug", true)) }
     Log.d("PREFERENCES", "age: "+age+" gender: "+gender+" debug: "+debug.toString())
 
@@ -78,7 +85,7 @@ private fun BodyContent(preferences: SharedPreferences) {
     var emailDialog: Boolean by remember { mutableStateOf(false) }
     var progressDialog: Boolean by remember { mutableStateOf(false) }
 
-    val res = LocalContext.current
+
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item (){
@@ -159,7 +166,6 @@ private fun BodyContent(preferences: SharedPreferences) {
                     }
                     Text(text = reminder.toString())
                 }
-                //ASa//
                 Divider()
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -315,7 +321,7 @@ private fun BodyContent(preferences: SharedPreferences) {
     if(openPreferences){
         val res = LocalContext.current
         AlertDialog(
-//            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
+            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
             onDismissRequest = {/*openPreferences = false*/},
             confirmButton = {
                 TextButton(onClick = {
@@ -329,39 +335,78 @@ private fun BodyContent(preferences: SharedPreferences) {
                 }
             },
             text = {
-                Column(Modifier.fillMaxWidth())
+                LazyColumn(Modifier.fillMaxWidth())
                 {
-                    selectableButtonList(
-                        sharedPreferences = preferences,
-                        options = listOf("1-17", "18-29", "30-44", "45-59", "60-79", "80+", "NA"),
-                        prefName = "age" ,
-                        title = res.getString(R.string.Age),
-                        selectedText = {age = it},
-                        extraText = null,
-                    )
-                    selectableButtonList(
-                        sharedPreferences = preferences,
-                        options = listOf(res.getString(R.string.man), res.getString(R.string.woman), res.getString(R.string.other), "NA"),
-                        prefName = "gender" ,
-                        title = res.getString(R.string.Gender),
-                        selectedText = {gender = it},
-                        extraText = null
-                    )
-                    selectableButtonListReminders(
-                        sharedPreferences = preferences,
-                        options = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never)),
-                        prefName = "reminder" ,
-                        title = res.getString(R.string.Reminders),
-                        selectedText = {reminder = it},
-                    )
-                    selectableButtonList(
-                        sharedPreferences = preferences,
-                        options = listOf(res.getString(R.string.Minimal), res.getString(R.string.Low),res.getString(R.string.Regular)),
-                        prefName = "battery" ,
-                        title = res.getString(R.string.Battery),
-                        selectedText = {battery = it},
-                        extraText = listOf(res.getString(R.string.MinimalText), res.getString(R.string.LowText),res.getString(R.string.RegularText))
-                    )
+                    item() {
+                        selectableButtonList(
+                            sharedPreferences = preferences,
+                            options = listOf(
+                                "1-17",
+                                "18-29",
+                                "30-44",
+                                "45-59",
+                                "60-79",
+                                "80+",
+                                "NA"
+                            ),
+                            translationTable = mapOf(
+                                "1-17" to "1-17",
+                                "18-29" to "18-29",
+                                "30-44" to "30-44",
+                                "45-59" to "45-59",
+                                "60-79" to "60-79",
+                                "80+" to "80+",
+                                "NA" to "NA"
+                            ),
+                            prefName = "age",
+                            title = res.getString(R.string.Age),
+                            selectedText = { age = it },
+                            extraText = null,
+                        )
+                        selectableButtonList(
+                            sharedPreferences = preferences,
+                            options = listOf(
+                                res.getString(R.string.man),
+                                res.getString(R.string.woman),
+                                res.getString(R.string.other),
+                                "NA"
+                            ),
+                            translationTable = tradGender,
+                            prefName = "gender",
+                            title = res.getString(R.string.Gender),
+                            selectedText = { gender = it },
+                            extraText = null
+                        )
+                        selectableButtonListReminders(
+                            sharedPreferences = preferences,
+                            options = listOf(
+                                res.getString(R.string.Daily),
+                                res.getString(R.string.Weekly),
+                                res.getString(R.string.Never)
+                            ),
+                            translationTable = tradReminder,
+                            prefName = "reminder",
+                            title = res.getString(R.string.Reminders),
+                            selectedText = { reminder = it },
+                        )
+                        selectableButtonList(
+                            sharedPreferences = preferences,
+                            options = listOf(
+                                res.getString(R.string.Minimal),
+                                res.getString(R.string.Low),
+                                res.getString(R.string.Regular)
+                            ),
+                            translationTable = tradBattery,
+                            prefName = "battery",
+                            title = res.getString(R.string.Battery),
+                            selectedText = { battery = it },
+                            extraText = listOf(
+                                res.getString(R.string.MinimalText) + "\n" + res.getString(R.string.batteryDiclaimer),
+                                res.getString(R.string.LowText) + "\n" + res.getString(R.string.batteryDiclaimer),
+                                res.getString(R.string.RegularText) + "\n" + res.getString(R.string.batteryDiclaimer)
+                            )
+                        )
+                    }
                 }
             }
         )
@@ -375,11 +420,12 @@ private fun BodyContent(preferences: SharedPreferences) {
         var email by remember { mutableStateOf("") }
         var valid by remember { mutableStateOf(false) }
         AlertDialog(
+            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
             onDismissRequest = {},
             title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
             },
             confirmButton = {
-                Button(enabled = valid,
+                TextButton(enabled = valid,
                     onClick = {
                         // on below line we are storing data in shared preferences file.
                         if (valid) {
@@ -387,18 +433,24 @@ private fun BodyContent(preferences: SharedPreferences) {
                             preferences.edit().commit()
                         }
                         emailDialog = false
-                    }) {
-                    Text(res.getString(R.string.Accept))
+                    },colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent,
+                        disabledBackgroundColor = Color.Transparent,
+                        disabledContentColor = Color.Gray
+                    )) {
+                    Text(text = res.getString(R.string.Accept),color = if(valid)Orange else Color.Gray ,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                 }
             },
             dismissButton = {
-                Button(
+                TextButton(
                     onClick = {
                         preferences.edit().putString("email", "False").apply()
                         preferences.edit().commit()
                         emailDialog = false
-                    }) {
-                    Text(res.getString(R.string.Deny))
+                    }, colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent,
+                    )) {
+                    Text(text = res.getString(R.string.Deny),color = Orange,style = TextStyle(fontSize = 16.sp))
                 }
             },
             text = {
@@ -410,15 +462,18 @@ private fun BodyContent(preferences: SharedPreferences) {
     }
     if (progressDialog) {
         AlertDialog(
+            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
             onDismissRequest = {},
             title = { Text(LocalContext.current.getString(R.string.drawProgress), style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
             },
             confirmButton = {
-                Button(
+                TextButton(
                     onClick = {
                         progressDialog = false
-                    }) {
-                    Text(res.getString(R.string.Accept))
+                    },colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent,
+                    )) {
+                    Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                 }
             },
             text = {
@@ -620,13 +675,13 @@ fun ValidateEmail(): Pair<String, Boolean> {
     var valid by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.padding(16.dp)) {
-        Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2)
+        Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2, textAlign = TextAlign.Justify)
         Spacer(modifier = Modifier.height(height = 20.dp))
         EmailTextField(email = email, onEmailChange = { email = it })
 
         if (email.isNotEmpty()) {
             if (isValidEmail(email)) {
-                Text(text = LocalContext.current.getString(R.string.emailValid), color = Color.Blue)
+                Text(text = LocalContext.current.getString(R.string.emailValid))
                 valid = true
             } else {
                 Text(text = LocalContext.current.getString(R.string.emailNoValid), color = Color.Red)

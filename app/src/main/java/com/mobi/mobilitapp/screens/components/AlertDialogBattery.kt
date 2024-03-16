@@ -1,6 +1,7 @@
 package com.mobi.mobilitapp.screens.components
 
 import android.content.SharedPreferences
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.ui.theme.Orange
+import com.mobi.mobilitapp.ui.theme.SoftGray
 
 @Composable
 fun alertDialogBattery(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> Unit,newText: (String)-> Unit){
@@ -34,6 +36,7 @@ fun alertDialogBattery(sharedPreferences: SharedPreferences,ongoing: (Boolean)->
     var radioText = listOf(res.getString(R.string.RegularText), res.getString(R.string.LowText), res.getString(R.string.MinimalText))
     val selected = remember { mutableStateOf(radioOptions.indexOf(activity)) }
     AlertDialog(
+        backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
         onDismissRequest = {ongoing(false)},
         confirmButton = {
             TextButton(onClick = {

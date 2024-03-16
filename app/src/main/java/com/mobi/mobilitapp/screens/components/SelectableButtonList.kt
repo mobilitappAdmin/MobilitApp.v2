@@ -48,11 +48,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @Composable
-fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<String>, prefName: String, title:String, selectedText: (String)-> Unit, extraText:List<String>? = listOf<String>()){
+fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<String>,translationTable:Map<String,String>, prefName: String, title:String, selectedText: (String)-> Unit, extraText:List<String>? = listOf<String>()){
     val res = LocalContext.current
-    var activity: String = sharedPreferences.getString(prefName, options.last())!!
+    var activity: String = sharedPreferences.getString(prefName, translationTable.keys.last())!!
     sharedPreferences.edit().putString(prefName, activity).apply();
-    val selected = remember { mutableStateOf(options.indexOf(activity)) }
+
+    val selected = remember { mutableStateOf(options.indexOf(translationTable[activity])) }
     Text(modifier = Modifier.fillMaxWidth(), text = title,style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold), textAlign = TextAlign.Center)
     Spacer(Modifier.height(10.dp))
 
@@ -67,10 +68,10 @@ fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<Stri
             list.forEachIndexed { index, text ->
                 Button(
                     onClick = {
-                        activity = text;
+                        activity = translationTable.inverseMap()[text]!!;
                         selected.value = index;
                         sharedPreferences.edit().putString(prefName, activity).apply();
-                        selectedText(activity)
+                        selectedText(text)
                     },
                     contentPadding = PaddingValues(
                         start = 4.dp,
@@ -95,10 +96,10 @@ fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<Stri
                 blist.forEachIndexed { index, text ->
                     Button(
                         onClick = {
-                            activity = text;
+                            activity = translationTable.inverseMap()[text]!!;
                             selected.value = index + 3
                             sharedPreferences.edit().putString(prefName, activity).apply();
-                            selectedText(activity)
+                            selectedText(text)
                         },
                         contentPadding = PaddingValues(
                             start = 4.dp,
@@ -120,26 +121,31 @@ fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<Stri
     }
     if (extraText != null) {
         if(extraText.isNotEmpty()){
+            val t = extraText[selected.value].split("\n")
             Spacer(Modifier.height(5.dp))
-            Text(extraText[selected.value])
+            Text(t[0], textAlign = TextAlign.Justify, fontSize = 12.sp,)
+
+            Spacer(Modifier.height(15.dp))
+            Text(t[1], textAlign = TextAlign.Justify, fontSize = 10.sp,)
         }
     }
-    Spacer(Modifier.height(10.dp))
+    Spacer(Modifier.height(15.dp))
 }
 
 @Composable
-fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:List<String>, prefName: String, title:String, selectedText: (String)-> Unit){
+fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:List<String>,translationTable:Map<String,String>, prefName: String, title:String, selectedText: (String)-> Unit){
     val res = LocalContext.current
-    var activity: String = sharedPreferences.getString(prefName, options.last())!!
+    var activity: String = sharedPreferences.getString(prefName, translationTable.keys.last())!!
     sharedPreferences.edit().putString(prefName, activity).apply();
 
+    val selected = remember { mutableStateOf(options.indexOf(translationTable[activity])) }
 
     val baseRequestCode = 110
     val times = remember { getTimes(sharedPreferences).toMutableStateList()}
     val size_time = remember { mutableStateOf(times.size)}
     val calendars  = remember{ MutableList(times.size) {Calendar.getInstance()} }
 
-    val selected = remember { mutableStateOf(options.indexOf(activity)) }
+
 
     cancelReminders(res, baseRequestCode)
     if(selected.value == 0){ // daily
@@ -159,10 +165,10 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
             options.forEachIndexed { index, text ->
                 Button(
                     onClick = {
-                        activity = text;
+                        activity = translationTable.inverseMap()[text]!!;
                         selected.value = index;
                         sharedPreferences.edit().putString(prefName, activity).apply();
-                        selectedText(activity)
+                        selectedText(text)
                     },
                     contentPadding = PaddingValues(
                         start = 4.dp,
@@ -260,7 +266,8 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
         }
 
     }
-    Spacer(Modifier.height(10.dp))
+    Spacer(Modifier.height(5.dp))
+
 }
 
 fun getTimes(sharedPreferences: SharedPreferences):List<String>{
@@ -275,4 +282,5 @@ fun getTimes(sharedPreferences: SharedPreferences):List<String>{
     }
     return times
 }
+fun <K, V> Map<K, V>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
 
