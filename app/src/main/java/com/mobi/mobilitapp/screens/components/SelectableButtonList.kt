@@ -215,7 +215,7 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
 
                         ,
                         contentPadding = PaddingValues(start = 10.dp,end = 10.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange,backgroundColor = Color.Transparent),
 
 
 
@@ -248,7 +248,7 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
                             .size(30.dp)
                             ,
                         contentPadding = PaddingValues(1.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange)
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Orange, backgroundColor = Color.Transparent)
 
 
                     ) {

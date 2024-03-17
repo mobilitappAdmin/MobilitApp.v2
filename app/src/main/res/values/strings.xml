@@ -56,6 +56,9 @@
     <!--Reminder-->
     <string name="ReminderPopUp">Get usage reminders:</string>
     <string name="ReminderNotification">Doing a commute today? Remember to generate data!</string>
+    <string name="ReminderExtraTextConcurs">You have %s/3 travels registered. Keep it going!</string>
+    <string name="ReminderExtraTextConcursAcabat">You are eligible for the raffle!</string>
+
     <string name="ReminderPreferences">Notification frequency</string>
 
     <!--Battery-->

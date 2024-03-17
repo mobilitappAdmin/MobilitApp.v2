@@ -45,6 +45,8 @@
 
     <string name="ReminderPopUp">Recibir recordatorios de uso:</string>
     <string name="ReminderNotification">¿Haces un viaje hoy? ¡Recuerda generar datos!</string>
+    <string name="ReminderExtraTextConcurs">Tienes %s/3 viajes registrados. ¡Sigue así!</string>
+    <string name="ReminderExtraTextConcursAcabat">¡Eres elegible para el sorteo!</string>
     <string name="ReminderPreferences">Frecuencia de notificación</string>
 
     <!--Bateria-->

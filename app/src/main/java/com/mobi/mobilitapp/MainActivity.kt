@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
 
 
         //remove preferences the first time the app is launched, if needed
-        if(!sharedPreferences.contains("flushd")){
+        if(!sharedPreferences.contains("flushed")){
             sharedPreferences.edit().clear().commit()
             sharedPreferences.edit().putString("flushed","flushed").commit()
         }

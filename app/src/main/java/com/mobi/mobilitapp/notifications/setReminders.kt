@@ -15,6 +15,7 @@ fun setReminders(context: Context, frequency:String, time:String, requestCode:In
     val intent = Intent(context, AlarmBroadcastReceiver::class.java)
     intent.putExtra("content",context.getString(R.string.ReminderNotification))
     intent.putExtra("requestCode",requestCode)
+    intent.putExtra("reminder","reminder")
     val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
