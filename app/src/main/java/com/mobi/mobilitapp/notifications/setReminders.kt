@@ -15,6 +15,7 @@ fun setReminders(context: Context, frequency:String, time:String, requestCode:In
     val intent = Intent(context, AlarmBroadcastReceiver::class.java)
     intent.putExtra("content",context.getString(R.string.ReminderNotification))
     intent.putExtra("requestCode",requestCode)
+    intent.putExtra("reminder","reminder")
     val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     val alarmManager = context.getSystemService(ComponentActivity.ALARM_SERVICE) as AlarmManager
@@ -29,6 +30,9 @@ fun setReminders(context: Context, frequency:String, time:String, requestCode:In
         calendar.set(Calendar.MINUTE, t[1].toInt())
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
+        if(calendar.timeInMillis < System.currentTimeMillis()){
+            calendar.add(Calendar.DAY_OF_MONTH,1)
+        }
         Log.d("calendar Current Time", Date(System.currentTimeMillis()).toString())
         Log.d("calendar set at" , calendar.time.toString())
 

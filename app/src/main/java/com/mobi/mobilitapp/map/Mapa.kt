@@ -88,6 +88,7 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     private val uiString2 = mutableStateOf(context.getString(R.string.distcons)+" %.0fm".format(0.0))
     val mutColor = mutableStateOf(ecoGreen)
     val battery = mutableStateOf("Regular")
+    val triggerRecomposition = mutableStateOf("trigger")
 
 
     private var partialDistance = 0.0
@@ -184,7 +185,9 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
         resetView()
 
     }
-
+    fun triggerRecompose(){
+        triggerRecomposition.value = ""
+    }
     fun getColor(vehicle: String):Color{
         if (!nameToID.contains(vehicle)) return Color.White
         return Color(markerColors[nameToID[vehicle]]!!)
@@ -745,8 +748,14 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
     @Composable
     fun noMapa(){
-        Box(Modifier.fillMaxSize().background(Color.LightGray)){
-            Column(Modifier.align(Alignment.Center).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(Color.LightGray)){
+            Column(
+                Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
                 Icon(
                     painter = painterResource(R.drawable.hide),
                     contentDescription = "map unaviable",
@@ -765,111 +774,114 @@ class Mapa(val context:Context,sharedPreferences: SharedPreferences? = null): Ap
     }
     @Composable
     fun appLayout() {
-        val localDensity = LocalDensity.current
 
-        //check if the preferences have changed
-        battery.value = preferences?.getString("battery","Regular")!!
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .clip(shape = RoundedCornerShape(15.dp))
-                .onGloballyPositioned { coordinates ->
-                    mapHeight = with(localDensity) { coordinates.size.height.toDp() }
-                    mapWidth = with(localDensity) { coordinates.size.width.toDp() }
-                }
+        if(triggerRecomposition.value == "trigger"){
+            val localDensity = LocalDensity.current
 
-        )// this will be the map
-        {
-            if(battery.value == "Minimal"){
-                noMapa()
-            }
-            else {
-                DrawMap()
-                //Text("H $mapHeight W $mapWidth",modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp), fontWeight = FontWeight.Bold,color = Color.Black)
+            //check if the preferences have changed
+            battery.value = preferences?.getString("battery", "Regular")!!
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+                    .clip(shape = RoundedCornerShape(15.dp))
+                    .onGloballyPositioned { coordinates ->
+                        mapHeight = with(localDensity) { coordinates.size.height.toDp() }
+                        mapWidth = with(localDensity) { coordinates.size.width.toDp() }
+                    }
 
-                Column(
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 20.dp, end = 15.dp)
-                ) {
+            )// this will be the map
+            {
+                if (battery.value == "Minimal") {
+                    noMapa()
+                } else {
+                    DrawMap()
+                    //Text("H $mapHeight W $mapWidth",modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp), fontWeight = FontWeight.Bold,color = Color.Black)
+
+                    Column(
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 20.dp, end = 15.dp)
+                    ) {
 
 
-                    if (battery.value == "Regular") {
-                        if (!onTrip.value) {
-                            //ButtonClearMap
-                            Spacer(modifier = Modifier.size(10.dp))
-                            ButtonCenterMap()
-                        } else {
-                            //ButtonClearMap()
-                            ButtonCruise()
+                        if (battery.value == "Regular") {
+                            if (!onTrip.value) {
+                                //ButtonClearMap
+                                Spacer(modifier = Modifier.size(10.dp))
+                                ButtonCenterMap()
+                            } else {
+                                //ButtonClearMap()
+                                ButtonCruise()
+                            }
                         }
                     }
-                }
 
-                //DATA
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 20.dp, start = 10.dp)
-                ) {
-                    var background = Color.White.copy(alpha = 0.7f)
-
-                    Row(
-                        Modifier
-                            .clip(shape = RoundedCornerShape(15.dp))
-                            .background(background)
-                            .padding(start = 10.dp, end = 10.dp, top = 2.dp)
+                    //DATA
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = 20.dp, start = 10.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.eco),
-                            contentDescription = "distance",
-                            modifier = Modifier
-                                .size(25.dp)
-                                .padding(start = 2.dp)
-                                .align(CenterVertically),
-                            tint = mutColor.value
-                        )
-                        Text(
-                            CO2String.value,
-                            modifier = Modifier
-                                .padding(start = 8.dp, end = 8.dp, top = 2.dp)
-                                .align(CenterVertically),
-                            fontWeight = FontWeight.Bold,
-                            color = mutColor.value
-                        )
-                    }
-                    Spacer(Modifier.padding(2.dp))
-                    Row(
-                        Modifier
-                            .padding(end = 3.dp)
-                            .clip(shape = RoundedCornerShape(15.dp))
-                            .background(background)
-                            .padding(start = 10.dp, end = 10.dp, top = 1.dp, bottom = 1.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ruler),
-                            contentDescription = "distance",
-                            modifier = Modifier
-                                .size(25.dp)
-                                .padding(start = 2.dp)
-                                .align(CenterVertically),
-                            tint = Orange
-                        )
-                        Text(
-                            DistanceString.value,
-                            modifier = Modifier
-                                .padding(start = 8.dp, end = 8.dp, top = 2.dp)
-                                .align(CenterVertically),
-                            fontWeight = FontWeight.Bold,
-                            color = Orange
-                        )
-                    }
+                        var background = Color.White.copy(alpha = 0.7f)
+
+                        Row(
+                            Modifier
+                                .clip(shape = RoundedCornerShape(15.dp))
+                                .background(background)
+                                .padding(start = 10.dp, end = 10.dp, top = 2.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.eco),
+                                contentDescription = "distance",
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .padding(start = 2.dp)
+                                    .align(CenterVertically),
+                                tint = mutColor.value
+                            )
+                            Text(
+                                CO2String.value,
+                                modifier = Modifier
+                                    .padding(start = 8.dp, end = 8.dp, top = 2.dp)
+                                    .align(CenterVertically),
+                                fontWeight = FontWeight.Bold,
+                                color = mutColor.value
+                            )
+                        }
+                        Spacer(Modifier.padding(2.dp))
+                        Row(
+                            Modifier
+                                .padding(end = 3.dp)
+                                .clip(shape = RoundedCornerShape(15.dp))
+                                .background(background)
+                                .padding(start = 10.dp, end = 10.dp, top = 1.dp, bottom = 1.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ruler),
+                                contentDescription = "distance",
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .padding(start = 2.dp)
+                                    .align(CenterVertically),
+                                tint = Orange
+                            )
+                            Text(
+                                DistanceString.value,
+                                modifier = Modifier
+                                    .padding(start = 8.dp, end = 8.dp, top = 2.dp)
+                                    .align(CenterVertically),
+                                fontWeight = FontWeight.Bold,
+                                color = Orange
+                            )
+                        }
 
 
+                    }
                 }
             }
         }
+        else triggerRecomposition.value = "trigger"
     }
     fun formatData(data: Double, type:String = ""):String{
         var s = ""

@@ -27,11 +27,11 @@
     <string name="About">About</string>
     <string name="Gender">Gender</string>
     <string name="Age">Age</string>
-    <string name="man">man</string>
-    <string name="woman">woman</string>
-    <string name="other">other</string>
+    <string name="man">Man</string>
+    <string name="woman">Woman</string>
+    <string name="other">Other</string>
     <string name="Pollution">Pollution</string>
-    <string name="Reminders">Reminders</string>
+    <string name="Reminders">Reminder</string>
     <string name="Battery">Battery</string>
 
     <string name="Bicycle">Bicycle</string>
@@ -55,7 +55,10 @@
 
     <!--Reminder-->
     <string name="ReminderPopUp">Get usage reminders:</string>
-    <string name="ReminderNotification">Reminder</string>
+    <string name="ReminderNotification">Doing a commute today? Remember to generate data!</string>
+    <string name="ReminderExtraTextConcurs">You have %s/3 travels registered. Keep it going!</string>
+    <string name="ReminderExtraTextConcursAcabat">You are eligible for the raffle!</string>
+
     <string name="ReminderPreferences">Notification frequency</string>
 
     <!--Battery-->
@@ -63,11 +66,11 @@
     <string name="Weekly">Weekly</string>
     <string name="Never">Never</string>
     <string name="Regular">Regular</string>
-    <string name="RegularText">Regular</string>
+    <string name="RegularText">Real-time feedback of the predictive model on the map.</string>
     <string name="Low">Low</string>
-    <string name="LowText">Low</string>
     <string name="Minimal">Minimal</string>
-    <string name="MinimalText">Minimal</string>
+    <string name="MinimalText">The map is disabled to minimize battery consumption.</string>
+    <string name="batteryDiclaimer">The battery setting has no effect on the performance of the predictive model.</string>
     <string name="BatteryUsage">Battery usage</string>
     <!--Train Screen-->
     <string name="GenerateData">Generate Data</string>
@@ -127,5 +130,6 @@
     <string name="currenProgress">Currently you have participated in</string>
     <string name="days">days</string>
     <string name="activateEmail">To participate in the draw activate your email</string>
+    <string name="LowText">Enable only the basic functionalities of hte map.</string>
 
 </resources>

@@ -17,11 +17,11 @@
     <string name="About">Projecte</string>
     <string name="Gender">Gènere</string>
     <string name="Age">Edat</string>
-    <string name="man">home</string>
-    <string name="woman">dona</string>
-    <string name="other">altre</string>
+    <string name="man">Home</string>
+    <string name="woman">Dona</string>
+    <string name="other">Altre</string>
     <string name="Pollution">Contaminació</string>
-    <string name="Reminders">Recordatoris</string>
+    <string name="Reminders">Recordatori</string>
     <string name="Battery">Bateria</string>
 
     <string name="Bicycle">Bicicleta</string>
@@ -45,19 +45,21 @@
 
     <!--Recordatori-->
     <string name="ReminderPopUp">Rebre recordatoris d\'ús:</string>
-    <string name="ReminderNotification">Recordatori</string>
+    <string name="ReminderNotification">Fas un viatge avui? Recorda generar dades!</string>
+    <string name="ReminderExtraTextConcurs">Tens %s/3 viatges registrats. Segueix així!</string>
+    <string name="ReminderExtraTextConcursAcabat">Ets elegible per al sorteig!</string>
     <string name="ReminderPreferences">Freqüència de notificacions</string>
 
     <!--Bateria-->
     <string name="Daily">Diari</string>
     <string name="Weekly">Semanal</string>
     <string name="Never">Mai</string>
-    <string name="Regular">Regular</string>
-    <string name="RegularText">Normal</string>
-    <string name="Low">Low</string>
-    <string name="LowText">Baix</string>
-    <string name="Minimal">Minimal</string>
-    <string name="MinimalText">Mínim</string>
+    <string name="Regular">Normal</string>
+    <string name="RegularText">Dibuix de les prediccions al mapa en temps real.</string>
+    <string name="Low">Baix</string>
+    <string name="LowText">Activar només les funcionalitats bàsiques del mapa.</string>
+    <string name="Minimal">Mínim</string>
+    <string name="MinimalText">El mapa està desactivat per minimitzar el consum de bateria.</string>
     <string name="BatteryUsage">Ús de la bateria</string>
 
     <!--Train Screen-->
@@ -118,5 +120,6 @@
     <string name="days">dies</string>
     <string name="activateEmail">Per participar al sorteig activa el teu correu electrònic</string>
     <string name="mapDisabled">La visualització del model predictiu al mapa no està disponible a causa de la configuració d\'estalvi de bateria, però encara podeu obtenir les prediccions a través finestra de text. Per habilitar el mapa, aneu a Preferències>Bateria i seleccioneu una altra opció.</string>
+    <string name="batteryDiclaimer">La configuració de la bateria no té cap efecte en el rendiment del model predictiu.</string>
 
 </resources>

@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.TimePicker
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.notifications.AlarmBroadcastReceiver
 import com.mobi.mobilitapp.notifications.setReminders
 import com.mobi.mobilitapp.ui.theme.Orange
+import com.mobi.mobilitapp.ui.theme.SoftGray
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -71,6 +73,7 @@ fun alertDialogReminder(sharedPreferences: SharedPreferences,ongoing: (Boolean)-
     var radioOptions = listOf(res.getString(R.string.Daily), res.getString(R.string.Weekly), res.getString(R.string.Never))
     AlertDialog(
         onDismissRequest = {ongoing(false)},
+        backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
         confirmButton = {
             TextButton(onClick = {
                 // on below line we are storing data in shared preferences file.

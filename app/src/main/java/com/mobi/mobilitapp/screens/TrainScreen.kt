@@ -1,6 +1,7 @@
 package com.mobi.mobilitapp.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
@@ -19,6 +20,8 @@ import androidx.compose.ui.unit.sp
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.screens.components.TopBar
 import com.mobi.mobilitapp.sensors.SensorLoader
+import com.mobi.mobilitapp.ui.theme.Orange
+import com.mobi.mobilitapp.ui.theme.SoftGray
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -192,19 +195,22 @@ private fun ActivityDialog(
     if (showDialog){
         var activity: String? = null
         AlertDialog(
+            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
             onDismissRequest = {},
             title = {Text(res.getString(R.string.train5)+":", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))},
             confirmButton = {
-                            Button(onClick = {
+                            TextButton(onClick = {
                                 sensorLoader.initialize(activity!!)
                                 dismissDialog()
-                            }) {
-                                Text(res.getString(R.string.Accept))
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.Transparent,
+                            )) {
+                                Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                             }
             },
             dismissButton = {
-                Button(onClick = { dismissDialog() }) {
-                    Text(res.getString(R.string.Cancel))
+                TextButton(onClick = { dismissDialog() }) {
+                    Text(text = res.getString(R.string.Deny),color = Orange,style = TextStyle(fontSize = 16.sp))
                 }
             },
             text = {
