@@ -518,7 +518,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             )
             val time = differenceInMinutes(startDate, Date())
 
-            return dist >= 0f && time >= 0f
+            return dist >= 500f && time >= 5f
         }
         return false
     }
