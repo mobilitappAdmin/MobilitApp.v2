@@ -28,6 +28,6 @@ fun EmailTextField(email: String, onEmailChange: (String) -> Unit) {
     )
 }
 fun isValidEmail(email: String): Boolean {
-    val emailRegex = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-z]+".toRegex()
+    val emailRegex = "[a-zA-Z0-9._-]+@([a-zA-Z0-9.-]+\\.)?upc\\.edu".toRegex()
     return email.matches(emailRegex)
 }
