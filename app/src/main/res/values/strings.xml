@@ -72,6 +72,15 @@
     <string name="MinimalText">The map is disabled to minimize battery consumption.</string>
     <string name="batteryDiclaimer">The battery setting has no effect on the performance of the predictive model.</string>
     <string name="BatteryUsage">Battery usage</string>
+
+    <!--Concurs-->
+    <string name="Sorteig">Raffle</string>
+    <string name="SorteigPregunta">Would you like to participate on the raffle?</string>
+    <string name="Participar">Participate</string>
+    <string name="NoParticipar">I don\'t want to participate</string>
+
+
+
     <!--Train Screen-->
     <string name="GenerateData">Generate Data</string>
 

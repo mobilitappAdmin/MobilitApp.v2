@@ -40,6 +40,7 @@ import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.MainScreen
 import com.mobi.mobilitapp.screens.components.EmailTextField
+import com.mobi.mobilitapp.screens.components.alertDialogEmail
 import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
@@ -204,7 +205,7 @@ class MainActivity : ComponentActivity() {
 //        var openReminder: Boolean by remember { mutableStateOf(!sharedPreferences.contains("reminder")) }
         val res = LocalContext.current
         if (openLocation) {
-            var title: String = res.getString(R.string.LocationUse) +":"
+            var title: String = res.getString(R.string.LocationUse)
             AlertDialog(
                 backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
                 onDismissRequest = {(context as? Activity)?.finish()},
@@ -346,51 +347,9 @@ class MainActivity : ComponentActivity() {
 //        if (!openPreferences and openReminder) {
 //            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
 //        }
-        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
+        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("emailo")) }
         if (!openPreferences and mailSorteig) { //email sorteig
-            var title: String = LocalContext.current.getString(R.string.email) +":"
-            var email by remember { mutableStateOf("") }
-            var valid by remember { mutableStateOf(false) }
-            AlertDialog(
-                backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
-                onDismissRequest = {},
-                title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-                },
-                confirmButton = {
-                    TextButton(enabled = valid,
-                        onClick = {
-                        // on below line we are storing data in shared preferences file.
-                        if (valid) {
-                            sharedPreferences.edit().putString("email", email).apply()
-                            sharedPreferences.edit().commit()
-                        }
-                        mailSorteig = false
-                    }, colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Transparent,
-                            disabledBackgroundColor = Color.Transparent,
-                            disabledContentColor = Color.Gray
-                        )) {
-                        Text(text = res.getString(R.string.Accept),color = if(valid)Orange else Color.Gray,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            sharedPreferences.edit().putString("email", "False").apply()
-                            sharedPreferences.edit().commit()
-                            mailSorteig = false
-                        }, colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Transparent,
-                        )) {
-                        Text(text = res.getString(R.string.Deny),color = Orange,style = TextStyle(fontSize = 16.sp))
-                    }
-                },
-                text = {
-                    val (email_, valid_) = ValidateEmail()
-                    email = email_
-                    valid = valid_
-                }
-            )
+            alertDialogEmail(sharedPreferences = sharedPreferences, ongoing = {mailSorteig = it}, newText = {} )
         }
 
 
@@ -410,27 +369,4 @@ class MainActivity : ComponentActivity() {
         //}
     }
 
-    @Composable
-    fun ValidateEmail(): Pair<String, Boolean> {
-        var email by remember { mutableStateOf("") }
-        var valid by remember { mutableStateOf(false) }
-
-        Column (modifier = Modifier.padding(16.dp)) {
-            Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2, textAlign = TextAlign.Justify)
-            Spacer(modifier = Modifier.height(height = 20.dp))
-            EmailTextField(email = email, onEmailChange = { email = it })
-
-            if (email.isNotEmpty()) {
-                if (isValidEmail(email)) {
-                    Text(text = LocalContext.current.getString(R.string.emailValid))
-                    valid = true
-                } else {
-                    Text(text = LocalContext.current.getString(R.string.emailNoValid), color = Color.Red)
-                    valid = false
-                }
-            }
-        }
-
-        return Pair(email, valid)
-    }
 }

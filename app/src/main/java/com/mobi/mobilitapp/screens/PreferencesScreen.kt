@@ -671,16 +671,17 @@ fun TextBox_stop(preferences: SharedPreferences) {
 
 @Composable
 fun ValidateEmail(): Pair<String, Boolean> {
-    var email by remember { mutableStateOf("") }
+    val pref = LocalContext.current.getSharedPreferences("preferences",0)
+    var email by remember { mutableStateOf(pref.getString("gender","")) }
     var valid by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.padding(16.dp)) {
         Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2, textAlign = TextAlign.Justify)
         Spacer(modifier = Modifier.height(height = 20.dp))
-        EmailTextField(email = email, onEmailChange = { email = it })
+        EmailTextField(email = email!!, onEmailChange = { email = it })
 
-        if (email.isNotEmpty()) {
-            if (isValidEmail(email)) {
+        if (email!!.isNotEmpty()) {
+            if (isValidEmail(email!!)) {
                 Text(text = LocalContext.current.getString(R.string.emailValid))
                 valid = true
             } else {
@@ -690,7 +691,7 @@ fun ValidateEmail(): Pair<String, Boolean> {
         }
     }
 
-    return Pair(email, valid)
+    return Pair(email!!, valid)
 }
 
 fun getProgressRaffle(array: Array<String?>?, email: String): Float {
