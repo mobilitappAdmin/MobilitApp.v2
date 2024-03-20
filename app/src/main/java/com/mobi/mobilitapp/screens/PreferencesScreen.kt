@@ -454,7 +454,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                 }
             },
             text = {
-                val (email_, valid_) = ValidateEmail()
+                val (email_, valid_) = ValidateEmail(preferences.getString("email", "").toString())
                 email = email_
                 valid = valid_
             }
@@ -670,8 +670,8 @@ fun TextBox_stop(preferences: SharedPreferences) {
 }
 
 @Composable
-fun ValidateEmail(): Pair<String, Boolean> {
-    var email by remember { mutableStateOf("") }
+fun ValidateEmail(em: String): Pair<String, Boolean> {
+    var email by remember { mutableStateOf(em) }
     var valid by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.padding(16.dp)) {
