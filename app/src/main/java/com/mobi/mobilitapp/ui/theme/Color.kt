@@ -11,7 +11,8 @@ val Orange = Color(0xFFD1462A)
 val Orange2 = Color(0xFFD13415)
 val Yellow = Color(0xFFD1C23F)
 
-
+val TextOnWhite = Color(0xFF666666)
+val TextOnBlack = Color(0xFFA9A9A9)
 // colors
 val ecoGreen = Color(0xFF98D8AA)
 val ecoYellow = Color(0xFFF7D06E)

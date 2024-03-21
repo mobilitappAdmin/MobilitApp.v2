@@ -107,7 +107,6 @@
     <string name="n1">Consumo total: %s</string>
     <string name="n2">Consumo total: %s\nSu viaje ha generado %s de CO2. Podría haber ahorrado %s de CO2 utilizando el transporte público.</string>
     <string name="n3">Consumo total: %s\n¡Enhorabuena! Ha ahorrado potencialmente %s de CO2 evitando el uso de transportes contaminantes.</string>
-    <string name="emailInfo">Este email se requiere para la participación en el sorteo organizado por la UPC.  Esta información solo será utilizada para contactar con el ganador de este. Pulsa denegar si no quieres participar.</string>
     <string name="emailValid">" El correo electrónico es válido"</string>
     <string name="emailNoValid">" El correo electrónico no es válido"</string>
     <string name="draw">Sorteo</string>
