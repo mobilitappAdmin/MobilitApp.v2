@@ -34,6 +34,8 @@ import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.getArray
 import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.TopBar
+import com.mobi.mobilitapp.screens.components.ValidateEmail
+import com.mobi.mobilitapp.screens.components.alertDialogEmail
 import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.screens.components.alertDialogReminder
 import com.mobi.mobilitapp.screens.components.selectableButtonList
@@ -416,49 +418,7 @@ private fun BodyContent(preferences: SharedPreferences) {
 //    }
 
     if (emailDialog) {
-        var title: String = res.getString(R.string.email) +":"
-        var email by remember { mutableStateOf("") }
-        var valid by remember { mutableStateOf(false) }
-        AlertDialog(
-            backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
-            onDismissRequest = {},
-            title = { Text(title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
-            },
-            confirmButton = {
-                TextButton(enabled = valid,
-                    onClick = {
-                        // on below line we are storing data in shared preferences file.
-                        if (valid) {
-                            preferences.edit().putString("email", email).apply()
-                            preferences.edit().commit()
-                        }
-                        emailDialog = false
-                    },colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Transparent,
-                        disabledBackgroundColor = Color.Transparent,
-                        disabledContentColor = Color.Gray
-                    )) {
-                    Text(text = res.getString(R.string.Accept),color = if(valid)Orange else Color.Gray ,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        preferences.edit().putString("email", "False").apply()
-                        preferences.edit().commit()
-                        emailDialog = false
-                    }, colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.Transparent,
-                    )) {
-                    Text(text = res.getString(R.string.Deny),color = Orange,style = TextStyle(fontSize = 16.sp))
-                }
-            },
-            text = {
-                val (email_, valid_) = ValidateEmail(preferences.getString("email", "").toString())
-                email = email_
-                valid = valid_
-            }
-        )
+        alertDialogEmail(sharedPreferences = preferences, ongoing = {emailDialog = it} , newText = {} )
     }
     if (progressDialog) {
         AlertDialog(
@@ -669,29 +629,6 @@ fun TextBox_stop(preferences: SharedPreferences) {
 
 }
 
-@Composable
-fun ValidateEmail(em: String): Pair<String, Boolean> {
-    var email by remember { mutableStateOf(em) }
-    var valid by remember { mutableStateOf(false) }
-
-    Column (modifier = Modifier.padding(16.dp)) {
-        Text(LocalContext.current.getString(R.string.emailInfo), style = MaterialTheme.typography.body2, textAlign = TextAlign.Justify)
-        Spacer(modifier = Modifier.height(height = 20.dp))
-        EmailTextField(email = email, onEmailChange = { email = it })
-
-        if (email.isNotEmpty()) {
-            if (isValidEmail(email)) {
-                Text(text = LocalContext.current.getString(R.string.emailValid))
-                valid = true
-            } else {
-                Text(text = LocalContext.current.getString(R.string.emailNoValid), color = Color.Red)
-                valid = false
-            }
-        }
-    }
-
-    return Pair(email, valid)
-}
 
 fun getProgressRaffle(array: Array<String?>?, email: String): Float {
     if (email == "False") {
