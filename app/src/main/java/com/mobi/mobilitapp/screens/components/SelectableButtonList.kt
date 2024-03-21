@@ -47,6 +47,8 @@ import com.mobi.mobilitapp.ui.theme.Orange
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
+fun <K, V> Map<K, V>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
+
 @Composable
 fun selectableButtonList(sharedPreferences: SharedPreferences, options:List<String>,translationTable:Map<String,String>, prefName: String, title:String, selectedText: (String)-> Unit, extraText:List<String>? = listOf<String>()){
     val res = LocalContext.current
@@ -282,5 +284,6 @@ fun getTimes(sharedPreferences: SharedPreferences):List<String>{
     }
     return times
 }
-fun <K, V> Map<K, V>.inverseMap() = map { Pair(it.value, it.key) }.toMap()
+
+
 

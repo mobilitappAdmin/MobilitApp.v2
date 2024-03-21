@@ -74,11 +74,27 @@
     <string name="BatteryUsage">Battery usage</string>
 
     <!--Concurs-->
-    <string name="Sorteig">Raffle</string>
-    <string name="SorteigPregunta">Would you like to participate on the raffle?</string>
-    <string name="Participar">Participate</string>
-    <string name="NoParticipar">I don\'t want to participate</string>
+    <string name="Giveaway">Giveaway</string>
+    <string name="GiveawayExlpanation">"We are organizing a giveaway among UPC students and personnel. If you would like to participate, check the box and fill the form below. You can find more information "</string>
+    <string name="here">"here."</string>
+    <string name="GivewayCheck">I want to participate on the giveaway</string>
+    <string name="Participate">Participate</string>
+    <string name="DontParticipate">I don\'t want to participate</string>
 
+    <string name="FIB">FIB - Facultad de Informática</string>
+    <string name="ETSAB">ETSAB - Facultad de Arquitectura</string>
+    <string name="ETSETB">ETSETB - Facultad de Telecomunicaciones</string>
+    <string name="ETSECCB">ETSECCB - Facultad de Ingeniería Civil</string>
+
+    <string name="Student">Student</string>
+    <string name="PDI">PDI</string>
+    <string name="PAS">PAS/PTGAS</string>
+
+    <string name="_1st">1st</string>
+    <string name="_2nd">2nd</string>
+    <string name="_3rd">3rd</string>
+    <string name="_4th">4th</string>
+    <string name="_Master">Master Degree</string>
 
 
     <!--Train Screen-->

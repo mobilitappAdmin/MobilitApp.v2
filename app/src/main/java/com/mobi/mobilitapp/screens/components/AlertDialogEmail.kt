@@ -60,7 +60,7 @@ import com.mobi.mobilitapp.ui.theme.TextOnWhite
 @Composable
 fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> Unit,newText: (String)-> Unit){
 //ongoing is set to false once the user clicks the button or outside the alert
-    var title: String = LocalContext.current.getString(R.string.Sorteig)
+    var title: String = LocalContext.current.getString(R.string.Giveaway)
     val res = LocalContext.current
 
     var organization by remember { mutableStateOf(sharedPreferences.getString("organization","")!!) }
@@ -77,7 +77,6 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
             (role != "") and                        //non void role
             ((grade != "") or (role != "Student"));   //non void grade or grade disabled
 
-    Log.d("email Outie",email)
 
     AlertDialog(
         backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
@@ -105,7 +104,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                         disabledBackgroundColor = Color.Transparent,
                         disabledContentColor = Color.Gray
                     )) {
-                    Text(text = res.getString(R.string.Participar),color = if(valid)Orange else Color.Gray,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                    Text(text = res.getString(R.string.Participate),color = if(valid)Orange else Color.Gray,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                 }
             }
             else{ // Dont participate
@@ -121,7 +120,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                     }, colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent,
                     )) {
-                    Text(text = res.getString(R.string.NoParticipar),color = Orange,style = TextStyle(fontSize = 16.sp,fontWeight = FontWeight.Bold))
+                    Text(text = res.getString(R.string.DontParticipate),color = Orange,style = TextStyle(fontSize = 16.sp,fontWeight = FontWeight.Bold))
                 }
             }
 
@@ -135,16 +134,16 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                 //disclaimer amb la url del sorteig
                 val uriHandler = LocalUriHandler.current
                 val annotatedString = buildAnnotatedString {
-                    append("We are organizing a raffle among UPC students and personnel. If you would like to participate, check the box and fill the form below. You can find more information ")
+                    append(res.getString(R.string.GiveawayExlpanation))
 
-                    pushStringAnnotation(tag = "raffle", annotation = "https://mobilitapp.upc.edu/")
+                    pushStringAnnotation(tag = "giveaway", annotation = "https://mobilitapp.upc.edu/")
                     withStyle(style = SpanStyle(color =Orange)) {
-                        append("here.")
+                        append(res.getString(R.string.here))
                     }
                     pop()
                 }
                 ClickableText(text = annotatedString,style = TextStyle(fontSize = 12.sp,textAlign = TextAlign.Justify, color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)), onClick = { offset ->
-                    annotatedString.getStringAnnotations(tag = "raffle", start = offset, end = offset).firstOrNull()?.let {
+                    annotatedString.getStringAnnotations(tag = "giveaway", start = offset, end = offset).firstOrNull()?.let {
                         uriHandler.openUri(it.item)
                     }
                 })
@@ -158,11 +157,11 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                         enabled = true,
                         colors = CheckboxDefaults.colors(checkedColor = Orange, uncheckedColor = Orange)
                     )
-                    Text(text = "I want to participate on the raffle",modifier = Modifier.padding(top = 1.dp), fontSize = 13.sp,textAlign = TextAlign.Justify)
+                    Text(text = res.getString(R.string.GivewayCheck),modifier = Modifier.padding(top = 1.dp), fontSize = 13.sp,textAlign = TextAlign.Justify)
                 }
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)){
-                    dropDown(modifier = Modifier,value = organization,label="Organization",disabled = !checked,items = listOf("FIB - Facultad de Informática","ETSAB - Facultad de Arquitectura","ETSETB - Facultad de Telecomunicaciones","ETSECCB - Facultad de Ingenieria Civil"),selectedText = {organization = it})
+                    dropDown(modifier = Modifier,value = organization,label="Organization",disabled = !checked,items = listOf("FIB - Facultad de Informática","ETSAB - Facultad de Arquitectura","ETSETB - Facultad de Telecomunicaciones","ETSECCB - Facultad de Ingeniería Civil"),selectedText = {organization = it})
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)){
                         dropDown(modifier = Modifier.weight(1f),value = role,label="Role",disabled = !checked,items = listOf("Student","PDI","PAS/PTGAS"),selectedText = {role = it})
                         dropDown(modifier = Modifier.weight(1f),value = grade,label="Grade",disabled = (!checked or (role != "Student")),items = listOf("1st","2nd","3rd","4th","Master Degree"),selectedText = {grade = it})
@@ -186,7 +185,6 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
 fun ValidateEmail(sharedPreferences: SharedPreferences,disabled:Boolean = false): Pair<String, Boolean> {
     val e = sharedPreferences.getString("email","")!!
     var email by remember { mutableStateOf( if (e != "False") e else "" )}
-    Log.d("email Innie",email)
     var valid by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.fillMaxWidth()) {
