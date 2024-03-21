@@ -75,6 +75,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private var stop: Pair<Float, Boolean> = Pair(0.0f, false)
 
     private lateinit var startDate: Date
+    private lateinit var drawDate: Date // nomes per el sorteig
     private var startLoc: Location? = null
     private var first: Boolean = true
 
@@ -153,6 +154,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     fun initialize() {
         first = true
         startDate = Date()
+        drawDate = Date()
         captureHash = abs((startDate.toString()+ANDROID_ID).hashCode())
         stop = Pair(0.0f, false)
         val email = preferences.getString("email", "False")
@@ -516,9 +518,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 locations[locations.size - 1].latitude,
                 locations[locations.size - 1].longitude
             )
-            val time = differenceInMinutes(startDate, Date())
+            val time = differenceInMinutes(drawDate, Date())
+            Log.d("VIATGE", "$dist metres i $time minuts")
 
-            return dist >= 500f && time >= 5f
+            return dist >= 400f && time >= 4f
         }
         return false
     }
