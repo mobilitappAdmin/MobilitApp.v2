@@ -63,9 +63,35 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
     var title: String = LocalContext.current.getString(R.string.Giveaway)
     val res = LocalContext.current
 
-    var organization by remember { mutableStateOf(sharedPreferences.getString("organization","")!!) }
-    var role by remember { mutableStateOf(sharedPreferences.getString("role","")!!) }
-    var grade by remember { mutableStateOf(sharedPreferences.getString("grade","")!!) }
+    //save preferences in english
+    val transOrg = mapOf(
+        "FIB" to res.getString(R.string.FIB),
+        "ETSAB" to res.getString(R.string.ETSAB),
+        "ETSETB" to res.getString(R.string.ETSETB),
+        "ETSECCB" to res.getString(R.string.ETSECCB),
+        "" to ""
+    )
+    var organization by remember { mutableStateOf(transOrg[sharedPreferences.getString("organization","")!!]!!) }
+
+    val transRole = mapOf(
+        "Student" to res.getString(R.string.Student),
+        "PDI" to res.getString(R.string.PDI),
+        "PAS" to res.getString(R.string.PAS),
+        "" to ""
+    )
+    var role by remember { mutableStateOf(transRole[sharedPreferences.getString("role","")!!]!!) }
+
+    val transGrade = mapOf(
+        "1st" to res.getString(R.string._1st),
+        "2nd" to res.getString(R.string._2nd),
+        "3rd" to res.getString(R.string._3rd),
+        "4th" to res.getString(R.string._4th),
+        "Master" to res.getString(R.string._Master),
+        "" to ""
+    )
+    var grade by remember { mutableStateOf(transGrade[sharedPreferences.getString("grade","")!!]!!) }
+
+
 
     var email by remember {  mutableStateOf(sharedPreferences.getString("email","")!!) }
     var validEmail by remember { mutableStateOf(false) }
@@ -75,7 +101,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
     valid = validEmail and                          //valid mail
             ( organization != "") and               //non void organization
             (role != "") and                        //non void role
-            ((grade != "") or (role != "Student"));   //non void grade or grade disabled
+            ((grade != "") or (role != res.getString(R.string.Student)));   //non void grade or grade disabled
 
 
     AlertDialog(
@@ -88,12 +114,12 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                         // on below line we are storing data in shared preferences file.
                         if (valid) {
                             sharedPreferences.edit().putString("email", email).apply()
-                            sharedPreferences.edit().putString("organization", organization).apply()
-                            sharedPreferences.edit().putString("role", role).apply()
-                            if(role != "Student") //grade disabled
+                            sharedPreferences.edit().putString("organization", transOrg.inverseMap()[organization]).apply()
+                            sharedPreferences.edit().putString("role", transRole.inverseMap()[role]).apply()
+                            if(role != res.getString(R.string.Student)) //grade disabled
                                 sharedPreferences.edit().putString("grade", "").apply()
                             else
-                                sharedPreferences.edit().putString("grade", grade).apply()
+                                sharedPreferences.edit().putString("grade", transGrade.inverseMap()[grade]).apply()
 
                             sharedPreferences.edit().commit()
                             newText(email)
@@ -161,10 +187,10 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                 }
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)){
-                    dropDown(modifier = Modifier,value = organization,label="Organization",disabled = !checked,items = listOf("FIB - Facultad de Informática","ETSAB - Facultad de Arquitectura","ETSETB - Facultad de Telecomunicaciones","ETSECCB - Facultad de Ingeniería Civil"),selectedText = {organization = it})
+                    dropDown(modifier = Modifier,value = organization,label="Organization",disabled = !checked,items = listOf(res.getString(R.string.FIB),res.getString(R.string.ETSAB),res.getString(R.string.ETSETB),res.getString(R.string.ETSECCB)),selectedText = {organization = it})
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)){
-                        dropDown(modifier = Modifier.weight(1f),value = role,label="Role",disabled = !checked,items = listOf("Student","PDI","PAS/PTGAS"),selectedText = {role = it})
-                        dropDown(modifier = Modifier.weight(1f),value = grade,label="Grade",disabled = (!checked or (role != "Student")),items = listOf("1st","2nd","3rd","4th","Master Degree"),selectedText = {grade = it})
+                        dropDown(modifier = Modifier.weight(1f),value = role,label="Role",disabled = !checked,items = listOf(res.getString(R.string.Student),res.getString(R.string.PDI),res.getString(R.string.PAS)),selectedText = {role = it})
+                        dropDown(modifier = Modifier.weight(1f),value = grade,label="Grade",disabled = (!checked or (role != res.getString(R.string.Student))),items = listOf(res.getString(R.string._1st),res.getString(R.string._2nd),res.getString(R.string._3rd),res.getString(R.string._4th),res.getString(R.string._Master)),selectedText = {grade = it})
 
                     }
                     val (email_, valid_) = ValidateEmail(sharedPreferences, !checked)

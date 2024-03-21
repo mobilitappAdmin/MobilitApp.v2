@@ -60,6 +60,32 @@
     <string name="Minimal">Mínimo</string>
     <string name="MinimalText">El mapa está deshabilitado para minimizar el consumo de batería.</string>
     <string name="BatteryUsage">Uso de la batería</string>
+
+    <!--Concurso-->
+    <string name="Giveaway">Sorteo</string>
+    <string name="GiveawayExlpanation">"Estamos organizando un sorteo entre estudiantes y personal de la UPC. Si quieres participar, marca la casilla y rellena el siguiente formulario. Puedes encontrar más información "</string>
+    <string name="here">"aquí."</string>
+    <string name="GivewayCheck">Quiero participar en el sorteo</string>
+    <string name="Participate">Participar</string>
+    <string name="DontParticipate">No quiero participar</string>
+
+    <string name="FIB">FIB - Facultad de Informática</string>
+    <string name="ETSAB">ETSAB - Facultad de Arquitectura</string>
+    <string name="ETSETB">ETSETB - Facultad de Telecomunicaciones</string>
+    <string name="ETSECCB">ETSECCB - Facultad de Ingeniería Civil</string>
+
+    <string name="Student">Estudiante</string>
+    <string name="PDI">PDI</string>
+    <string name="PAS">PAS/PTGAS</string>
+
+    <string name="_1st">1º</string>
+    <string name="_2nd">2º</string>
+    <string name="_3rd">3º</string>
+    <string name="_4th">4º</string>
+    <string name="_Master">Master</string>
+
+    <string name="emailInfo">Este correo electrónico sólo se utilizará como información de contacto para anunciar a los ganadores.</string>
+
     <!--Train Screen-->
     <string name="GenerateData">Generar Datos</string>
 
@@ -81,8 +107,8 @@
     <!--Preferences Screen-->
     <string name="Preferences">Preferencias</string>
 
-    <string name="pref1">Seleccione su intervalo de edad</string>
-    <string name="pref2">Seleccione su género</string>
+    <string name="pref1">Rango de edad</string>
+    <string name="pref2">Género</string>
     <string name="pref3">Activa el modo de depuración</string>
     <string name="pref4">Acceso a la página web del proyecto</string>
     <string name="pref5">Descarga la documentación de contaminación</string>

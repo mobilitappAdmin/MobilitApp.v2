@@ -77,7 +77,7 @@
     <string name="Giveaway">Giveaway</string>
     <string name="GiveawayExlpanation">"We are organizing a giveaway among UPC students and personnel. If you would like to participate, check the box and fill the form below. You can find more information "</string>
     <string name="here">"here."</string>
-    <string name="GivewayCheck">I want to participate on the giveaway</string>
+    <string name="GivewayCheck">I want to participate</string>
     <string name="Participate">Participate</string>
     <string name="DontParticipate">I don\'t want to participate</string>
 
@@ -95,6 +95,8 @@
     <string name="_3rd">3rd</string>
     <string name="_4th">4th</string>
     <string name="_Master">Master Degree</string>
+
+    <string name="emailInfo">This email will only be used as contact information to announce the winners.</string>
 
 
     <!--Train Screen-->
@@ -118,8 +120,7 @@
     <!--Preferences Screen-->
     <string name="Preferences">Preferences</string>
 
-    <string name="pref1">Select your age range</string>
-    <string name="pref2">Select your gender</string>
+    <string name="pref1">Age range</string>
     <string name="pref3">Enable debug mode</string>
     <string name="pref4">Access to the project website</string>
     <string name="pref5">Download pollution documentation</string>
@@ -145,10 +146,10 @@
     <string name="n1">Total Consumption: %s</string>
     <string name="n2">Total Consumption: %s\nYour trip generated %s of CO2. You could have saved %s of CO2 by using public transport.</string>
     <string name="n3">Total Consumption: %s\nCongratulations! you have potentially saved %s of CO2 by avoiding the use of polluting transport.</string>
-    <string name="emailInfo">This email will only be used as contact information to announce the winners.</string>
+
     <string name="emailValid">Email is valid</string>
     <string name="emailNoValid">Email is not valid</string>
-    <string name="draw">Draw</string>
+    <string name="draw">Giveaway</string>
     <string name="email">Email</string>
     <string name="drawProgress">Draw progress</string>
     <string name="infoDrawProgress">In the draw organized by the UPC, you must have participated in a minimum of 3 days of the 5 total days that the campaign lasts.</string>
@@ -156,5 +157,6 @@
     <string name="days">days</string>
     <string name="activateEmail">To participate in the draw activate your email</string>
     <string name="LowText">Enable only the basic functionalities of hte map.</string>
+    <string name="pref2">Gender</string>
 
 </resources>
