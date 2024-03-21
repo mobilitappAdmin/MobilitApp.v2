@@ -347,7 +347,7 @@ class MainActivity : ComponentActivity() {
 //        if (!openPreferences and openReminder) {
 //            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
 //        }
-        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("emailo")) }
+        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
         if (!openPreferences and mailSorteig) { //email sorteig
             alertDialogEmail(sharedPreferences = sharedPreferences, ongoing = {mailSorteig = it}, newText = {} )
         }

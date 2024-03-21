@@ -129,7 +129,7 @@
     <string name="n1">Total Consumption: %s</string>
     <string name="n2">Total Consumption: %s\nYour trip generated %s of CO2. You could have saved %s of CO2 by using public transport.</string>
     <string name="n3">Total Consumption: %s\nCongratulations! you have potentially saved %s of CO2 by avoiding the use of polluting transport.</string>
-    <string name="emailInfo">This email is required to participate in the draw organized by the UPC. This information will only be used to contact the winner. Press deny if you do not want to participate.</string>
+    <string name="emailInfo">This email will only be used as contact information to announce the winners.</string>
     <string name="emailValid">Email is valid</string>
     <string name="emailNoValid">Email is not valid</string>
     <string name="draw">Draw</string>
