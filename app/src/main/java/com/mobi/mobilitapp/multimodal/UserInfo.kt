@@ -100,6 +100,9 @@ class UserInfo(val dir: String, val filename: String) {
         captureHash: Int,
         gender: String,
         ageRange: String,
+        organization: String,
+        role: String,
+        grade: String,
         activityType: String,
         startLoc: Array<String>,
         endLoc: Array<String>,
@@ -108,11 +111,19 @@ class UserInfo(val dir: String, val filename: String) {
     ): Boolean {
         try {
             open()
-            writeLine(
-                captureHash.toString() + "," + gender + "," + ageRange + ","
-                        + startTime + "," + startLoc[1] + "," + startLoc[0] + ","
-                        + endTime + "," + endLoc[1] + "," + endLoc[0] + "," + activityType
-            )
+            if (organization != ""){
+                writeLine(
+                    captureHash.toString() + "," + gender + "," + ageRange + "," + organization + "," + role + "," + grade + ","
+                            + startTime + "," + startLoc[1] + "," + startLoc[0] + ","
+                            + endTime + "," + endLoc[1] + "," + endLoc[0] + "," + activityType
+                )
+            } else {
+                writeLine(
+                    captureHash.toString() + "," + gender + "," + ageRange + ","
+                            + startTime + "," + startLoc[1] + "," + startLoc[0] + ","
+                            + endTime + "," + endLoc[1] + "," + endLoc[0] + "," + activityType
+                )
+            }
             close()
             Log.v("USER-INFO", "User info successfully written in csv file")
             return true

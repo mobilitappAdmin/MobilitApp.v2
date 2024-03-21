@@ -287,6 +287,9 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                                 captureHash,
                                 preferences.getString("gender", null)!!,
                                 preferences.getString("age", null)!!,
+                                preferences.getString("organization", null)!!,
+                                preferences.getString("role", null)!!,
+                                preferences.getString("grade", null)!!,
                                 prevMacroState,
                                 arrayOf(
                                     startLoc!!.longitude.toString(),
@@ -467,6 +470,9 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 captureHash,
                 preferences.getString("gender", null)!!,
                 preferences.getString("age", null)!!,
+                preferences.getString("organization", "")!!,
+                preferences.getString("role", "")!!,
+                preferences.getString("grade", "")!!,
                 macroState,
                 arrayOf(
                     startLoc!!.longitude.toString(),
