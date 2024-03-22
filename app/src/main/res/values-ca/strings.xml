@@ -64,16 +64,16 @@
 
     <!--Concurs-->
     <string name="Giveaway">Sorteig</string>
-    <string name="GiveawayExlpanation">"Estem organitzant un sorteig entre estudiants i personal de la UPC. Si vols participar, marca la casella i omple el formulari següent. Pots trobar més informació "</string>
+    <string name="GiveawayExlpanation">"Estem organitzant un sorteig entre l\'estudiantat i el personal de la UPC. Si vols participar, marca la casella i omple el formulari següent. Pots trobar més informació "</string>
     <string name="here">"aquí."</string>
     <string name="GivewayCheck">Vull participar al sorteig</string>
     <string name="Participate">Participar</string>
     <string name="DontParticipate">No vull participar</string>
 
     <string name="FIB">FIB - Facultat d\'Informàtica</string>
-    <string name="ETSAB">ETSAB - Facultat d\'Arquitectura</string>
-    <string name="ETSETB">ETSETB - Facultat de Telecomunicacions</string>
-    <string name="ETSECCB">ETSECCB - Facultat d\'Enginyeria Civil</string>
+    <string name="ETSAB">ETSAB - Escola Tècnica d\'Arquitectura</string>
+    <string name="ETSETB">ETSETB - Escola de Telecomunicacions</string>
+    <string name="ETSECCB">ETSECCPB - Escola d\'Enginyeria Civil</string>
 
     <string name="Student">Estudiant</string>
     <string name="PDI">PDI</string>
@@ -85,7 +85,7 @@
     <string name="_4th">4rt</string>
     <string name="_Master">Màster</string>
 
-    <string name="emailInfo">Aquest correu electrònic només s\'utilitzarà com a informació de contacte per anunciar els guanyadors.</string>
+    <string name="emailInfo">Aquest correu electrònic només s\'utilitzarà com a informació de contacte per anunciar les persones guanyadores.</string>
     <!--Train Screen-->
     <string name="GenerateData">Generar Dades</string>
 
@@ -144,5 +144,8 @@
     <string name="activateEmail">Per participar al sorteig activa el teu correu electrònic</string>
     <string name="mapDisabled">La visualització del model predictiu al mapa no està disponible a causa de la configuració d\'estalvi de bateria, però encara podeu obtenir les prediccions a través finestra de text. Per habilitar el mapa, aneu a Preferències>Bateria i seleccioneu una altra opció.</string>
     <string name="batteryDiclaimer">La configuració de la bateria no té cap efecte en el rendiment del model predictiu.</string>
+    <string name="Organization">Escola</string>
+    <string name="Role">Rol</string>
+    <string name="Grade">Curs</string>
 
 </resources>

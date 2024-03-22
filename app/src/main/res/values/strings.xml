@@ -81,22 +81,25 @@
     <string name="Participate">Participate</string>
     <string name="DontParticipate">I don\'t want to participate</string>
 
-    <string name="FIB">FIB - Facultad de Informática</string>
-    <string name="ETSAB">ETSAB - Facultad de Arquitectura</string>
-    <string name="ETSETB">ETSETB - Facultad de Telecomunicaciones</string>
-    <string name="ETSECCB">ETSECCB - Facultad de Ingeniería Civil</string>
+    <string name="Organization">School</string>
+    <string name="FIB">FIB - School of Informatics</string>
+    <string name="ETSAB">ETSAB - School of Arquitecture</string>
+    <string name="ETSETB">ETSETB - School of Telecommunications</string>
+    <string name="ETSECCB">ETSECCPB - School of Civil Engineering</string>
 
+    <string name="Role">Role</string>
     <string name="Student">Student</string>
     <string name="PDI">PDI</string>
     <string name="PAS">PAS/PTGAS</string>
 
+    <string name="Grade">Grade</string>
     <string name="_1st">1st</string>
     <string name="_2nd">2nd</string>
     <string name="_3rd">3rd</string>
     <string name="_4th">4th</string>
     <string name="_Master">Master Degree</string>
 
-    <string name="emailInfo">This email will only be used as contact information to announce the winners.</string>
+    <string name="emailInfo">This email will only be used as contact information to announce the prize winners.</string>
 
 
     <!--Train Screen-->
