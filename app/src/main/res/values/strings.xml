@@ -48,7 +48,6 @@
     <string name="Walk">Walk</string>
 
     <!--Main-->
-    <string name="Age2">Age (years old):</string>
     <string name="LocationUse">Location Use</string>
     <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, when the app is in use including when the app is in background.</string>
 

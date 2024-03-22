@@ -38,7 +38,6 @@
     <string name="Walk">Caminar</string>
 
     <!--Main-->
-    <string name="Age2">Edat (anys):</string>
     <string name="LocationUse">Ús de la ubicació</string>
     <string name="LocationPolicy">Aquesta aplicació recopila dades d\'ubicació per permetre la detecció de canvis en el mode de transport i per activar el mapeig del vostre viatge, quan l\'aplicació està en ús incloent quan l\'aplicació està en segon pla.</string>
 
