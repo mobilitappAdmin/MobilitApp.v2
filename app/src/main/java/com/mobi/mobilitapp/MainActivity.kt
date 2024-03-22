@@ -42,6 +42,7 @@ import com.mobi.mobilitapp.screens.MainScreen
 import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.alertDialogEmail
 import com.mobi.mobilitapp.screens.components.isValidEmail
+import com.mobi.mobilitapp.screens.components.removeTimes
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
 import com.mobi.mobilitapp.sensors.SensorLoader
@@ -246,6 +247,11 @@ class MainActivity : ComponentActivity() {
                 backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
                 confirmButton = {
                     TextButton(onClick = {
+
+                        //remove stored timers if not needed, to refresh the list when entering the popup again
+                        if(sharedPreferences.getString("reminder","") != "Daily")
+                            removeTimes(sharedPreferences = sharedPreferences)
+
                         // on below line we are storing data in shared preferences file.
                         sharedPreferences.edit().commit()
                         openPreferences = false

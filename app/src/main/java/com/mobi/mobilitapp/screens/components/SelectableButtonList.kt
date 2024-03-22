@@ -147,7 +147,11 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
     val size_time = remember { mutableStateOf(times.size)}
     val calendars  = remember{ MutableList(times.size) {Calendar.getInstance()} }
 
-
+    if(times.isEmpty()){
+        calendars.add(Calendar.getInstance());
+        times.add("07:00")
+        size_time.value +=1
+    }
 
     cancelReminders(res, baseRequestCode)
     if(selected.value == 0){ // daily
@@ -223,16 +227,19 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
 
                     ) {
                         Text(times[index],Modifier.padding(top = 2.dp,start = 5.dp, end = 5.dp).wrapContentHeight(align = Alignment.CenterVertically), fontSize = 14.sp)
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "remove timer",
-                            modifier = Modifier.size(18.dp).
-                            clickable {
-                                calendars.removeAt(index)
-                                times.removeAt(index)
-                                size_time.value -= 1
-                                sharedPreferences.edit().putString("reminderTimer${times.size}", "").apply() }
-                        )
+                        if(size_time.value > 1){
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "remove timer",
+                                modifier = Modifier.size(18.dp).
+                                clickable {
+                                    calendars.removeAt(index)
+                                    times.removeAt(index)
+                                    size_time.value -= 1
+                                    sharedPreferences.edit().putString("reminderTimer${times.size}", "").apply() }
+                            )
+                        }
+
                     }
                 }
 
@@ -241,7 +248,7 @@ fun selectableButtonListReminders(sharedPreferences: SharedPreferences, options:
                     OutlinedButton(
                         onClick = {
                             calendars.add(Calendar.getInstance());
-                            times.add("08:00")
+                            times.add("${7 * (size_time.value+1)}:00")
                             size_time.value +=1
                         },
                         border = BorderStroke(2.dp, Orange),
@@ -285,5 +292,12 @@ fun getTimes(sharedPreferences: SharedPreferences):List<String>{
     return times
 }
 
+fun removeTimes(sharedPreferences: SharedPreferences){
+    Log.d("removing","removing")
+    for(i in (0..2)){
+        sharedPreferences.edit().putString("reminderTimer$i","").apply()
+
+    }
+}
 
 

@@ -38,6 +38,7 @@ import com.mobi.mobilitapp.screens.components.ValidateEmail
 import com.mobi.mobilitapp.screens.components.alertDialogEmail
 import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.screens.components.alertDialogReminder
+import com.mobi.mobilitapp.screens.components.removeTimes
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
 import com.mobi.mobilitapp.ui.theme.Orange
@@ -226,7 +227,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                     )
                     preferences.getString("email", "")?.let {
                         Text(
-                            text = it,
+                            text = if(it == "False") "-" else it,
                             style = MaterialTheme.typography.body2
                         )
                     }
@@ -327,6 +328,12 @@ private fun BodyContent(preferences: SharedPreferences) {
             onDismissRequest = {/*openPreferences = false*/},
             confirmButton = {
                 TextButton(onClick = {
+
+                    //remove stored timers if not needed, to refresh the list when entering the popup again
+                    if(preferences.getString("reminder","") != "Daily")
+                        removeTimes(sharedPreferences = preferences)
+
+
                     // on below line we are storing data in shared preferences file.
                     preferences.edit().commit()
                     openPreferences = false
