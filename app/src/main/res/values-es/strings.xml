@@ -63,16 +63,16 @@
 
     <!--Concurso-->
     <string name="Giveaway">Sorteo</string>
-    <string name="GiveawayExlpanation">"Estamos organizando un sorteo entre estudiantes y personal de la UPC. Si quieres participar, marca la casilla y rellena el siguiente formulario. Puedes encontrar más información "</string>
+    <string name="GiveawayExlpanation">"Estamos organizando un sorteo entre estudiantado y personal de la UPC. Si quieres participar, marca la casilla y rellena el siguiente formulario. Puedes encontrar más información "</string>
     <string name="here">"aquí."</string>
     <string name="GivewayCheck">Quiero participar en el sorteo</string>
     <string name="Participate">Participar</string>
     <string name="DontParticipate">No quiero participar</string>
 
     <string name="FIB">FIB - Facultad de Informática</string>
-    <string name="ETSAB">ETSAB - Facultad de Arquitectura</string>
-    <string name="ETSETB">ETSETB - Facultad de Telecomunicaciones</string>
-    <string name="ETSECCB">ETSECCB - Facultad de Ingeniería Civil</string>
+    <string name="ETSAB">ETSAB - Escuela Técnica de Arquitectura</string>
+    <string name="ETSETB">ETSETB - Escuela de Telecomunicaciones</string>
+    <string name="ETSECCB">ETSECCPB - Escuela de Ingeniería Civil</string>
 
     <string name="Student">Estudiante</string>
     <string name="PDI">PDI</string>
@@ -84,7 +84,7 @@
     <string name="_4th">4º</string>
     <string name="_Master">Master</string>
 
-    <string name="emailInfo">Este correo electrónico sólo se utilizará como información de contacto para anunciar a los ganadores.</string>
+    <string name="emailInfo">Este correo electrónico sólo se utilizará como información de contacto para anunciar las personas ganadoras.</string>
 
     <!--Train Screen-->
     <string name="GenerateData">Generar Datos</string>
