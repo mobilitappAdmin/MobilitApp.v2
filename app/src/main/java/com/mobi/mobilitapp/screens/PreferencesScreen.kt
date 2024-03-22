@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -27,17 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mobi.mobilitapp.R
 import com.mobi.mobilitapp.getArray
-import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.TopBar
-import com.mobi.mobilitapp.screens.components.ValidateEmail
 import com.mobi.mobilitapp.screens.components.alertDialogEmail
-import com.mobi.mobilitapp.screens.components.isValidEmail
-import com.mobi.mobilitapp.screens.components.alertDialogReminder
 import com.mobi.mobilitapp.screens.components.removeTimes
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
@@ -410,9 +403,9 @@ private fun BodyContent(preferences: SharedPreferences) {
                             title = res.getString(R.string.Battery),
                             selectedText = { battery = it },
                             extraText = listOf(
-                                res.getString(R.string.MinimalText) + "\n" + res.getString(R.string.batteryDiclaimer),
-                                res.getString(R.string.LowText) + "\n" + res.getString(R.string.batteryDiclaimer),
-                                res.getString(R.string.RegularText) + "\n" + res.getString(R.string.batteryDiclaimer)
+                                res.getString(R.string.MinimalText) + "\n" + res.getString(R.string.batteryDisclaimer),
+                                res.getString(R.string.LowText) + "\n" + res.getString(R.string.batteryDisclaimer),
+                                res.getString(R.string.RegularText) + "\n" + res.getString(R.string.batteryDisclaimer)
                             )
                         )
                     }

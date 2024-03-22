@@ -1,7 +1,6 @@
 package com.mobi.mobilitapp.screens.components
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -160,7 +159,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                 //disclaimer amb la url del sorteig
                 val uriHandler = LocalUriHandler.current
                 val annotatedString = buildAnnotatedString {
-                    append(res.getString(R.string.GiveawayExlpanation))
+                    append(res.getString(R.string.GiveawayExplanation))
 
                     pushStringAnnotation(tag = "giveaway", annotation = "https://mobilitapp.upc.edu/")
                     withStyle(style = SpanStyle(color =Orange)) {
@@ -183,7 +182,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                         enabled = true,
                         colors = CheckboxDefaults.colors(checkedColor = Orange, uncheckedColor = Orange)
                     )
-                    Text(text = res.getString(R.string.GivewayCheck),modifier = Modifier.padding(top = 1.dp), fontSize = 13.sp,textAlign = TextAlign.Justify)
+                    Text(text = res.getString(R.string.GiveawayCheck),modifier = Modifier.padding(top = 1.dp), fontSize = 13.sp,textAlign = TextAlign.Justify)
                 }
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)){

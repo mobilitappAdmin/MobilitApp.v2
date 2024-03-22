@@ -12,25 +12,20 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -39,9 +34,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.MainScreen
-import com.mobi.mobilitapp.screens.components.EmailTextField
 import com.mobi.mobilitapp.screens.components.alertDialogEmail
-import com.mobi.mobilitapp.screens.components.isValidEmail
 import com.mobi.mobilitapp.screens.components.removeTimes
 import com.mobi.mobilitapp.screens.components.selectableButtonList
 import com.mobi.mobilitapp.screens.components.selectableButtonListReminders
@@ -340,9 +333,9 @@ class MainActivity : ComponentActivity() {
                                 title = res.getString(R.string.Battery),
                                 selectedText = {},
                                 extraText = listOf(
-                                    res.getString(R.string.MinimalText) + "\n" + res.getString(R.string.batteryDiclaimer),
-                                    res.getString(R.string.LowText) + "\n" + res.getString(R.string.batteryDiclaimer),
-                                    res.getString(R.string.RegularText) + "\n" + res.getString(R.string.batteryDiclaimer)
+                                    res.getString(R.string.MinimalText) + "\n" + res.getString(R.string.batteryDisclaimer),
+                                    res.getString(R.string.LowText) + "\n" + res.getString(R.string.batteryDisclaimer),
+                                    res.getString(R.string.RegularText) + "\n" + res.getString(R.string.batteryDisclaimer)
                                 )
                             )
                         }

@@ -62,18 +62,18 @@
 
     <!--Concurso-->
     <string name="Giveaway">Sorteo</string>
-    <string name="GiveawayExlpanation">"Estamos organizando un sorteo entre estudiantado y personal de la UPC. Si quieres participar, marca la casilla y rellena el siguiente formulario. Puedes encontrar más información "</string>
+    <string name="GiveawayExplanation">"Estamos organizando un sorteo entre estudiantado y personal de la UPC. Si quieres participar, marca la casilla y rellena el siguiente formulario. Puedes encontrar más información "</string>
     <string name="here">"aquí."</string>
-    <string name="GivewayCheck">Quiero participar en el sorteo</string>
+    <string name="GiveawayCheck">Quiero participar en el sorteo</string>
     <string name="Participate">Participar</string>
     <string name="DontParticipate">No quiero participar</string>
 
     <string name="FIB">FIB - Facultad de Informática</string>
     <string name="ETSAB">ETSAB - Escuela Técnica de Arquitectura</string>
-    <string name="ETSETB">ETSETB - Escuela de Telecomunicaciones</string>
+    <string name="ETSETB">ETSETB - Escuela de Telecomunicación</string>
     <string name="ETSECCB">ETSECCPB - Escuela de Ingeniería Civil</string>
 
-    <string name="Student">Estudiante</string>
+    <string name="Student">Estudiantado</string>
     <string name="PDI">PDI</string>
     <string name="PAS">PAS/PTGAS</string>
 
@@ -142,7 +142,7 @@
     <string name="days">días</string>
     <string name="activateEmail">Para participar en el sorteo activa tu correo electrónico</string>
     <string name="mapDisabled">La visualización del modelo predictivo en el mapa no está disponible debido a la configuración de ahorro de batería, pero todavía puede obtener las predicciones a través de ventana de texto. Para habilitar el mapa, vaya a Preferencias>Batería y seleccione otra opción.</string>
-    <string name="batteryDiclaimer">La configuración de la batería no tiene ningún efecto sobre el rendimiento del modelo predictivo.</string>
+    <string name="batteryDisclaimer">La configuración de la batería no tiene ningún efecto sobre el rendimiento del modelo predictivo.</string>
     <string name="Organization">Escuela</string>
     <string name="Role">Rol</string>
     <string name="Grade">Curso</string>

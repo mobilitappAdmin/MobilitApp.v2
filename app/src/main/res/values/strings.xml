@@ -69,20 +69,20 @@
     <string name="Low">Low</string>
     <string name="Minimal">Minimal</string>
     <string name="MinimalText">The map is disabled to minimize battery consumption.</string>
-    <string name="batteryDiclaimer">The battery setting has no effect on the performance of the predictive model.</string>
+    <string name="batteryDisclaimer">The battery setting has no effect on the performance of the predictive model.</string>
     <string name="BatteryUsage">Battery usage</string>
 
     <!--Concurs-->
     <string name="Giveaway">Giveaway</string>
-    <string name="GiveawayExlpanation">"We are organizing a giveaway among UPC students and personnel. If you would like to participate, check the box and fill the form below. You can find more information "</string>
+    <string name="GiveawayExplanation">"We are organizing a giveaway among UPC students and personnel. If you would like to participate, check the box and fill the form below. You can find more information "</string>
     <string name="here">"here."</string>
-    <string name="GivewayCheck">I want to participate</string>
+    <string name="GiveawayCheck">I want to participate</string>
     <string name="Participate">Participate</string>
     <string name="DontParticipate">I don\'t want to participate</string>
 
     <string name="Organization">School</string>
     <string name="FIB">FIB - School of Informatics</string>
-    <string name="ETSAB">ETSAB - School of Arquitecture</string>
+    <string name="ETSAB">ETSAB - School of Architecture</string>
     <string name="ETSETB">ETSETB - School of Telecommunications</string>
     <string name="ETSECCB">ETSECCPB - School of Civil Engineering</string>
 
