@@ -218,6 +218,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
+    var minipopUpState: Boolean by remember { mutableStateOf(false) }
     var popUpState: Boolean by remember { mutableStateOf(false) }
     var animationState: Boolean by remember { mutableStateOf(false) }
     var interactionSource = remember { MutableInteractionSource() }
@@ -246,6 +247,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         multimodal.initialize()
                         multimodal.startCapture()
                         mapa.startTrip()
+                        minipopUpState = false
                         stop = false
                     },
                     modifier = Modifier
@@ -267,7 +269,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     onClick = {
                         multimodal.stopCapture()
                         stop = true
-                        popUpState = true
+                        minipopUpState = true
                         mapa.endTrip()
                         //sendCO2notification()
                     },
@@ -384,6 +386,21 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
             }
 
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .clickable(interactionSource = interactionSource, indication = null) { },
+            visible = minipopUpState,
+            enter = slideInVertically(initialOffsetY = {screenHeight.value.toInt()},animationSpec = tween(durationMillis = 500)),
+            exit = slideOutVertically(targetOffsetY = {screenHeight.value.toInt()},animationSpec = tween(durationMillis = 500)),
+        ){
+            Button(onClick = {minipopUpState = false; popUpState = true},
+                colors = ButtonDefaults.buttonColors(backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray),
+                contentPadding = PaddingValues(2.dp)){
+                Icon(painter = painterResource(R.drawable.icons8_collapse_arrow_48) , contentDescription = "expand extra info", modifier = Modifier.size(25.dp), tint = if (!isSystemInDarkTheme()) Orange else Color.White)
+
+            }
+        }
         //darken the background behind the popup and close the it if clicked outside
         AnimatedVisibility(
             modifier = Modifier.fillMaxSize(),
