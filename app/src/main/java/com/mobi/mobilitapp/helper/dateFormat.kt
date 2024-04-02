@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 fun indrawDays(todayDate: Date): Boolean {
-    val drawDays = arrayOf( "21", "22", "23", "24", "25", "26", "27")
-    val drawMonth = "03"
+    val drawDays = arrayOf( "15", "16", "17", "18", "19")
+    val drawMonth = "04"
     val drawYear = "2024"
 
     val parser = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH)
