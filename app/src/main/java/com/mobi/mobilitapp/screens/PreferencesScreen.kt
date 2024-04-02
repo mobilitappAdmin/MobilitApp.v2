@@ -444,6 +444,7 @@ private fun BodyContent(preferences: SharedPreferences) {
                 val email = preferences.getString("email", "False").toString()
                 Column (modifier = Modifier.padding(16.dp)) {
                     Text(res.getString(R.string.infoDrawProgress))
+                    Spacer(Modifier.height(15.dp))
                     if (email != "False") {
                         Text(
                             "${res.getString(R.string.currenProgress)} ${days.size} ${res.getString(R.string.days)}.",
