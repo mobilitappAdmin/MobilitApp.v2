@@ -39,7 +39,7 @@
 
     <!--Main-->
     <string name="LocationUse">Ús de la ubicació</string>
-    <string name="LocationPolicy">Aquesta aplicació recopila dades d\'ubicació per permetre la detecció de canvis en el mode de transport i per activar el mapeig del vostre viatge, quan l\'aplicació està en ús incloent quan l\'aplicació està en segon pla.</string>
+    <string name="LocationPolicy">Aquesta aplicació recopila dades d\'ubicació per permetre la detecció de canvis en el mode de transport i per activar el mapeig del vostre viatge, tant si l\'aplicació està en ús com en segon pla.</string>
 
 
     <!--Recordatori-->
@@ -144,7 +144,7 @@
     <string name="mapDisabled">La visualització del model predictiu al mapa no està disponible a causa de la configuració d\'estalvi de bateria, però encara podeu obtenir les prediccions a través finestra de text. Per habilitar el mapa, aneu a Preferències>Bateria i seleccioneu una altra opció.</string>
     <string name="batteryDisclaimer">La configuració de la bateria no té cap efecte en el rendiment del model predictiu.</string>
     <string name="Organization">Escola</string>
-    <string name="Role">Rol</string>
+    <string name="Profile">Perfil</string>
     <string name="Grade">Curs</string>
 
 </resources>

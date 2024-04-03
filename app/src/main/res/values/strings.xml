@@ -49,7 +49,7 @@
 
     <!--Main-->
     <string name="LocationUse">Location Use</string>
-    <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, when the app is in use including when the app is in background.</string>
+    <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, including when the app is in background.</string>
 
 
     <!--Reminder-->
@@ -86,7 +86,7 @@
     <string name="ETSETB">ETSETB - School of Telecommunications</string>
     <string name="ETSECCB">ETSECCPB - School of Civil Engineering</string>
 
-    <string name="Role">Role</string>
+    <string name="Profile">Profile</string>
     <string name="Student">Student</string>
     <string name="PDI">PDI</string>
     <string name="PAS">PAS/PTGAS</string>

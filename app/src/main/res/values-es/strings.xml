@@ -39,7 +39,7 @@
 
     <!--Main-->
     <string name="LocationUse">Uso de la ubicación</string>
-    <string name="LocationPolicy">Esta aplicación recopila datos de ubicación para permitir la detección de cambios de modo de transporte y para habilitar el mapeo de su viaje, cuando la aplicación está en uso incluyendo cuando la aplicación se encuentra en segundo plano.</string>
+    <string name="LocationPolicy">Esta aplicación recopila datos de ubicación para permitir la detección de cambios de modo de transporte y para habilitar el mapeo de su viaje, tanto cuando la aplicación está en uso como en segundo plano.</string>
 
 
     <string name="ReminderPopUp">Recibir recordatorios de uso:</string>
@@ -144,7 +144,7 @@
     <string name="mapDisabled">La visualización del modelo predictivo en el mapa no está disponible debido a la configuración de ahorro de batería, pero todavía puede obtener las predicciones a través de ventana de texto. Para habilitar el mapa, vaya a Preferencias>Batería y seleccione otra opción.</string>
     <string name="batteryDisclaimer">La configuración de la batería no tiene ningún efecto sobre el rendimiento del modelo predictivo.</string>
     <string name="Organization">Escuela</string>
-    <string name="Role">Rol</string>
+    <string name="Profile">Perfil</string>
     <string name="Grade">Curso</string>
 
 </resources>
