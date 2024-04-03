@@ -65,7 +65,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
     //save preferences in english
     val transOrg = mapOf(
         "FIB" to res.getString(R.string.FIB),
-        "ETSAB" to res.getString(R.string.ETSAB),
+        "ETSAB" to res.getString(R.string.ETSAV),
         "ETSETB" to res.getString(R.string.ETSETB),
         "ETSECCB" to res.getString(R.string.ETSECCB),
         "" to ""
@@ -186,7 +186,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
                 }
 
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)){
-                    dropDown(modifier = Modifier,value = organization,label= res.getString(R.string.Organization),disabled = !checked,items = listOf(res.getString(R.string.FIB),res.getString(R.string.ETSAB),res.getString(R.string.ETSETB),res.getString(R.string.ETSECCB)),selectedText = {organization = it})
+                    dropDown(modifier = Modifier,value = organization,label= res.getString(R.string.Organization),disabled = !checked,items = listOf(res.getString(R.string.FIB),res.getString(R.string.ETSAV),res.getString(R.string.ETSETB),res.getString(R.string.ETSECCB)),selectedText = {organization = it})
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)){
                         dropDown(modifier = Modifier.weight(1f),value = role,label=res.getString(R.string.Role),disabled = !checked,items = listOf(res.getString(R.string.Student),res.getString(R.string.PDI),res.getString(R.string.PAS)),selectedText = {role = it})
                         dropDown(modifier = Modifier.weight(1f),value = grade,label=res.getString(R.string.Grade),disabled = (!checked or (role != res.getString(R.string.Student))),items = listOf(res.getString(R.string._1st),res.getString(R.string._2nd),res.getString(R.string._3rd),res.getString(R.string._4th),res.getString(R.string._Master)),selectedText = {grade = it})
