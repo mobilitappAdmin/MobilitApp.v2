@@ -50,7 +50,9 @@
     <!--Main-->
     <string name="LocationUse">Location Use</string>
     <string name="LocationPolicy">This app collects location data to enable detection of transport mode changes and to enable mapping of your journey, including when the app is in background.</string>
-
+    <string name="CheckBoxPrivacyPolicy">"I have read and accept the "</string>
+    <string name="PrivacyPolicy">"Privacy Policy"</string>
+    <string name="PrivacyPolicyLink">https://mobilitapp.upc.edu/en/privacy-information-about-mobilitapp</string>
 
     <!--Reminder-->
     <string name="ReminderPopUp">Get usage reminders:</string>

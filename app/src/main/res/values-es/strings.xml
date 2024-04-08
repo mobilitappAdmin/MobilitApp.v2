@@ -146,5 +146,8 @@
     <string name="Organization">Escuela</string>
     <string name="Profile">Perfil</string>
     <string name="Grade">Curso</string>
+    <string name="CheckBoxPrivacyPolicy">"He leído y acepto la "</string>
+    <string name="PrivacyPolicy">"Política de Privacidad"</string>
+    <string name="PrivacyPolicyLink">https://mobilitapp.upc.edu/es/informacion-sobre-privacidad-en-mobilitapp</string>
 
 </resources>

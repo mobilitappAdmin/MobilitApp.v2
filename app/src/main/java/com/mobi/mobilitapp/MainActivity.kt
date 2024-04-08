@@ -12,20 +12,29 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -200,6 +209,7 @@ class MainActivity : ComponentActivity() {
         val res = LocalContext.current
         if (openLocation) {
             var title: String = res.getString(R.string.LocationUse)
+            var checked by remember { mutableStateOf(false)}
             AlertDialog(
                 backgroundColor = if (!isSystemInDarkTheme()) Color.White else SoftGray,
                 onDismissRequest = {(context as? Activity)?.finish()},
@@ -213,9 +223,16 @@ class MainActivity : ComponentActivity() {
                             sharedPreferences.edit().commit()
                             openLocation = false
                         },
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent,))
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Orange,
+                            backgroundColor = Color.Transparent,
+                            disabledBackgroundColor = Color.Transparent,
+                            disabledContentColor = Color.Gray,
+
+                        ),
+                        enabled = checked)
                     {
-                        Text(text = res.getString(R.string.Accept),color = Orange,style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                        Text(text = res.getString(R.string.Accept),style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                     }
                 },
                 dismissButton = {
@@ -229,7 +246,39 @@ class MainActivity : ComponentActivity() {
                     }
 
                 },
-                text = { Text(res.getString(R.string.LocationPolicy), fontSize = 12.sp, textAlign = TextAlign.Justify)}
+                text = {
+                    Column(){
+                        Text(res.getString(R.string.LocationPolicy), fontSize = 12.sp, textAlign = TextAlign.Justify)
+                        Spacer(Modifier.height(10.dp))
+                        Row(Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                modifier = Modifier.scale(1f),
+                                checked = checked,
+                                onCheckedChange = { checked = it },
+                                enabled = true,
+                                colors = CheckboxDefaults.colors(checkedColor = Orange, uncheckedColor = Orange)
+                            )
+                            val uriHandler = LocalUriHandler.current
+                            val annotatedString = buildAnnotatedString {
+                                append(res.getString(R.string.CheckBoxPrivacyPolicy))
+                                pushStringAnnotation(tag = "privacy_policy", annotation = res.getString(R.string.PrivacyPolicyLink))
+                                withStyle(style = SpanStyle(color =Orange)) {
+                                    append(res.getString(R.string.PrivacyPolicy))
+                                }
+                                pop()
+
+                            }
+                            Log.d("privact", annotatedString.toString())
+                            ClickableText(text = annotatedString,style = TextStyle(fontSize = 14.sp, color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current), textAlign = TextAlign.Justify), onClick = { offset ->
+                                annotatedString.getStringAnnotations(tag = "privacy_policy", start = offset, end = offset).firstOrNull()?.let {
+                                    uriHandler.openUri(it.item)
+                                }
+                            })
+                        }
+                    }
+                }
+
+
             )
         }
 
