@@ -100,7 +100,7 @@ class UserInfo(val dir: String, val filename: String) {
         captureHash: Int,
         gender: String,
         ageRange: String,
-        organization: String,
+        organization: String = "",
         role: String,
         grade: String,
         activityType: String,

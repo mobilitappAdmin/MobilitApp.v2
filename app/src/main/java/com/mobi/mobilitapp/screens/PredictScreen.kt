@@ -539,7 +539,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                                             .align(Alignment.Center)) {
                                             Text("${item}", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
                                             Text("CO2 ${mapa.formatData(mapa.getCO2(dist,item), "CO2")} ", color = Color.White,textAlign = TextAlign.Left,modifier = Modifier)
-                                            Text( res.getString(R.string.Distance)+ "${mapa.formatData(dist, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
+                                            Text( res.getString(R.string.Distance)+ " ${mapa.formatData(dist, "distance")} ", color = Color.White, textAlign = TextAlign.Right,modifier = Modifier)
 
                                         }
                                     }

@@ -56,6 +56,9 @@ import com.mobi.mobilitapp.ui.theme.SoftGray
 /**
  * Main activity of the application.
  */
+
+
+
 class MainActivity : ComponentActivity() {
     private lateinit var android_id: String
     private lateinit var sensorLoader: SensorLoader
@@ -395,10 +398,18 @@ class MainActivity : ComponentActivity() {
 //        if (!openPreferences and openReminder) {
 //            alertDialogReminder(sharedPreferences = sharedPreferences, ongoing = {openReminder = it}, newText = {})
 //        }
-        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
-        if (!openPreferences and mailSorteig) { //email sorteig
-            alertDialogEmail(sharedPreferences = sharedPreferences, ongoing = {mailSorteig = it}, newText = {} )
-        }
+
+
+        //DESCOMENTAR TOTS ELS BLOCS AMB EL TAG "SORTEIG" PER HABILITAR SORTEIG
+
+        //SORTEIG
+//        var mailSorteig: Boolean by remember { mutableStateOf(!sharedPreferences.contains("email")) }
+//        if (!openPreferences and mailSorteig) { //email sorteig
+//            alertDialogEmail(sharedPreferences = sharedPreferences, ongoing = {mailSorteig = it}, newText = {} )
+//        }
+//        if (!sharedPreferences.contains("draw")){
+//            saveArray(arrayOf(), "draw", sharedPreferences)
+//        }
 
 
 
@@ -406,9 +417,7 @@ class MainActivity : ComponentActivity() {
             sharedPreferences.edit().putBoolean("debug", false).apply()
             sharedPreferences.edit().commit()
         }
-        if (!sharedPreferences.contains("draw")){
-            saveArray(arrayOf(), "draw", sharedPreferences)
-        }
+
 
         //if (!sharedPreferences.contains("heuristic_fact")){
             sharedPreferences.edit().putFloat("heuristic_fact", 2.5f).apply()

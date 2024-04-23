@@ -197,60 +197,61 @@ private fun BodyContent(preferences: SharedPreferences) {
             )
              */
 
-            Text(
-                text = res.getString(R.string.draw),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.padding(10.dp)
-            )
-            Divider()
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-                    .clickable { emailDialog = true }
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.email),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    preferences.getString("email", "")?.let {
-                        Text(
-                            text = if(it == "False") "-" else it,
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                }
-            }
-            Divider()
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-                    .clickable { progressDialog = true }
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = res.getString(R.string.drawProgress),
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    LinearProgressIndicator(
-                        progress = getProgressRaffle(
-                            getArray("draw", preferences),
-                            preferences.getString("email", "False").toString()
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+            //SORTEIG
+//            Text(
+//                text = res.getString(R.string.draw),
+//                style = MaterialTheme.typography.h5,
+//                modifier = Modifier.padding(10.dp)
+//            )
+//            Divider()
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(72.dp)
+//                    .padding(horizontal = 16.dp)
+//                    .clickable { emailDialog = true }
+//            ) {
+//                Column(
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Text(
+//                        text = res.getString(R.string.email),
+//                        style = MaterialTheme.typography.subtitle1
+//                    )
+//                    preferences.getString("email", "")?.let {
+//                        Text(
+//                            text = if(it == "False") "-" else it,
+//                            style = MaterialTheme.typography.body2
+//                        )
+//                    }
+//                }
+//            }
+//            Divider()
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(72.dp)
+//                    .padding(horizontal = 16.dp)
+//                    .clickable { progressDialog = true }
+//            ) {
+//                Column(
+//                    modifier = Modifier.weight(1f)
+//                ) {
+//                    Text(
+//                        text = res.getString(R.string.drawProgress),
+//                        style = MaterialTheme.typography.subtitle1
+//                    )
+//                    LinearProgressIndicator(
+//                        progress = getProgressRaffle(
+//                            getArray("draw", preferences),
+//                            preferences.getString("email", "False").toString()
+//                        ),
+//                        modifier = Modifier.fillMaxWidth()
+//                    )
+//                }
+//            }
             Text(
                 text = res.getString(R.string.About),
                 style = MaterialTheme.typography.h5,

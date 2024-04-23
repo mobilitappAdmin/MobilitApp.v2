@@ -158,11 +158,14 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         captureHash = abs((startDate.toString()+ANDROID_ID).hashCode())
         stop = Pair(0.0f, false)
         val email = preferences.getString("email", "False")
-        userInfoService = if (email != null && email != "False") {
-            UserInfo(FILEPATH, captureHash.toString()+"_"+email+"_"+"UserInfo.csv")
-        } else {
-            UserInfo(FILEPATH, captureHash.toString() + '_' + "UserInfo.csv")
-        }
+        userInfoService =  UserInfo(FILEPATH, captureHash.toString() + '_' + "UserInfo.csv")
+
+        //SORTEIG
+//        userInfoService = if (email != null && email != "False") {
+//            UserInfo(FILEPATH, captureHash.toString()+"_"+email+"_"+"UserInfo.csv")
+//        } else {
+//            UserInfo(FILEPATH, captureHash.toString() + '_' + "UserInfo.csv")
+//        }
         mlService =  MLService(context)
         mlService.initialize() //load Model
         stopService = StopService(alpha = preferences.getFloat("alpha",0f).toDouble(), max_radium = 30, num_points = 90, covering_threshold = 75.0F)
@@ -283,11 +286,14 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     if (macroState != prevMacroState) {
                         if (!first) {
                             //userinfo
+                            val organization = ""
+                            // SORTEIG
+//                            organization = preferences.getString("organization", null)!!,
                             userInfoService.createUserInfoDataFile(
                                 captureHash,
                                 preferences.getString("gender", null)!!,
                                 preferences.getString("age", null)!!,
-                                preferences.getString("organization", null)!!,
+                               organization,
                                 preferences.getString("role", null)!!,
                                 preferences.getString("grade", null)!!,
                                 prevMacroState,
@@ -466,11 +472,14 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         sensorLoader.stopCapture()
         //push server
         if (!first) {
+            val organization = ""
+            // SORTEIG
+//          organization = preferences.getString("organization", null)!!,
             userInfoService.createUserInfoDataFile(
                 captureHash,
                 preferences.getString("gender", null)!!,
                 preferences.getString("age", null)!!,
-                preferences.getString("organization", "")!!,
+                organization,
                 preferences.getString("role", "")!!,
                 preferences.getString("grade", "")!!,
                 macroState,
@@ -489,27 +498,26 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     }
 
     fun pushUserInfo(): Boolean {
-        // Sorteo
-        if (checkDrawValidity()) {
-            val email = preferences.getString("email", "")
-            if (email != "" && email != "False") {
-                // save the day
-                if (indrawDays(startDate)) {
-                    val today = formatDate(startDate)
-                    var daysArray = getArray("draw", preferences)
-                    if (daysArray != null) {
-                        if (!daysArray.contains(today)){
-                            daysArray += today
-                            saveArray(daysArray, "draw", preferences)
-                        }
-                    }
-                    else {
-                        saveArray(arrayOf(today), "draw", preferences)
-                    }
-                }
-            }
-        }
-        // SORTEO
+        // SORTEIG
+//        if (checkDrawValidity()) {
+//            val email = preferences.getString("email", "")
+//            if (email != "" && email != "False") {
+//                // save the day
+//                if (indrawDays(startDate)) {
+//                    val today = formatDate(startDate)
+//                    var daysArray = getArray("draw", preferences)
+//                    if (daysArray != null) {
+//                        if (!daysArray.contains(today)){
+//                            daysArray += today
+//                            saveArray(daysArray, "draw", preferences)
+//                        }
+//                    }
+//                    else {
+//                        saveArray(arrayOf(today), "draw", preferences)
+//                    }
+//                }
+//            }
+//        }
         val intent = Intent(context, UploadService::class.java)
         intent.putExtra("USERINFO", "Uploading...")
         context.startService(intent)
