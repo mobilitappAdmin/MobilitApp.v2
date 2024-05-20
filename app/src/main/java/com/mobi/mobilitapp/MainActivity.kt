@@ -440,6 +440,6 @@ fun Context.startMultimodalService() {
     this.startForegroundService(intent)
 
 }
-fun Context.stopMobilitAppService() {
+fun Context.stopMultimodalService() {
     stopService(Intent(this, Multimodal::class.java))
 }

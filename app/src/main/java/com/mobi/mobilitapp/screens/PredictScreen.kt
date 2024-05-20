@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -48,7 +49,7 @@ import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.components.MapDialog
 import com.mobi.mobilitapp.screens.components.TopBar
 import com.mobi.mobilitapp.startMultimodalService
-import com.mobi.mobilitapp.stopMobilitAppService
+import com.mobi.mobilitapp.stopMultimodalService
 import com.mobi.mobilitapp.ui.theme.*
 import org.osmdroid.util.GeoPoint
 import java.util.*
@@ -272,7 +273,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 // Stop button
                 Button(
                     onClick = {
-                        context.stopMobilitAppService()
+                        val intent = Intent("Capture")
+                        intent.putExtra("Stop","")
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+//                        context.stopMobilitAppService()
                         stop = true
                         minipopUpState = true
                         mapa.endTrip()
@@ -340,15 +344,15 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
+
                     // Upload button
                     Button(
                         onClick = {
-                            uploading = true
-                            var upload = multimodal.pushUserInfo()
-                            if (upload) {
-                                stop = null
-                                uploading = false
-                            }
+                            stop = null
+                            val intent = Intent("Capture")
+                            intent.putExtra("Process","Upload")
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF5DFB56)),
                         modifier = Modifier
@@ -365,12 +369,10 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     // delete button
                     Button(
                         onClick = {
-                            deleting = true
-                            var delete = multimodal.deleteUserInfo()
-                            if (delete) {
-                                stop = null
-                                deleting = false
-                            }
+                            stop = null
+                            val intent = Intent("Capture")
+                            intent.putExtra("Process","Delete")
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE74C3C)),
                         modifier = Modifier

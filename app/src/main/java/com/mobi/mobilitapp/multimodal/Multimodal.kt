@@ -5,8 +5,10 @@ import android.R
 import android.app.Activity
 import android.app.Notification
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
@@ -26,6 +28,8 @@ import com.mobi.mobilitapp.helper.indrawDays
 import com.mobi.mobilitapp.saveArray
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.server.UploadService
+import com.mobi.mobilitapp.stopMultimodalService
+import org.osmdroid.util.GeoPoint
 import java.io.File
 import java.lang.Math.abs
 import java.math.BigDecimal
@@ -99,6 +103,26 @@ class Multimodal: Service() {
     val FILEPATH = Environment
         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         .absolutePath + "/MobilitAppV2/sensors"
+
+    //comunication
+
+    private val updateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+
+        // we will receive data updates in onReceive method.
+        override fun onReceive(context: Context?, intent: Intent) {
+            if(intent.hasExtra("Stop")) stopCapture()
+            else if(intent.hasExtra("Process")){
+                if(intent.getStringExtra("Process")!! == "Upload"){
+                    pushUserInfo()
+                }
+                else{
+                    deleteUserInfo()
+                }
+
+            }
+
+        }
+    }
 
     /**
      * Returns the last captured location as an array of longitude and latitude coordinates.
@@ -305,7 +329,7 @@ class Multimodal: Service() {
                     Log.d(TAG, "Send fifo $fifoStr")
                     Log.d(TAG, "Capturing $capturing")
 
-                    context.sendBroadcast(intent)
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
                     if (macroState != prevMacroState) {
                         if (!first) {
@@ -354,9 +378,15 @@ class Multimodal: Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.d("test","onStartCommand")
+        Log.d(TAG,"onStartCommand")
+
         getConstructorParams(intent)
         initialize()
+
+        //recieve updates from app
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+            updateReceiver, IntentFilter("Capture")
+        )
 
         startAsForegroundService()
         startCapture()
@@ -580,7 +610,6 @@ class Multimodal: Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "OnDestroy")
-        stopCapture()
     }
 
     fun pushUserInfo(): Boolean {
@@ -607,7 +636,7 @@ class Multimodal: Service() {
         val intent = Intent(context, UploadService::class.java)
         intent.putExtra("USERINFO", "Uploading...")
         context.startService(intent)
-
+        context.stopMultimodalService()
         return true
     }
     private fun checkDrawValidity(): Boolean {
@@ -670,6 +699,7 @@ class Multimodal: Service() {
                 Log.d("DELETE", e.toString())
             }
         }
+        context.stopMultimodalService()
         return true
     }
 
