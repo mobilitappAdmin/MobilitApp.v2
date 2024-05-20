@@ -1,7 +1,9 @@
 package com.mobi.mobilitapp.multimodal
 
 import android.Manifest
+import android.R
 import android.app.Activity
+import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,8 +13,11 @@ import android.location.Location
 import android.os.Environment
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.mobi.mobilitapp.getArray
@@ -41,10 +46,17 @@ import kotlin.math.sqrt
  * @param sensorLoader An instance of SensorLoader used to load and analyze sensor data.
  * @param preferences The SharedPreferences instance to access user preferences.
  */
-class Multimodal(private val context: Context, private val sensorLoader: SensorLoader, private val preferences: SharedPreferences, android_id: String): Service() {
+class Multimodal: Service() {
+
+    //constructor
+    private var context: Context = this
+    private lateinit var sensorLoader:SensorLoader
+    //private lateinit var notificationId: Int
+    private lateinit var notification: Notification
+    private lateinit var user_id: String
+    private lateinit var preferences: SharedPreferences
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val ANDROID_ID: String = android_id
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
     private lateinit var mlService: MLService
@@ -78,6 +90,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
     private lateinit var drawDate: Date // nomes per el sorteig
     private var startLoc: Location? = null
     private var first: Boolean = true
+    private var TAG = "TESTING"
 
     private var lastwindow = "-"
 
@@ -103,6 +116,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             return arrayOf("-", "-")
         }
 
+    }
+    fun setSensorLoader(sensor: SensorLoader){
+        sensorLoader = sensor
+        Log.d("SensorLoader", "Sensor loader set")
     }
 
     /**
@@ -152,14 +169,15 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
      * Initializes the Multimodal service by setting up required components and services.
      */
     fun initialize() {
+        preferences = context.getSharedPreferences("preferences",0)
         first = true
         startDate = Date()
         drawDate = Date()
+        val ANDROID_ID: String = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         captureHash = abs((startDate.toString()+ANDROID_ID).hashCode())
         stop = Pair(0.0f, false)
         val email = preferences.getString("email", "False")
         userInfoService =  UserInfo(FILEPATH, captureHash.toString() + '_' + "UserInfo.csv")
-
         //SORTEIG
 //        userInfoService = if (email != null && email != "False") {
 //            UserInfo(FILEPATH, captureHash.toString()+"_"+email+"_"+"UserInfo.csv")
@@ -190,6 +208,11 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
             "Tram" to 0,
             "WALK" to 0
         ) as MutableMap<String, Int>
+
+
+        sensorLoader= SensorLoader(application.applicationContext,Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID))
+
+        Log.d(TAG, "Service Intialized")
 
         val intent = Intent("multimodal")
 
@@ -270,7 +293,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     if (accuracy < 100) {
                         stop = stopService.addLocation(location)
                     }
-
+                    Log.d(TAG, "Location received")
                     intent.putExtra("macroState", macroState)
                     intent.putExtra("fifo", fifoStr)
                     intent.putExtra("activity", activity)
@@ -279,9 +302,10 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                     intent.putExtra("stop", BigDecimal(stop.first.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString() + " %, " + stopService.get_size().toString() + ", " +
                             BigDecimal(stopService.distance_to_last_location()).setScale(2, RoundingMode.HALF_EVEN).toString() + " m, " +  BigDecimal(stopService.get_current_alpha()).setScale(3, RoundingMode.HALF_EVEN).toString())
                     intent.putExtra("ml", ml_calls.toString())
-                    Log.d("MULTIMODAL", "send fifo $fifoStr")
+                    Log.d(TAG, "Send fifo $fifoStr")
+                    Log.d(TAG, "Capturing $capturing")
 
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                    context.sendBroadcast(intent)
 
                     if (macroState != prevMacroState) {
                         if (!first) {
@@ -314,7 +338,8 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                         prevMacroState = macroState
                     }
                     if (stop.second) {
-                        stopCapture()
+                        //stopCapture()
+                        stopForegroundService()
                     }
                 }
             }
@@ -324,7 +349,55 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         locationRequest.interval = (30 * 1000).toLong() // 18 seconds
         locationRequest.fastestInterval = (20 * 1000).toLong() // 16 seconds
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        Log.d(TAG, "Setup Location Updates")
 
+    }
+
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Log.d("test","onStartCommand")
+        getConstructorParams(intent)
+        initialize()
+
+        startAsForegroundService()
+        startCapture()
+
+        Log.d(TAG, "Service Started")
+        Log.d(TAG, "capturing ${capturing}")
+
+        return START_REDELIVER_INTENT
+    }
+    private fun getConstructorParams(intent: Intent) {
+        user_id = intent.getStringExtra("userId").toString()
+        val NotificationTitle = intent.getStringExtra("NotificationTitle")
+        val NotificationContent = intent.getStringExtra("NotificationDescription")
+        val NotificationChannel = intent.getStringExtra("NotificationChannel")
+
+        if (NotificationTitle != null && NotificationContent != null && NotificationChannel != null) {
+            notification =
+                createNotification(NotificationTitle, NotificationContent, "Mobilitapp")!!
+        }
+        else {
+            notification =
+                createNotification("Mobilitapp", "Foreground service developed", "Mobilitapp")!!
+        }
+    }
+    private fun startAsForegroundService() {
+        // promote service to foreground service
+        startForeground(1, notification)
+
+        Log.d(TAG, "Start Foreground")
+    }
+    fun stopForegroundService() {
+        stopSelf()
+    }
+    private fun createNotification(title: String, content: String, channel_id: String): Notification? {
+        // Build your notification here using the NotificationCompat.Builder
+        // Don't forget to set a small icon, or the notification will not show
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channel_id)
+            .setSmallIcon(com.mobi.mobilitapp.R.mipmap.ic_launcher) // notification icon
+            .setContentTitle(title)
+            .setContentText(content)
+        return builder.build()
     }
 
     fun getPredictionSummary(): MutableMap<String, Int> {
@@ -443,6 +516,7 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
         )
         // Initialize sensor data capture
         sensorLoader.initialize("Multimodal")
+        Log.d(TAG, "Start location updates")
     }
 
     /**
@@ -495,6 +569,18 @@ class Multimodal(private val context: Context, private val sensorLoader: SensorL
                 Date().toString()
             )
         }
+    }
+    override fun onCreate() {
+        super.onCreate()
+
+        Toast.makeText(this, "Foreground Service created", Toast.LENGTH_SHORT).show()
+
+        Log.d(TAG, "Service Created")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "OnDestroy")
+        stopCapture()
     }
 
     fun pushUserInfo(): Boolean {

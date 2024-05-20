@@ -32,13 +32,13 @@ object FFT {
         for (k in 0 until n / 2) {
             even[k] = x[2 * k]
         }
-        val evenFFT: Array<Complex?> = com.mobi.mobilitapp.multimodal.FFT.FFT.fft(even)
+        val evenFFT: Array<Complex?> = fft(even)
 
         // compute FFT of odd terms
         for (k in 0 until n / 2) {
             even[k] = x[2 * k + 1]
         }
-        val oddFFT: Array<Complex?> = com.mobi.mobilitapp.multimodal.FFT.FFT.fft(even)
+        val oddFFT: Array<Complex?> = fft(even)
 
         // combine
         val y = arrayOfNulls<Complex>(n)

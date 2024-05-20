@@ -47,6 +47,8 @@ import com.mobi.mobilitapp.map.Mapa
 import com.mobi.mobilitapp.multimodal.Multimodal
 import com.mobi.mobilitapp.screens.components.MapDialog
 import com.mobi.mobilitapp.screens.components.TopBar
+import com.mobi.mobilitapp.startMultimodalService
+import com.mobi.mobilitapp.stopMobilitAppService
 import com.mobi.mobilitapp.ui.theme.*
 import org.osmdroid.util.GeoPoint
 import java.util.*
@@ -218,6 +220,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
+    var capturing: Boolean by remember { mutableStateOf(false) }
     var minipopUpState: Boolean by remember { mutableStateOf(false) }
     var popUpState: Boolean by remember { mutableStateOf(false) }
     var animationState: Boolean by remember { mutableStateOf(false) }
@@ -244,16 +247,18 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                         LocalBroadcastManager.getInstance(context).registerReceiver(
                             windowReceiver, IntentFilter("multimodal")
                         )
-                        multimodal.initialize()
-                        multimodal.startCapture()
+                        context.startMultimodalService()
+//                        multimodal.initialize()
+//                        multimodal.startCapture()
                         mapa.startTrip()
                         minipopUpState = false
                         stop = false
+                        capturing = true
                     },
                     modifier = Modifier
                         .height(40.dp)
                         .width(150.dp),
-                    enabled = (!multimodal.getState())
+                    enabled = (!capturing)
                 ) {
                     Icon(
                         Icons.Filled.PlayArrow,
@@ -267,16 +272,17 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 // Stop button
                 Button(
                     onClick = {
-                        multimodal.stopCapture()
+                        context.stopMobilitAppService()
                         stop = true
                         minipopUpState = true
                         mapa.endTrip()
+                        capturing = false
                         //sendCO2notification()
                     },
                     modifier = Modifier
                         .height(40.dp)
                         .width(150.dp),
-                    enabled = multimodal.getState()
+                    enabled = capturing
                 ) {
                     Icon(
                         Icons.Filled.Done,
@@ -326,7 +332,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
 
             // When stopping capture
-            if (stop != null && !multimodal.getState()) {
+            if (stop != null && !capturing) {
                 var uploading: Boolean by remember { mutableStateOf(false) }
                 var deleting: Boolean by remember { mutableStateOf(false) }
 
