@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -23,6 +24,7 @@
         android:requestLegacyExternalStorage="true"
         tools:targetApi="31"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -37,8 +39,12 @@
             </intent-filter>
         </activity>
         <service android:enabled="true" android:name="com.mobi.mobilitapp.server.UploadService" android:exported="false"/>
-        <service android:enabled="true" android:name="com.mobi.mobilitapp.multimodal.Multimodal" android:exported="false"
-            tools:ignore="Instantiatable" />
+        <service
+            android:name="com.mobi.mobilitapp.multimodal.Multimodal"
+            android:exported="false"
+            android:foregroundServiceType="location"
+            tools:ignore="Instantiatable">
+        </service>
         <receiver
             android:name=".notifications.AlarmBroadcastReceiver"
             android:exported="true"

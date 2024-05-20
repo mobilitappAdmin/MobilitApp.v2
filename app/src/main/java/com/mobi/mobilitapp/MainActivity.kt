@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
@@ -57,7 +58,7 @@ import com.mobi.mobilitapp.ui.theme.SoftGray
  * Main activity of the application.
  */
 
-
+val CHANNEL_ID = "Mobilitapp_default_channel"
 
 class MainActivity : ComponentActivity() {
     private lateinit var android_id: String
@@ -92,11 +93,12 @@ class MainActivity : ComponentActivity() {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
 
-
+        Log.d("Create","create")
         android_id = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         sensorLoader = SensorLoader(this, android_id)
         sensorLoaderMulti = SensorLoader(this, android_id)
-        multiModal = Multimodal(this, sensorLoaderMulti, sharedPreferences, android_id)
+        multiModal = Multimodal()
+        multiModal.setSensorLoader(sensorLoaderMulti)
         mapa = Mapa(this,sharedPreferences)
 
 
@@ -426,4 +428,18 @@ class MainActivity : ComponentActivity() {
         //}
     }
 
+}
+fun Context.startMultimodalService() {
+    val intent = Intent(this, Multimodal::class.java)
+    //add info to the library
+    intent.putExtra("userId", "3efds234r")
+    intent.putExtra("NotificationTitle", "MobilitApp Service")
+    intent.putExtra("NotificationDescription", "A multimodal trip is being captured using MobilitApp.")
+    intent.putExtra("NotificationChannel", CHANNEL_ID)
+
+    this.startForegroundService(intent)
+
+}
+fun Context.stopMobilitAppService() {
+    stopService(Intent(this, Multimodal::class.java))
 }

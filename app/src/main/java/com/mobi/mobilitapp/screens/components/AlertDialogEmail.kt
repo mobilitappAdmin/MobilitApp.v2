@@ -65,7 +65,7 @@ fun alertDialogEmail(sharedPreferences: SharedPreferences,ongoing: (Boolean)-> U
     //save preferences in english
     val transOrg = mapOf(
         "FIB" to res.getString(R.string.FIB),
-        "ETSAB" to res.getString(R.string.ETSAV),
+        "ETSAV" to res.getString(R.string.ETSAV),
         "ETSETB" to res.getString(R.string.ETSETB),
         "ETSECCB" to res.getString(R.string.ETSECCB),
         "Other" to res.getString(R.string.others),
