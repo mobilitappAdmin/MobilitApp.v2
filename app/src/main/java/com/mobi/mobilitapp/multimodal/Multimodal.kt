@@ -18,9 +18,12 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.google.android.gms.location.*
 import com.mobi.mobilitapp.getArray
 import com.mobi.mobilitapp.helper.formatDate
@@ -193,7 +196,21 @@ class Multimodal: Service() {
      * Initializes the Multimodal service by setting up required components and services.
      */
     fun initialize() {
-        preferences = context.getSharedPreferences("preferences",0)
+
+        //needed to retrieve EncryptedSharedPreferences
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        // Initialize/open an instance of EncryptedSharedPreferences on below line.
+        preferences = EncryptedSharedPreferences.create(
+            // passing a file name to share a preferences
+            "preferences",
+            masterKeyAlias,
+            this,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+
+        Log.d(TAG,"Shared Preferences Gender ${preferences.getString("gender", ":(")}")
         first = true
         startDate = Date()
         drawDate = Date()
@@ -339,11 +356,11 @@ class Multimodal: Service() {
 //                            organization = preferences.getString("organization", null)!!,
                             userInfoService.createUserInfoDataFile(
                                 captureHash,
-                                preferences.getString("gender", null)!!,
-                                preferences.getString("age", null)!!,
+                                preferences.getString("gender", "null")!!,
+                                preferences.getString("age", "null")!!,
                                organization,
-                                preferences.getString("role", null)!!,
-                                preferences.getString("grade", null)!!,
+                                preferences.getString("role", "null")!!,
+                                preferences.getString("grade", "null")!!,
                                 prevMacroState,
                                 arrayOf(
                                     startLoc!!.longitude.toString(),
@@ -574,6 +591,7 @@ class Multimodal: Service() {
         capturing = false
         fusedLocationClient.removeLocationUpdates(locationCallback)
         sensorLoader.stopCapture()
+        Log.d(TAG,"Capture finished")
         //push server
         if (!first) {
             val organization = ""
@@ -581,8 +599,8 @@ class Multimodal: Service() {
 //          organization = preferences.getString("organization", null)!!,
             userInfoService.createUserInfoDataFile(
                 captureHash,
-                preferences.getString("gender", null)!!,
-                preferences.getString("age", null)!!,
+                preferences.getString("gender", "null")!!,
+                preferences.getString("age", "null")!!,
                 organization,
                 preferences.getString("role", "")!!,
                 preferences.getString("grade", "")!!,
@@ -609,6 +627,8 @@ class Multimodal: Service() {
     }
     override fun onDestroy() {
         super.onDestroy()
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(
+            updateReceiver)
         Log.d(TAG, "OnDestroy")
     }
 
