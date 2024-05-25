@@ -221,7 +221,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
-    var capturing: Boolean by remember { mutableStateOf(false) }
+    var capturing: Boolean by rememberSaveable  { mutableStateOf(false) }
     var minipopUpState: Boolean by remember { mutableStateOf(false) }
     var popUpState: Boolean by remember { mutableStateOf(false) }
     var animationState: Boolean by remember { mutableStateOf(false) }
