@@ -1,6 +1,7 @@
 package com.mobi.mobilitapp.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -192,6 +193,18 @@ private fun ActivityDialog(
     sensorLoader: SensorLoader
 ){
     val res = LocalContext.current
+    val translationTable = mapOf( res.getString(R.string.Bicycle) to "Bicycle",
+        res.getString(R.string.Bus) to "Bus",
+        res.getString(R.string.Car) to "Car",
+        res.getString(R.string.e_Bicycle) to "e_Bicycle",
+        res.getString(R.string.e_Scooter) to "e_Scooter",
+        res.getString(R.string.Metro) to "Metro",
+        res.getString(R.string.Moto ) to "Moto",
+        res.getString(R.string.Run) to "Run",
+        res.getString(R.string.Stationary) to "Still",
+        res.getString(R.string.Train) to "Train",
+        res.getString(R.string.Tram) to "Tram",
+        res.getString(R.string.Walk) to "Walk")
     if (showDialog){
         var activity: String? = null
         AlertDialog(
@@ -228,7 +241,7 @@ private fun ActivityDialog(
                                             res.getString(R.string.Walk))
 
                 val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[2]) }
-                activity=selectedOption
+                activity=translationTable[selectedOption]
                 Column(
                     modifier= Modifier
                         .fillMaxWidth()
@@ -251,7 +264,8 @@ private fun ActivityDialog(
                                 modifier = Modifier.padding(all = Dp(value = 2F)),
                                 onClick = {
                                     onOptionSelected(text)
-                                    activity = text
+                                    activity = translationTable[text]
+                                    Log.d("activity",activity!!)
                                 })
                             Text(
                                 fontSize = 18.sp,

@@ -4,6 +4,7 @@ import android.Manifest
 import android.R
 import android.app.Activity
 import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -25,6 +26,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.google.android.gms.location.*
+import com.mobi.mobilitapp.MainActivity
 import com.mobi.mobilitapp.getArray
 import com.mobi.mobilitapp.helper.formatDate
 import com.mobi.mobilitapp.helper.indrawDays
@@ -440,10 +442,17 @@ class Multimodal: Service() {
     private fun createNotification(title: String, content: String, channel_id: String): Notification? {
         // Build your notification here using the NotificationCompat.Builder
         // Don't forget to set a small icon, or the notification will not show
+
+        val notificationIntent = Intent(context, MainActivity::class.java)
+        notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val pendingIntent = PendingIntent.getActivity(context, 8008, notificationIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(this, channel_id)
             .setSmallIcon(com.mobi.mobilitapp.R.mipmap.ic_launcher) // notification icon
             .setContentTitle(title)
             .setContentText(content)
+            .setContentIntent(pendingIntent)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
         return builder.build()
     }
 
@@ -621,7 +630,7 @@ class Multimodal: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        Toast.makeText(this, "Foreground Service created", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "Foreground Service created", Toast.LENGTH_SHORT).show()
 
         Log.d(TAG, "Service Created")
     }
