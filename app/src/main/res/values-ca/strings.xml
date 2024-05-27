@@ -94,6 +94,8 @@
     <string name="train3">Capturat correctament</string>
     <string name="train4">Capturant</string>
     <string name="train5">Seleccioneu una activitat</string>
+    <string name="train6">Aquesta funcio permet generar dades de sensors en trajectes unimodals, amb els quals poder entrenar l\'algoritme de ML.</string>
+    <string name="train7">Procureu utilitzar únicament el transport seleccionat, sense trams a peu o en un altre vehicle durant la mateixa captura.</string>
 
     <!--Predict Screen-->
     <string name="Trip">Generar Viatge</string>

@@ -94,6 +94,8 @@
     <string name="train3">Capturado correctamente</string>
     <string name="train4">Capturando</string>
     <string name="train5">Seleccione una actividad</string>
+    <string name="train6">Esta funcion permite generar datos de sensores en trayectos unimodales, con los cuales poder entrenar el algoritmo de ML.</string>
+    <string name="train7">Procura utilizar unicamente el transporte seleccionado, sin tramos a pie o en otro vehiculo durante la misma captura.</string>
 
     <!--Predict Screen-->
     <string name="Trip">Generar Viaje</string>
