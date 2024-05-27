@@ -2,6 +2,7 @@ package com.mobi.mobilitapp.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +25,7 @@ import com.mobi.mobilitapp.screens.components.TopBar
 import com.mobi.mobilitapp.sensors.SensorLoader
 import com.mobi.mobilitapp.ui.theme.Orange
 import com.mobi.mobilitapp.ui.theme.SoftGray
+import com.mobi.mobilitapp.ui.theme.SofterGray
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -182,6 +185,30 @@ private fun BodyContent(sensorLoader: SensorLoader){
         } else if (sensorLoader.getState()){
             Text(res.getString(R.string.train4)+"...")
         }
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(Modifier.align(Alignment.BottomCenter)) {
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = SofterGray,
+                        textAlign = TextAlign.Center
+                    ),
+                    text = res.getString(R.string.train6)
+                )
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = SofterGray,
+                        textAlign = TextAlign.Center
+                    ),
+                    text = res.getString(R.string.train7)                )
+                Spacer(Modifier.size(250.dp))
+
+            }
+        }
+
     }
 
 }

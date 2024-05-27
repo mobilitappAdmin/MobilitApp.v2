@@ -112,6 +112,8 @@
     <string name="train3">Captured successfully</string>
     <string name="train4">Capturing</string>
     <string name="train5">Select an activity</string>
+    <string name="train6">This function generates sensor data on unimodal trips, with which we will train the machine learning algorithm to predict the transportation mode.</string>
+    <string name="train7">Use a single selected transportation, without segments on foot or in another vehicle during the same capture.</string>
 
     <!--Predict Screen-->
     <string name="Trip">Generate Trip</string>
