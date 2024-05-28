@@ -101,7 +101,7 @@ class SensorLoader(private val context: Context, android_id: String): Service(),
     fun initialize(selectedActivity: String): Boolean {
 
         activity=selectedActivity
-        Toast.makeText(context, this.context.getString(R.string.SensorLoader)+": $activity", Toast.LENGTH_LONG).show()
+        if(activity != "Multimodal")Toast.makeText(context, this.context.getString(R.string.SensorLoader)+": $activity", Toast.LENGTH_LONG).show()
 
         accArray=ArrayList()
         magArray=ArrayList()

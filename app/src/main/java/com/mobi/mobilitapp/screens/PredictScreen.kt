@@ -119,8 +119,17 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     val fibPosition = GeoPoint(41.38867, 2.11196)
     var vehicleTest: String by remember { mutableStateOf("Car") }
 
-    // chose if the popup should put all the subt-ravels with the same vehicle into one card or show them separately
+    // chose if the popup should put all the sub-travels with the same vehicle into one card or show them separately
     var condensedPopUp = true
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
+    var capturing: Boolean by rememberSaveable  { mutableStateOf(false) }
+    var minipopUpState: Boolean by remember { mutableStateOf(false) }
+    var popUpState: Boolean by remember { mutableStateOf(false) }
+    var animationState: Boolean by remember { mutableStateOf(false) }
+    var interactionSource = remember { MutableInteractionSource() }
 
     val res = LocalContext.current
 
@@ -154,7 +163,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) { return }
-            notify(0, mBuilder.build())
+            notify(8, mBuilder.build())
         }
     }
 
@@ -193,7 +202,14 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
             if(stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0){
                 sendCO2notification()
+                val intent = Intent("Capture")
+                intent.putExtra("Stop","")
+                LocalBroadcastManager.getInstance(res).sendBroadcast(intent)
+//                        context.stopMobilitAppService()
+                stop = true
+                minipopUpState = true
                 mapa.endTrip()
+                capturing = false
             }
 
             if (macro != null) {
@@ -218,14 +234,6 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
 
         }
     }
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-    var capturing: Boolean by rememberSaveable  { mutableStateOf(false) }
-    var minipopUpState: Boolean by remember { mutableStateOf(false) }
-    var popUpState: Boolean by remember { mutableStateOf(false) }
-    var animationState: Boolean by remember { mutableStateOf(false) }
-    var interactionSource = remember { MutableInteractionSource() }
 
 
     Box() {

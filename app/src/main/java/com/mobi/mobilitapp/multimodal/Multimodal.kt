@@ -382,7 +382,7 @@ class Multimodal: Service() {
                     }
                     if (stop.second) {
                         //stopCapture()
-                        stopForegroundService()
+                        //stopForegroundService()
                     }
                 }
             }
@@ -432,7 +432,7 @@ class Multimodal: Service() {
     }
     private fun startAsForegroundService() {
         // promote service to foreground service
-        startForeground(1, notification)
+        startForeground(8, notification)
 
         Log.d(TAG, "Start Foreground")
     }
