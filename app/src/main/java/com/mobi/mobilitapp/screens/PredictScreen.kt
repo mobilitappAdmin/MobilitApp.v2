@@ -112,7 +112,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
     var macroState: String? by rememberSaveable  {
         mutableStateOf(multimodal.get_macrostate())
     }
-    var stop: Boolean? by rememberSaveable  { mutableStateOf(null) }
+    var stop: Boolean by rememberSaveable  { mutableStateOf(false) }
     var location_accuracy: String? by rememberSaveable  { mutableStateOf("0") }
     //var mapa by remember {mutableStateOf(mapa)}
     val jardinsPedralbes = GeoPoint(41.387540, 2.117864)
@@ -167,17 +167,19 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
         }
     }
 
-    val windowReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    class WindowReceiver: BroadcastReceiver() {
 
         // we will receive data updates in onReceive method.
         override fun onReceive(context: Context?, intent: Intent) {
             // Get extra data included in the Intent
+            Log.d("onReceive","onReceive")
             val loc: String? = intent.getStringExtra("location")
             val act: String? = intent.getStringExtra("activity")
             val fifo_str = intent.getStringExtra("fifo")
             val loc_acc = intent.getStringExtra("accuracy")
             var macro = intent.getStringExtra("macroState")
             stop_cov = intent.getStringExtra("stop")
+            Log.d("STOP",stop_cov!!)
             ml_calls = intent.getStringExtra("ml")
             // on below line we are updating the data in our text view.
             if (loc != null) {
@@ -201,11 +203,14 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 fifo = fifo_str
             }
             if(stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0){
-                sendCO2notification()
+                if(intent.getStringExtra("noNotify") == null) {
+                    sendCO2notification()
+                }
                 val intent = Intent("Capture")
                 intent.putExtra("Stop","")
                 LocalBroadcastManager.getInstance(res).sendBroadcast(intent)
 //                        context.stopMobilitAppService()
+                removeReceiver()
                 stop = true
                 minipopUpState = true
                 mapa.endTrip()
@@ -233,7 +238,13 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
 
         }
+         fun removeReceiver(){
+            LocalBroadcastManager.getInstance(res).unregisterReceiver(
+                this
+            )
+        }
     }
+    val windowReceiver = WindowReceiver()
 
 
     Box() {
@@ -267,7 +278,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     modifier = Modifier
                         .height(40.dp)
                         .width(150.dp),
-                    enabled = (!capturing)
+                    enabled = (!capturing and !stop)
                 ) {
                     Icon(
                         Icons.Filled.PlayArrow,
@@ -281,10 +292,20 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                 // Stop button
                 Button(
                     onClick = {
-                        val intent = Intent("Capture")
-                        intent.putExtra("Stop","")
+//                        val intent = Intent("Capture")
+//                        intent.putExtra("Stop","")
+
+                        //workaround to pass it as automatic stop, because it doesnt unregister the windoReceiver properly if done as above
+                        val intent = Intent("multimodal")
+                        intent.putExtra("noNotify","noNotify")
+                        intent.putExtra("stop","99")
+
+
+
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 //                        context.stopMobilitAppService()
+
+                        LocalBroadcastManager.getInstance(context).unregisterReceiver(windowReceiver);
                         stop = true
                         minipopUpState = true
                         mapa.endTrip()
@@ -319,9 +340,9 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             //debugo button
             //Button(onClick = { vehicleTest = if(vehicleTest == "Car") "WALK" else "Car" ; mapa.selectedIcon = mapa.nameToID[vehicleTest]!! }){Text(vehicleTest)}
                 
-            if (stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0) {
-                sendCO2notification()
-            }
+//            if (stop_cov!!.split(" ", ",", "%").filter { it.isNotEmpty() }[0].toDouble() >= 75.0) {
+//                sendCO2notification()
+//            }
             // debug text
             if (debug) {
                 val showDialog = remember { mutableStateOf(false) }
@@ -344,7 +365,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
             }
 
             // When stopping capture
-            if (stop != null && !capturing) {
+            if (stop!!  && !capturing) {
                 var uploading: Boolean by remember { mutableStateOf(false) }
                 var deleting: Boolean by remember { mutableStateOf(false) }
 
@@ -356,7 +377,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     // Upload button
                     Button(
                         onClick = {
-                            stop = null
+                            stop = false
                             val intent = Intent("Capture")
                             intent.putExtra("Process","Upload")
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
@@ -377,7 +398,7 @@ private fun BodyContent(context: Context, multimodal: Multimodal, debug: Boolean
                     // delete button
                     Button(
                         onClick = {
-                            stop = null
+                            stop = false
                             val intent = Intent("Capture")
                             intent.putExtra("Process","Delete")
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)

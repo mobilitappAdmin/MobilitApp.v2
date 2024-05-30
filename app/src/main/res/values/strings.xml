@@ -149,7 +149,7 @@
     <string name="predMap1">ML activity prediction</string>
 
     <!--Co2 Notification-->
-    <string name="JourneyFinished">Journey finished</string>
+    <string name="JourneyFinished">Journey finished automatically</string>
     <string name="n1">Total Consumption: %s</string>
     <string name="n2">Total Consumption: %s\nYour trip generated %s of CO2. You could have saved %s of CO2 by using public transport.</string>
     <string name="n3">Total Consumption: %s\nCongratulations! you have potentially saved %s of CO2 by avoiding the use of polluting transport.</string>

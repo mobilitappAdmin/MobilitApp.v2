@@ -342,8 +342,10 @@ class Multimodal: Service() {
                     intent.putExtra("activity", activity)
                     intent.putExtra("accuracy", accuracy.toString())
                     intent.putExtra("location", location.latitude.toString()+","+location.longitude.toString())
-                    intent.putExtra("stop", BigDecimal(stop.first.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString() + " %, " + stopService.get_size().toString() + ", " +
-                            BigDecimal(stopService.distance_to_last_location()).setScale(2, RoundingMode.HALF_EVEN).toString() + " m, " +  BigDecimal(stopService.get_current_alpha()).setScale(3, RoundingMode.HALF_EVEN).toString())
+                    if(capturing){
+                        intent.putExtra("stop", BigDecimal(stop.first.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString() + " %, " + stopService.get_size().toString() + ", " +
+                                BigDecimal(stopService.distance_to_last_location()).setScale(2, RoundingMode.HALF_EVEN).toString() + " m, " +  BigDecimal(stopService.get_current_alpha()).setScale(3, RoundingMode.HALF_EVEN).toString())
+                    }
                     intent.putExtra("ml", ml_calls.toString())
                     Log.d(TAG, "Send fifo $fifoStr")
                     Log.d(TAG, "Capturing $capturing")
@@ -600,7 +602,7 @@ class Multimodal: Service() {
         capturing = false
         fusedLocationClient.removeLocationUpdates(locationCallback)
         sensorLoader.stopCapture()
-        Log.d(TAG,"Capture finished")
+
         //push server
         if (!first) {
             val organization = ""

@@ -131,7 +131,7 @@
     <string name="predMap1">Predicción de la actividad con ML</string>
 
     <!--Co2 Notification-->
-    <string name="JourneyFinished">Viaje finalizado</string>
+    <string name="JourneyFinished">Viaje finalizado automáticamente</string>
     <string name="n1">Consumo total: %s</string>
     <string name="n2">Consumo total: %s\nSu viaje ha generado %s de CO2. Podría haber ahorrado %s de CO2 utilizando el transporte público.</string>
     <string name="n3">Consumo total: %s\n¡Enhorabuena! Ha ahorrado potencialmente %s de CO2 evitando el uso de transportes contaminantes.</string>

@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
             sharedPreferences.edit().putString("flush","flushed").commit()
         }
 
+        sharedPreferences.edit().putInt("service", 0).apply();
 
 
 
