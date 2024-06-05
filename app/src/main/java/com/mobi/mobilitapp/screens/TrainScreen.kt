@@ -204,6 +204,14 @@ private fun BodyContent(sensorLoader: SensorLoader){
                         textAlign = TextAlign.Center
                     ),
                     text = res.getString(R.string.train7)                )
+                Text(
+                    modifier = Modifier.padding(5.dp),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = SofterGray,
+                        textAlign = TextAlign.Center
+                    ),
+                    text = res.getString(R.string.train8)                )
                 Spacer(Modifier.size(250.dp))
 
             }

@@ -95,9 +95,10 @@
     <string name="train4">Capturant</string>
     <string name="train5">Seleccioneu una activitat</string>
     <string name="train6">Aquesta funció genera dades de sensors en trajectes unimodals, amb les quals entrenarem l\'algoritme d\'aprenentage màquina que prediu el mode de transport utilitzat.</string>
-    <string name="train7">Utilitza únicament el transport seleccionat, sense segments a peu o en un altre vehicle durant la mateixa captura.</string>
+    <string name="train7">Utilitza únicament el transport seleccionat, sense segments a peu o en un altre vehicle durant la mateixa captura. Recomenem generar dades durant 10–15min.</string>
 
     <!--Predict Screen-->
+    <string name="train8">Per generar viatges multimodals, ves a la pestanya Generar Viatge.</string>
     <string name="Trip">Generar Viatge</string>
     <string name="pred1">Predicció d\'activitat</string>
     <string name="pred2">Activitats</string>

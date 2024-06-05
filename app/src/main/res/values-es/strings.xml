@@ -95,9 +95,10 @@
     <string name="train4">Capturando</string>
     <string name="train5">Seleccione una actividad</string>
     <string name="train6">Esta función genera datos de sensores en trayectos unimodales, con los que entrenaremos el algoritmo de aprendizaje máquina que predice el modo de transporte utilizado.</string>
-    <string name="train7">Utiliza únicamente el transporte seleccionado, sin segmentos a pie o en otro vehículo durante la misma captura.</string>
+    <string name="train7">Utiliza únicamente el transporte seleccionado, sin segmentos a pie o en otro vehículo durante la misma captura. Recomendamos generar datos durante 10–15min.</string>
 
     <!--Predict Screen-->
+    <string name="train8">Para generar trayectos multimodales, ve a la pestaña Generar Viaje.</string>
     <string name="Trip">Generar Viaje</string>
     <string name="pred1">Predicción de actividad</string>
     <string name="pred2">Actividades</string>
